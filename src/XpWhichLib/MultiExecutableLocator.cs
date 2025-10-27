@@ -8,12 +8,10 @@
  */
 
 
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using System.Threading.Tasks;
 
 using XpWhichLib.Abstractions;
 
@@ -39,60 +37,45 @@ public class MultiExecutableLocator : IMultiExecutableLocator
     /// Locates all executable files within the specified directory and its subdirectories.
     /// </summary>
     /// <param name="directory">The directory to search for executables.</param>
+    /// <param name="directorySearchOption"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the executable files found.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public FileInfo[] LocateAllExecutablesWithinDirectory(DirectoryInfo directory)
+    public IEnumerable<FileInfo> LocateAllExecutablesWithinDirectory(DirectoryInfo directory,
+        SearchOption directorySearchOption)
     {
-        ConcurrentBag<FileInfo> results = new();
-        
-        IEnumerable<DirectoryInfo> directories = new DirectoryInfo(directory.FullName)
-            .EnumerateDirectories("*",  SearchOption.AllDirectories);
-
-        Parallel.ForEach(directories, dir =>
-        {
-            IEnumerable<FileInfo> files = new DirectoryInfo(dir.FullName)
-                .EnumerateFiles("*", SearchOption.AllDirectories)
-                .Where(file => _executableFileDetector.IsFileExecutable(file));
-            
-            foreach (FileInfo file in files)
+        ParallelQuery<FileInfo> results = directory
+            .EnumerateDirectories("*", directorySearchOption)
+            .AsParallel()
+            .SelectMany(dir =>
             {
-                results.Add(file);
-            }
-        });
-        
-        return results.ToArray();
+               return dir.EnumerateFiles("*", directorySearchOption)
+                    .Where(file => _executableFileDetector.IsFileExecutable(file));
+            });
+
+        return results;
     }
 
     /// <summary>
     /// Identifies all executable files within the specified drive by recursively searching through all directories.
     /// </summary>
     /// <param name="driveInfo">The drive to search within for executable files.</param>
+    /// <param name="directorySearchOption"></param>
     /// <returns>An array of FileInfo objects representing executable files found within the drive.</returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
-    public FileInfo[] LocateAllExecutablesWithinDrive(DriveInfo driveInfo)
+    public IEnumerable<FileInfo> LocateAllExecutablesWithinDrive(DriveInfo driveInfo, SearchOption directorySearchOption)
     {
-        ConcurrentBag<FileInfo> results = new();
-        
-        IEnumerable<DirectoryInfo> directories = new DirectoryInfo(driveInfo.RootDirectory.FullName)
-            .EnumerateDirectories("*",  SearchOption.AllDirectories);
+        ParallelQuery<FileInfo> results = driveInfo.RootDirectory
+            .EnumerateDirectories("*", directorySearchOption)
+            .AsParallel()
+            .SelectMany(dir => LocateAllExecutablesWithinDirectory(dir, directorySearchOption));
 
-        Parallel.ForEach(directories, directory =>
-        {
-            FileInfo[] files = LocateAllExecutablesWithinDirectory(directory);
-
-            foreach (FileInfo file in files)
-            {
-                results.Add(file);
-            }
-        });
-        
-        return results.ToArray();
+        return results;
     }
 }

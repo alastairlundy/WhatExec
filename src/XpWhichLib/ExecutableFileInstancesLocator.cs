@@ -38,26 +38,21 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>
+    /// <param name="directorySearchOption"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances.</returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
-    public FileInfo[] LocateExecutableInstances(string executableName)
+    public IEnumerable<FileInfo> LocateExecutableInstances(string executableName, SearchOption directorySearchOption)
     {
-        ConcurrentBag<FileInfo> concurrentBag = new();
-        
         IEnumerable<DriveInfo> drives = DriveInfo.GetDrives()
             .Where(x => x.IsReady);
 
-        Parallel.ForEach(drives, drive =>
-        {
-            foreach (FileInfo fileInfo in LocateExecutableInstancesWithinDrive(drive, executableName))
-            {
-                concurrentBag.Add(fileInfo);
-            }
-        });
-        
-        return concurrentBag.ToArray();
+        ParallelQuery<FileInfo> result = drives.AsParallel()
+            .SelectMany(drive =>
+                LocateExecutableInstancesWithinDrive(drive, executableName, SearchOption.AllDirectories));
+    
+        return result;
     }
 
     /// <summary>
@@ -65,29 +60,17 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     /// </summary>
     /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
     /// <param name="executableName">The name of the executable file to be located.</param>
+    /// <param name="directorySearchOption"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
-    public FileInfo[] LocateExecutableInstancesWithinDrive(DriveInfo driveInfo,
-        string executableName)
+    public IEnumerable<FileInfo> LocateExecutableInstancesWithinDrive(DriveInfo driveInfo,
+        string executableName, SearchOption directorySearchOption)
     {
-        ConcurrentBag<FileInfo> results = new ConcurrentBag<FileInfo>();
-        
-        string rootDir = driveInfo.RootDirectory.FullName;
-        
-        DirectoryInfo directoryInfo =  new DirectoryInfo(rootDir);
+        ParallelQuery<FileInfo> results = driveInfo.RootDirectory
+            .EnumerateDirectories("*", directorySearchOption)
+            .AsParallel()
+            .SelectMany(dir => LocateExecutableInstancesWithinDirectory(dir, executableName,  directorySearchOption));
 
-        IEnumerable<DirectoryInfo> directories = directoryInfo.EnumerateDirectories("*", SearchOption.AllDirectories);
-
-        Parallel.ForEach(directories, directory =>
-        {
-            FileInfo[] files =  LocateExecutableInstancesWithinDirectory(directory, executableName);
-
-            foreach (FileInfo file in files)
-            {
-                results.Add(file);
-            }
-        });
-
-        return results.ToArray();
+        return results;
     }
 
     /// <summary>
@@ -95,24 +78,17 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     /// </summary>
     /// <param name="directory">The directory where the search will be conducted.</param>
     /// <param name="executableName">The name of the executable file to search for.</param>
+    /// <param name="directorySearchOption"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable files within the directory.</returns>
-    public FileInfo[] LocateExecutableInstancesWithinDirectory(DirectoryInfo directory,
-        string executableName)
+    public IEnumerable<FileInfo> LocateExecutableInstancesWithinDirectory(DirectoryInfo directory,
+        string executableName, SearchOption directorySearchOption)
     {
-        ConcurrentBag<FileInfo> results = new();
-        
-        IEnumerable<FileInfo> files = directory
-            .EnumerateFiles("*", SearchOption.AllDirectories)
-            .Where(file => _executableFileDetector.IsFileExecutable(file));
+        ParallelQuery<FileInfo> results = directory
+            .EnumerateFiles("*", directorySearchOption)
+            .AsParallel()
+            .Where(file => _executableFileDetector.IsFileExecutable(file))
+            .Where(file => file.Exists && (file.Name.Equals(executableName) || file.FullName.Equals(executableName)));
 
-        Parallel.ForEach(files, file =>
-        {
-            if (file.Exists && (file.Name.Equals(executableName) || file.FullName.Equals(executableName)))
-            { 
-                results.Add(file);
-            }
-        });
-
-        return results.ToArray();
+        return results;
     }
 }

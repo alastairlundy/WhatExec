@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Collections.Generic;
 using System.IO;
 
 namespace XpWhichLib.Abstractions;
@@ -21,16 +22,19 @@ public interface IMultiExecutableLocator
     /// Filters the files to include only those that are recognized as executable based on the implementation of the provided executable file detector.
     /// </summary>
     /// <param name="directory">The directory in which to search for executable files.</param>
+    /// <param name="directorySearchOption"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
-    FileInfo[] LocateAllExecutablesWithinDirectory(DirectoryInfo directory);
+    IEnumerable<FileInfo> LocateAllExecutablesWithinDirectory(DirectoryInfo directory,
+        SearchOption directorySearchOption);
 
     /// <summary>
     /// Locates all executable files within a specified drive asynchronously.
     /// Filters the files to include only those recognized as executables based on the provided executable file detector implementation.
     /// </summary>
     /// <param name="driveInfo">The drive in which to search for executable files.</param>
+    /// <param name="searchOption"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
-    FileInfo[] LocateAllExecutablesWithinDrive(DriveInfo driveInfo);
+    IEnumerable<FileInfo> LocateAllExecutablesWithinDrive(DriveInfo driveInfo, SearchOption searchOption);
 }
