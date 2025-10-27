@@ -1,11 +1,22 @@
 ﻿using System;
 using System.Globalization;
-
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
-
+using Spectre.Console.Cli.Extensions.DependencyInjection;
 using XpWhich.Cli.Commands;
 
-CommandApp app = new CommandApp();
+using XpWhichLib;
+using XpWhichLib.Abstractions;
+using XpWhichLib.Detectors;
+
+IServiceCollection services = new ServiceCollection();
+
+services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
+services.AddScoped<IExecutableFileInstancesLocator, IExecutableFileInstancesLocator>();
+services.AddScoped<IMultiExecutableLocator, MultiExecutableLocator>();
+
+using var registrar = new DependencyInjectionRegistrar(services);
+CommandApp app = new CommandApp(registrar);
 
 app.Configure(config =>
 {
