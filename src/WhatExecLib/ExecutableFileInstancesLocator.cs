@@ -7,16 +7,13 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using System.Threading.Tasks;
+using WhatExecLib.Abstractions;
 
-using XpWhichLib.Abstractions;
-
-namespace XpWhichLib;
+namespace WhatExecLib;
 
 /// <summary>
 /// Represents a class that provides functionality to locate instances of executable files

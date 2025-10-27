@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XpWhich.Cli", "XpWhich.Cli\XpWhich.Cli.csproj", "{466D8E85-5E18-402C-8C30-A6BFF7D10C39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Cli", "WhatExec.Cli\WhatExec.Cli.csproj", "{466D8E85-5E18-402C-8C30-A6BFF7D10C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XpWhichLib", "XpWhichLib\XpWhichLib.csproj", "{C4567029-F397-44AA-A7CA-0367942E2F79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib", "WhatExecLib\WhatExecLib.csproj", "{C4567029-F397-44AA-A7CA-0367942E2F79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logic", "logic", "{BB3A9684-4F93-4B06-9456-730B2271307B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XpWhichLib.Abstractions", "XpWhichLib.Abstractions\XpWhichLib.Abstractions.csproj", "{D3A25A4C-3493-49EF-B6C4-3186BE9B34DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib.Abstractions", "WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj", "{D3A25A4C-3493-49EF-B6C4-3186BE9B34DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

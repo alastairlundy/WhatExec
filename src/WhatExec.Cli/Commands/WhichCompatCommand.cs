@@ -1,8 +1,8 @@
 using System.Threading;
 using Spectre.Console.Cli;
-using XpWhich.Cli.Settings;
+using WhatExec.Cli.Settings;
 
-namespace XpWhich.Cli.Commands;
+namespace WhatExec.Cli.Commands;
 
 public class WhichCompatCommand : Command<WhichCompatCommandSettings>
 {

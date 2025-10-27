@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace XpWhichLib.Abstractions;
+namespace WhatExecLib.Abstractions;
 
 /// <summary>
 /// Defines an interface for locating all executable files within a specified directory or drive.

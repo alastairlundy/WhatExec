@@ -3,11 +3,11 @@ using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using Spectre.Console.Cli.Extensions.DependencyInjection;
-using XpWhich.Cli.Commands;
+using WhatExec.Cli.Commands;
 
-using XpWhichLib;
-using XpWhichLib.Abstractions;
-using XpWhichLib.Detectors;
+using WhatExecLib;
+using WhatExecLib.Abstractions;
+using WhatExecLib.Detectors;
 
 IServiceCollection services = new ServiceCollection();
 
@@ -28,14 +28,14 @@ app.Configure(config =>
     Array.ForEach(args, x =>
     {
         if (x.ToLower().Contains("pretty"))
-            app.SetDefaultCommand<PrettyXpWhichCommand>();
+            app.SetDefaultCommand<PrettyWhatExecCommand>();
         else
         {
-            app.SetDefaultCommand<XpWhichCommand>();
+            app.SetDefaultCommand<WhatExecCommand>();
         }
     });
 
-    config.AddCommand<PrettyXpWhichCommand>("pretty");
+    config.AddCommand<PrettyWhatExecCommand>("pretty");
     
     config.AddCommand<WhichCompatCommand>("posix")
         .WithAlias("nix");

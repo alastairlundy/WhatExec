@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace XpWhich.Cli.Settings;
+namespace WhatExec.Cli.Settings;
 
 public class XpWhichCommandSettings : CommandSettings
 {

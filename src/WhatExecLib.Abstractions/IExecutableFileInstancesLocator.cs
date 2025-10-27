@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace XpWhichLib.Abstractions;
+namespace WhatExecLib.Abstractions;
 
 /// <summary>
 /// Defines methods for locating executable file instances across various locations such as drives and directories.

@@ -1,10 +1,10 @@
 using System.Threading;
 using Spectre.Console.Cli;
-using XpWhich.Cli.Settings;
+using WhatExec.Cli.Settings;
 
-namespace XpWhich.Cli.Commands;
+namespace WhatExec.Cli.Commands;
 
-public class PrettyXpWhichCommand : Command<XpWhichCommandSettings>
+public class WhatExecCommand : Command<XpWhichCommandSettings>
 {
     public override int Execute(CommandContext context, XpWhichCommandSettings settings,
         CancellationToken cancellationToken)

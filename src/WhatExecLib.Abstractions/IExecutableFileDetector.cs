@@ -9,7 +9,7 @@
 
 using System.IO;
 
-namespace XpWhichLib.Abstractions;
+namespace WhatExecLib.Abstractions;
 
 /// <summary>
 /// Provides an interface for detecting executable files based on their file type and system permissions.

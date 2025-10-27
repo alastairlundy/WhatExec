@@ -13,9 +13,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 
-using XpWhichLib.Abstractions;
+using WhatExecLib.Abstractions;
 
-namespace XpWhichLib;
+namespace WhatExecLib;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.

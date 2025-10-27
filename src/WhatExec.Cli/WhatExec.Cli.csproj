@@ -5,6 +5,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>whatexec</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,8 +18,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\XpWhichLib.Abstractions\XpWhichLib.Abstractions.csproj" />
-      <ProjectReference Include="..\XpWhichLib\XpWhichLib.csproj" />
+      <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
+      <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
     </ItemGroup>
 
 </Project>
