@@ -16,4 +16,9 @@
       <PackageReference Include="Spectre.Console.Cli.Extensions.DependencyInjection" Version="0.16.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\XpWhichLib.Abstractions\XpWhichLib.Abstractions.csproj" />
+      <ProjectReference Include="..\XpWhichLib\XpWhichLib.csproj" />
+    </ItemGroup>
+
 </Project>
