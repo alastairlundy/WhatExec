@@ -10,17 +10,15 @@
 using System;
 using System.IO;
 using System.Linq;
-
+using AlastairLundy.WhatExecLib.Abstractions;
 using AlastairLundy.WhatExecLib.Abstractions.Detectors;
-
 #if NETSTANDARD2_0
 using OperatingSystem = Polyfills.OperatingSystemPolyfill;
 #endif
 
-using AlastairLundy.WhatExecLib.Abstractions.Resolvers;
 // ReSharper disable ConvertClosureToMethodGroup
 
-namespace AlastairLundy.WhatExecLib.Resolvers;
+namespace AlastairLundy.WhatExecLib;
 
 /// <summary>
 /// Provides functionality to resolve the path of an executable file based on the system's PATH environment variable.

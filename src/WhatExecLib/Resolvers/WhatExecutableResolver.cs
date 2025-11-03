@@ -10,11 +10,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using AlastairLundy.WhatExecLib.Abstractions;
 using AlastairLundy.WhatExecLib.Abstractions.Locators;
-using AlastairLundy.WhatExecLib.Abstractions.Resolvers;
 
-namespace AlastairLundy.WhatExecLib.Resolvers;
+namespace AlastairLundy.WhatExecLib;
 
 /// <summary>
 /// Provides functionality to resolve the full file path of an executable based on a given input path.
@@ -88,7 +87,8 @@ public class WhatExecutableResolver : IWhatExecutableResolver
         
         string fileName = Path.GetFileName(inputFilePath);
            
-        IEnumerable<FileInfo> results = _executableFileInstancesLocator.LocateExecutableInstances(fileName, SearchOption.TopDirectoryOnly);
+        IEnumerable<FileInfo> results = _executableFileInstancesLocator.LocateExecutableInstances(fileName,
+            SearchOption.TopDirectoryOnly);
 
         fileInfo = results.FirstOrDefault();
         return pathOutput is not null; 

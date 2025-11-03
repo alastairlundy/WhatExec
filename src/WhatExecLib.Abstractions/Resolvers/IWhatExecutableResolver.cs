@@ -9,7 +9,7 @@
 
 using System.IO;
 
-namespace AlastairLundy.WhatExecLib.Abstractions.Resolvers;
+namespace AlastairLundy.WhatExecLib.Abstractions;
 
 /// <summary>
 /// Defines methods for resolving the full file path of an executable based on an input path or file name.

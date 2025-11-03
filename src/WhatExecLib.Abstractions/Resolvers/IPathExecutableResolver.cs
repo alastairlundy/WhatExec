@@ -9,7 +9,7 @@
 
 using System.IO;
 
-namespace AlastairLundy.WhatExecLib.Abstractions.Resolvers;
+namespace AlastairLundy.WhatExecLib.Abstractions;
 
 public interface IPathExecutableResolver
 {
