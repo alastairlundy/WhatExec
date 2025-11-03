@@ -221,7 +221,6 @@ public class PathExecutableResolver : IPathExecutableResolver
         bool fileHasExtension = Path.GetExtension(inputFilePath) != string.Empty;
 
         string[] pathExtensions = GetPathExtensions();
-
         string[] pathContents;
 
         try
@@ -247,7 +246,7 @@ public class PathExecutableResolver : IPathExecutableResolver
                         if (ExecutableFileIsValid(filePath, out FileInfo? info)  && info is not null)
                         {
                             fileInfo = info;
-                            return true;
+                            return File.Exists(Path.GetFullPath(filePath));
                         }
                     }
                 }
@@ -261,7 +260,7 @@ public class PathExecutableResolver : IPathExecutableResolver
                     if (ExecutableFileIsValid(filePath, out FileInfo? info)  && info is not null)
                     {
                         fileInfo = info;
-                        return true;
+                        return File.Exists(Path.GetFullPath(filePath));
                     }
                 }
             }
