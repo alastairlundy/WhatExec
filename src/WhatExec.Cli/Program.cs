@@ -15,7 +15,7 @@ services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
 services.AddScoped<IExecutableFileInstancesLocator, IExecutableFileInstancesLocator>();
 services.AddScoped<IMultiExecutableLocator, MultiExecutableLocator>();
 
-using var registrar = new DependencyInjectionRegistrar(services);
+using DependencyInjectionRegistrar registrar = new DependencyInjectionRegistrar(services);
 CommandApp app = new CommandApp(registrar);
 
 app.Configure(config =>
