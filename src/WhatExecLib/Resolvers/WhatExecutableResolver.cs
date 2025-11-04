@@ -47,7 +47,7 @@ public class WhatExecutableResolver : IWhatExecutableResolver
     {
         try
         {
-            FileInfo pathEnvFile = _pathExecutableResolver.ResolvePathEnvironmentFile(
+            FileInfo pathEnvFile = _pathExecutableResolver.ResolvePathEnvironmentExecutableFile(
                 inputFilePath
             );
 
@@ -84,7 +84,7 @@ public class WhatExecutableResolver : IWhatExecutableResolver
     /// <returns>True if the file path was resolved successfully; otherwise, false.</returns>
     public bool TryResolveExecutableFilePath(string inputFilePath, out FileInfo? fileInfo)
     {
-        bool foundPathResult = _pathExecutableResolver.TryResolvePathEnvironmentFile(
+        bool foundPathResult = _pathExecutableResolver.TryResolvePathEnvironmentExecutableFile(
             inputFilePath,
             out FileInfo? pathOutput
         );

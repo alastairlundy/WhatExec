@@ -187,9 +187,12 @@ public class PathExecutableResolver : IPathExecutableResolver
     /// <exception cref="FileNotFoundException">Thrown if the file could not be found in the specified locations.</exception>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
     /// <exception cref="InvalidOperationException">Thrown if an invalid operation occurs during file resolution, such as PATH not being able to be resolved.</exception>
-    public FileInfo ResolvePathEnvironmentFile(string inputFilePath)
+    public FileInfo ResolvePathEnvironmentExecutableFile(string inputFilePath)
     {
-        bool result = TryResolvePathEnvironmentFile(inputFilePath, out FileInfo? fileInfo);
+        bool result = TryResolvePathEnvironmentExecutableFile(
+            inputFilePath,
+            out FileInfo? fileInfo
+        );
 
         if (result == false || fileInfo is null)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
@@ -207,7 +210,10 @@ public class PathExecutableResolver : IPathExecutableResolver
     /// <param name="fileInfo">When this method returns, contains the resolved <see cref="FileInfo"/> object if the resolution is successful; otherwise, null.</param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
-    public bool TryResolvePathEnvironmentFile(string inputFilePath, out FileInfo? fileInfo)
+    public bool TryResolvePathEnvironmentExecutableFile(
+        string inputFilePath,
+        out FileInfo? fileInfo
+    )
     {
 #if NET8_0_OR_GREATER
         ArgumentException.ThrowIfNullOrEmpty(inputFilePath, nameof(inputFilePath));
