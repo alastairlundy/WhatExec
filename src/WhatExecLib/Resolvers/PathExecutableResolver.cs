@@ -61,6 +61,7 @@ public class PathExecutableResolver : IPathExecutableResolver
                 Environment
                     .GetEnvironmentVariable("PATHEXT")
                     ?.Split(pathSeparator, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
                     .Select(x =>
                     {
                         x = x.Trim();
@@ -70,6 +71,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                         return x;
                     })
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToArray() ?? [".COM", ".EXE", ".BAT", ".CMD"];
         }
         else
@@ -77,10 +79,7 @@ public class PathExecutableResolver : IPathExecutableResolver
             throw new PlatformNotSupportedException();
         }
 
-        return pathExtensions
-            .Where(p => !string.IsNullOrWhiteSpace(p))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+        return pathExtensions;
     }
 
     private string[] GetPathContents()
@@ -109,10 +108,10 @@ public class PathExecutableResolver : IPathExecutableResolver
         return pathContents
             .Split(pathSeparator, StringSplitOptions.RemoveEmptyEntries)
             .Where(p => !string.IsNullOrWhiteSpace(p))
-            .Select(p => p.Trim())
-            .Select(p => Environment.ExpandEnvironmentVariables(p))
             .Select(x =>
             {
+                x = x.Trim();
+                x = Environment.ExpandEnvironmentVariables(x);
                 x = x.Trim('"');
                 const string homeToken = "$HOME";
                 string userProfile = Environment.GetFolderPath(
