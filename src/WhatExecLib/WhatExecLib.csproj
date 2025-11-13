@@ -42,6 +42,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AlastairLundy.WhatExecLib.Abstractions" Version="1.0.0-preview.1" />
+    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
   </ItemGroup>
+  <!--  <ItemGroup>
+    <PackageReference Include="AlastairLundy.WhatExecLib.Abstractions" Version="1.0.0-preview.1" />
+  </ItemGroup>-->
 </Project>
