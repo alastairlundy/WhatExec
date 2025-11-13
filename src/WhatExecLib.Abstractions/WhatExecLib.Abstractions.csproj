@@ -17,5 +17,6 @@
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Version>1.0.0-preview.1</Version>
+    <Description>This is an abstractions-only library that provides interfaces for resolving Executable File locations.</Description>
   </PropertyGroup>
 </Project>

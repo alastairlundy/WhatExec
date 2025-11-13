@@ -15,6 +15,9 @@
     <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>1.0.0-preview.1</Version>
+    <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
+</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AlastairLundy.DotPrimitives" Version="4.0.0-preview.1" />
