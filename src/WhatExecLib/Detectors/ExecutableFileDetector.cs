@@ -21,6 +21,32 @@ namespace AlastairLundy.WhatExecLib.Detectors;
 /// </summary>
 public class ExecutableFileDetector : IExecutableFileDetector
 {
+    private bool IsUnix { get; set; }
+
+    private bool IsBsdBased { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <exception cref="PlatformNotSupportedException"></exception>
+    public ExecutableFileDetector()
+    {
+        IsUnix =
+            OperatingSystem.IsLinux()
+            || OperatingSystem.IsMacOS()
+            || OperatingSystem.IsMacCatalyst()
+            || OperatingSystem.IsFreeBSD()
+            || OperatingSystem.IsAndroid();
+
+        IsBsdBased =
+            OperatingSystem.IsMacOS()
+            || OperatingSystem.IsMacCatalyst()
+            || OperatingSystem.IsFreeBSD();
+
+        if (OperatingSystem.IsBrowser() || OperatingSystem.IsTvOS() || OperatingSystem.IsIOS())
+            throw new PlatformNotSupportedException();
+    }
+
     /// <summary>
     /// Determines whether the specified file can be executed on the current operating system.
     /// </summary>
@@ -36,9 +62,10 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("browser")]
     public bool IsFileExecutable(FileInfo file)
     {
-        if (File.Exists(file.FullName) == false)
+        if (!file.Exists)
             throw new FileNotFoundException();
 
+        /*
         if (OperatingSystem.IsWindows())
         {
             return DoesFileHaveExecutablePermissions(file) && DoesFileHaveExecutableExtension(file);
@@ -47,17 +74,12 @@ public class ExecutableFileDetector : IExecutableFileDetector
         {
 #pragma warning disable CA1416
             return DoesFileHaveExecutablePermissions(file)
-                ||
+                &&
                 //   IsUnixElfFile(fullPath) ||
                 DoesFileHaveExecutableExtension(file);
 #pragma warning restore CA1416
         }
-
-        if (
-            OperatingSystem.IsMacOS()
-            || OperatingSystem.IsMacCatalyst()
-            || OperatingSystem.IsFreeBSD()
-        )
+        if (IsBsdBased)
         {
 #pragma warning disable CA1416
             return DoesFileHaveExecutablePermissions(file)
@@ -66,9 +88,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 //    IsMachOFile(file.FullName) ||
                 DoesFileHaveExecutableExtension(file);
 #pragma warning restore CA1416
-        }
+        }*/
 
-        return DoesFileHaveExecutablePermissions(file) || DoesFileHaveExecutableExtension(file);
+        return DoesFileHaveExecutablePermissions(file) && DoesFileHaveExecutableExtension(file);
     }
 
     /// <summary>
@@ -86,7 +108,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("browser")]
     public bool DoesFileHaveExecutablePermissions(FileInfo file)
     {
-        if (File.Exists(file.FullName) == false)
+        if (!file.Exists)
             throw new FileNotFoundException();
 
         if (OperatingSystem.IsWindows())
@@ -97,13 +119,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
             return filePermission.HasExecutePermission();
         }
-        else if (
-            OperatingSystem.IsLinux()
-            || OperatingSystem.IsMacOS()
-            || OperatingSystem.IsMacCatalyst()
-            || OperatingSystem.IsFreeBSD()
-            || OperatingSystem.IsAndroid()
-        )
+        if (IsUnix)
         {
 #pragma warning disable CA1416
             UnixFileMode fileMode = File.GetUnixFileMode(file.FullName);
@@ -114,7 +130,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 || fileMode.HasFlag(UnixFileMode.UserExecute);
         }
 
-        return false;
+        throw new PlatformNotSupportedException();
     }
 
     /// <summary>
@@ -132,7 +148,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("browser")]
     public bool DoesFileHaveExecutableExtension(FileInfo file)
     {
-        if (File.Exists(file.FullName) == false)
+        if (!file.Exists)
             throw new FileNotFoundException();
 
         bool output = false;
@@ -167,9 +183,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 ".axf" => true,
                 ".ko" => true,
                 ".prx" => true,
-                ".puff" => true,
                 ".jar" => true,
                 ".sh" => true,
+                "" => true,
                 _ => false,
             };
         }
@@ -189,9 +205,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 ".axf" => true,
                 ".ko" => true,
                 ".prx" => true,
-                ".puff" => true,
                 ".jar" => true,
                 ".sh" => true,
+                "" => true,
                 _ => false,
             };
         }
@@ -209,9 +225,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 ".axf" => true,
                 ".ko" => true,
                 ".prx" => true,
-                ".puff" => true,
                 ".jar" => true,
                 ".sh" => true,
+                "" => true,
                 _ => false,
             };
         }
@@ -230,9 +246,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 ".axf" => true,
                 ".ko" => true,
                 ".prx" => true,
-                ".puff" => true,
                 ".jar" => true,
                 ".sh" => true,
+                "" => true,
                 _ => false,
             };
         }
