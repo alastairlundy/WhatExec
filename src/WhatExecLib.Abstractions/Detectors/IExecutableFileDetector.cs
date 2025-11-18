@@ -17,7 +17,7 @@ namespace AlastairLundy.WhatExecLib.Abstractions.Detectors;
 public interface IExecutableFileDetector
 {
     /// <summary>
-    /// Determines if a given file is executable.
+    /// Determines if a given file is an executable.
     /// </summary>
     /// <param name="file">The file to be checked.</param>
     /// <returns>True if the file can be executed, false otherwise.</returns>
