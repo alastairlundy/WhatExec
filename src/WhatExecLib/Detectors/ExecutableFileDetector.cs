@@ -10,8 +10,7 @@
 using System;
 using System.IO;
 using System.Runtime.Versioning;
-using AlastairLundy.DotPrimitives.IO.Permissions;
-using AlastairLundy.DotPrimitives.IO.Permissions.Windows;
+using AlastairLundy.DotExtensions.IO.Permissions;
 using AlastairLundy.WhatExecLib.Abstractions.Detectors;
 
 namespace AlastairLundy.WhatExecLib.Detectors;
@@ -68,7 +67,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
         /*
         if (OperatingSystem.IsWindows())
         {
-            return DoesFileHaveExecutablePermissions(file) && DoesFileHaveExecutableExtension(file);
+            return DoesFileHaveExecutablePermissions(file);
         }
         else if (OperatingSystem.IsLinux())
         {
@@ -90,177 +89,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
 #pragma warning restore CA1416
         }*/
 
-        return DoesFileHaveExecutablePermissions(file) && DoesFileHaveExecutableExtension(file);
-    }
-
-    /// <summary>
-    /// Determines if a given file has executable permissions on the current operating system.
-    /// </summary>
-    /// <param name="file">The file for which to check executable permissions.</param>
-    /// <returns>True if the file has executable permissions; otherwise, false.</returns>
-    /// <exception cref="FileNotFoundException">Thrown if the file specified does not exist.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [UnsupportedOSPlatform("ios")]
-    [SupportedOSPlatform("android")]
-    [UnsupportedOSPlatform("browser")]
-    public bool DoesFileHaveExecutablePermissions(FileInfo file)
-    {
-        if (!file.Exists)
-            throw new FileNotFoundException();
-
-        if (OperatingSystem.IsWindows())
-        {
-            WindowsFilePermission filePermission = WindowsFilePermissionManager.GetFilePermission(
-                file.FullName
-            );
-
-            return filePermission.HasExecutePermission();
-        }
-        if (IsUnix)
-        {
-#pragma warning disable CA1416
-            UnixFileMode fileMode = File.GetUnixFileMode(file.FullName);
-#pragma warning restore CA1416
-
-            return fileMode.HasFlag(UnixFileMode.OtherExecute)
-                || fileMode.HasFlag(UnixFileMode.GroupExecute)
-                || fileMode.HasFlag(UnixFileMode.UserExecute);
-        }
-
-        throw new PlatformNotSupportedException();
-    }
-
-    /// <summary>
-    /// Determines whether a specified file has a valid executable file extension.
-    /// </summary>
-    /// <param name="file">The file to be checked.</param>
-    /// <returns>True if the file extension is valid for an executable, false otherwise.</returns>
-    /// <exception cref="FileNotFoundException">Thrown if the file specified does not exist.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("ios")]
-    [SupportedOSPlatform("android")]
-    [UnsupportedOSPlatform("browser")]
-    public bool DoesFileHaveExecutableExtension(FileInfo file)
-    {
-        if (!file.Exists)
-            throw new FileNotFoundException();
-
-        bool output = false;
-
-        if (OperatingSystem.IsWindows())
-        {
-            output = file.Extension switch
-            {
-                ".exe" => true,
-                ".msi" => true,
-                ".appx" => true,
-                ".com" => true,
-                ".bat" => true,
-                ".cmd" => true,
-                ".jar" => true,
-                _ => false,
-            };
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            output = file.Extension switch
-            {
-                ".appimage" => true,
-                ".deb" => true,
-                ".rpm" => true,
-                ".so" => true,
-                ".o" => true,
-                ".out" => true,
-                ".bin" => true,
-                ".elf" => true,
-                ".mod" => true,
-                ".axf" => true,
-                ".ko" => true,
-                ".prx" => true,
-                ".jar" => true,
-                ".sh" => true,
-                "" => true,
-                _ => false,
-            };
-        }
-        else if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
-        {
-            output = file.Extension switch
-            {
-                ".kext" => true,
-                ".pkg" => true,
-                ".app" => true,
-                ".so" => true,
-                ".o" => true,
-                ".out" => true,
-                ".bin" => true,
-                ".elf" => true,
-                ".mod" => true,
-                ".axf" => true,
-                ".ko" => true,
-                ".prx" => true,
-                ".jar" => true,
-                ".sh" => true,
-                "" => true,
-                _ => false,
-            };
-        }
-        else if (OperatingSystem.IsFreeBSD())
-        {
-            output = file.Extension switch
-            {
-                ".appimage" => true,
-                ".so" => true,
-                ".o" => true,
-                ".out" => true,
-                ".bin" => true,
-                ".elf" => true,
-                ".mod" => true,
-                ".axf" => true,
-                ".ko" => true,
-                ".prx" => true,
-                ".jar" => true,
-                ".sh" => true,
-                "" => true,
-                _ => false,
-            };
-        }
-        else if (OperatingSystem.IsAndroid())
-        {
-            output = file.Extension switch
-            {
-                ".apk" => true,
-                ".aab" => false,
-                ".so" => true,
-                ".o" => true,
-                ".out" => true,
-                ".bin" => true,
-                ".elf" => true,
-                ".mod" => true,
-                ".axf" => true,
-                ".ko" => true,
-                ".prx" => true,
-                ".jar" => true,
-                ".sh" => true,
-                "" => true,
-                _ => false,
-            };
-        }
-        else if (OperatingSystem.IsIOS())
-        {
-            output = file.Extension switch
-            {
-                ".ipa" => true,
-                _ => false,
-            };
-        }
-
-        return output;
+        return file.HasExecutePermission();
     }
 }
