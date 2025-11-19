@@ -69,7 +69,7 @@ public class PathOnlySearchCommand : AsyncCommand<PathOnlySearchCommand.Settings
 
             foreach (FileInfo resolvedCommand in resolvedCommands)
             {
-                AnsiConsole.WriteLine(resolvedCommand.FullName);
+                Console.WriteLine(resolvedCommand.FullName);
             }
         }
         catch (Exception e)
