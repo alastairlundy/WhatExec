@@ -7,14 +7,12 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System;
 using System.Globalization;
 using AlastairLundy.WhatExec.Cli.Commands;
+using AlastairLundy.WhatExec.Cli.Commands.SingleSearch;
+using AlastairLundy.WhatExecLib.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Spectre.Console;
-using Spectre.Console.Cli;
 using Spectre.Console.Cli.Extensions.DependencyInjection;
-using WhatExecLib.Extensions.DependencyInjection;
 
 IServiceCollection services = new ServiceCollection();
 
