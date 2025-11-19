@@ -21,11 +21,6 @@ services.AddWhatExecLib(ServiceLifetime.Scoped);
 using DependencyInjectionRegistrar registrar = new DependencyInjectionRegistrar(services);
 CommandApp app = new CommandApp(registrar);
 
-FigletText titleText = new FigletText("WhatExec").Centered();
-
-AnsiConsole.Write(titleText);
-Console.WriteLine();
-
 app.Configure(config =>
 {
     config.CaseSensitivity(CaseSensitivity.Commands);
