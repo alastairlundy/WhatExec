@@ -8,7 +8,6 @@
  */
 
 using System.Globalization;
-using AlastairLundy.WhatExec.Cli.Commands;
 using AlastairLundy.WhatExecLib.Caching.Extensions;
 using AlastairLundy.WhatExecLib.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +18,14 @@ IServiceCollection services = new ServiceCollection();
 services.AddMemoryCache();
 services.AddWhatExecLib(ServiceLifetime.Scoped);
 services.AddWhatExecLibCaching(ServiceLifetime.Scoped);
+
+if (args.Any(s => s.Contains("--interactive")))
+{
+    FigletText titleText = new FigletText("WhatExec").Centered();
+
+    AnsiConsole.Write(titleText);
+    Console.WriteLine();
+}
 
 using DependencyInjectionRegistrar registrar = new DependencyInjectionRegistrar(services);
 CommandApp app = new CommandApp(registrar);
