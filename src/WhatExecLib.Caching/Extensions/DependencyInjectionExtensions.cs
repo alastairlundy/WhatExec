@@ -10,51 +10,180 @@
 using System;
 using AlastairLundy.WhatExecLib.Abstractions;
 using AlastairLundy.WhatExecLib.Abstractions.Detectors;
+using AlastairLundy.WhatExecLib.Caching.Resolvers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using WhatExecLib.Caching.Resolvers;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace WhatExecLib.Caching.Extensions;
+namespace AlastairLundy.WhatExecLib.Caching.Extensions;
 
 /// <summary>
 ///
 /// </summary>
 public static class DependencyInjectionExtensions
 {
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="serviceLifetime"></param>
-    /// <param name="pathCacheLifespan"></param>
-    /// <param name="pathExtensionsCacheLifespan"></param>
-    /// <returns></returns>
-    public static IServiceCollection UseCachingWithWhatExecLib(
-        this IServiceCollection services,
-        ServiceLifetime serviceLifetime,
-        TimeSpan? pathCacheLifespan = null,
-        TimeSpan? pathExtensionsCacheLifespan = null
-    )
+    /// <param name="services">The <see cref="IServiceCollection"/> to which the caching services will be added.</param>
+    extension(IServiceCollection services)
     {
-        switch (serviceLifetime)
+        /// <summary>
+        /// Configures caching services for WhatExecLib by adding support for memory caching and cached path executable resolution.
+        /// The type of caching services added is determined by the specified service lifetime.
+        /// </summary>
+        /// <param name="serviceLifetime">The <see cref="ServiceLifetime"/> specifying the lifecycle of the caching services.</param>
+        /// <param name="pathCacheLifespan">An optional <see cref="TimeSpan"/> specifying the lifespan of path cache entries. If null, the default behavior is applied.</param>
+        /// <param name="pathExtensionsCacheLifespan">An optional <see cref="TimeSpan"/> specifying the lifespan of path extension cache entries. If null, the default behavior is applied.</param>
+        /// <returns>The modified <see cref="IServiceCollection"/> with caching services configured.</returns>
+        public IServiceCollection AddWhatExecLibCaching(
+            ServiceLifetime serviceLifetime,
+            TimeSpan? pathCacheLifespan = null,
+            TimeSpan? pathExtensionsCacheLifespan = null
+        )
         {
-            case ServiceLifetime.Scoped:
-                services.AddScoped<ICachedPathExecutableResolver, CachedPathExecutableResolver>();
-                break;
-            case ServiceLifetime.Singleton:
-                services.AddSingleton<
-                    ICachedPathExecutableResolver,
-                    CachedPathExecutableResolver
-                >();
-                break;
-            case ServiceLifetime.Transient:
-                services.AddTransient<
-                    ICachedPathExecutableResolver,
-                    CachedPathExecutableResolver
-                >();
-                break;
+            services.AddMemoryCache();
+
+            if (pathCacheLifespan is null || pathExtensionsCacheLifespan is null)
+            {
+                switch (serviceLifetime)
+                {
+                    case ServiceLifetime.Scoped:
+                        services.AddScoped<
+                            ICachedPathExecutableResolver,
+                            MemoryCachedPathExecutableResolver
+                        >();
+                        break;
+                    case ServiceLifetime.Singleton:
+                        services.AddSingleton<
+                            ICachedPathExecutableResolver,
+                            MemoryCachedPathExecutableResolver
+                        >();
+                        break;
+                    case ServiceLifetime.Transient:
+                        services.AddTransient<
+                            ICachedPathExecutableResolver,
+                            MemoryCachedPathExecutableResolver
+                        >();
+                        break;
+                }
+            }
+            else
+            {
+                switch (serviceLifetime)
+                {
+                    case ServiceLifetime.Scoped:
+                        services.AddScoped<ICachedPathExecutableResolver>(
+                            sp => new MemoryCachedPathExecutableResolver(
+                                sp.GetRequiredService<IExecutableFileDetector>(),
+                                sp.GetRequiredService<IMemoryCache>(),
+                                (TimeSpan)pathCacheLifespan,
+                                (TimeSpan)pathExtensionsCacheLifespan
+                            )
+                        );
+                        break;
+                    case ServiceLifetime.Singleton:
+                        services.AddSingleton<ICachedPathExecutableResolver>(
+                            sp => new MemoryCachedPathExecutableResolver(
+                                sp.GetRequiredService<IExecutableFileDetector>(),
+                                sp.GetRequiredService<IMemoryCache>(),
+                                (TimeSpan)pathCacheLifespan,
+                                (TimeSpan)pathExtensionsCacheLifespan
+                            )
+                        );
+                        ;
+                        break;
+                    case ServiceLifetime.Transient:
+                        services.AddTransient<ICachedPathExecutableResolver>(
+                            sp => new MemoryCachedPathExecutableResolver(
+                                sp.GetRequiredService<IExecutableFileDetector>(),
+                                sp.GetRequiredService<IMemoryCache>(),
+                                (TimeSpan)pathCacheLifespan,
+                                (TimeSpan)pathExtensionsCacheLifespan
+                            )
+                        );
+                        ;
+                        break;
+                }
+            }
+            return services;
         }
 
-        return services;
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="serviceLifetime"></param>
+        /// <param name="pathCacheLifespan"></param>
+        /// <param name="pathExtensionsCacheLifespan"></param>
+        /// <returns></returns>
+        public IServiceCollection RedirectNonCachedWhatExecLib(
+            ServiceLifetime serviceLifetime,
+            TimeSpan? pathCacheLifespan = null,
+            TimeSpan? pathExtensionsCacheLifespan = null
+        )
+        {
+            services.AddMemoryCache();
+
+            if (pathCacheLifespan is null || pathExtensionsCacheLifespan is null)
+            {
+                switch (serviceLifetime)
+                {
+                    case ServiceLifetime.Scoped:
+                        services.TryAddScoped<
+                            IPathExecutableResolver,
+                            MemoryCachedPathExecutableResolver
+                        >();
+                        break;
+                    case ServiceLifetime.Singleton:
+                        services.TryAddSingleton<
+                            IPathExecutableResolver,
+                            MemoryCachedPathExecutableResolver
+                        >();
+                        break;
+                    case ServiceLifetime.Transient:
+                        services.TryAddTransient<
+                            IPathExecutableResolver,
+                            MemoryCachedPathExecutableResolver
+                        >();
+                        break;
+                }
+            }
+            else
+            {
+                switch (serviceLifetime)
+                {
+                    case ServiceLifetime.Scoped:
+                        services.TryAddScoped<IPathExecutableResolver>(
+                            sp => new MemoryCachedPathExecutableResolver(
+                                sp.GetRequiredService<IExecutableFileDetector>(),
+                                sp.GetRequiredService<IMemoryCache>(),
+                                (TimeSpan)pathCacheLifespan,
+                                (TimeSpan)pathExtensionsCacheLifespan
+                            )
+                        );
+                        break;
+                    case ServiceLifetime.Singleton:
+                        services.TryAddSingleton<IPathExecutableResolver>(
+                            sp => new MemoryCachedPathExecutableResolver(
+                                sp.GetRequiredService<IExecutableFileDetector>(),
+                                sp.GetRequiredService<IMemoryCache>(),
+                                (TimeSpan)pathCacheLifespan,
+                                (TimeSpan)pathExtensionsCacheLifespan
+                            )
+                        );
+                        ;
+                        break;
+                    case ServiceLifetime.Transient:
+                        services.TryAddTransient<IPathExecutableResolver>(
+                            sp => new MemoryCachedPathExecutableResolver(
+                                sp.GetRequiredService<IExecutableFileDetector>(),
+                                sp.GetRequiredService<IMemoryCache>(),
+                                (TimeSpan)pathCacheLifespan,
+                                (TimeSpan)pathExtensionsCacheLifespan
+                            )
+                        );
+                        ;
+                        break;
+                }
+            }
+            return services;
+        }
     }
 }

@@ -12,10 +12,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AlastairLundy.WhatExecLib.Abstractions.Detectors;
+using AlastairLundy.WhatExecLib.Abstractions.Locators;
 
 namespace AlastairLundy.WhatExecLib.Locators;
 
-public class ExecutableFileLocator
+public class ExecutableFileLocator : IExecutableFileLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
 

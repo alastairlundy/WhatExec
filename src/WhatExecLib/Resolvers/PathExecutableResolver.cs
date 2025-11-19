@@ -191,7 +191,7 @@ public class PathExecutableResolver : IPathExecutableResolver
         return false;
     }
 
-    private bool CheckFileExists(
+    protected bool CheckFileExists(
         string inputFilePath,
         out FileInfo? fileInfo,
         string pathEntry,

@@ -21,6 +21,8 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyEnsure>true</PolyEnsure>
     <Version>1.0.0-preview.1</Version>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsTrimmable>true</IsTrimmable>
     <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
 </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

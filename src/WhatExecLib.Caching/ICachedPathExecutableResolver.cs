@@ -11,7 +11,7 @@ using System;
 using System.IO;
 using AlastairLundy.WhatExecLib.Abstractions;
 
-namespace WhatExecLib.Caching;
+namespace AlastairLundy.WhatExecLib.Caching;
 
 /// <summary>
 ///
@@ -29,5 +29,20 @@ public interface ICachedPathExecutableResolver : IPathExecutableResolver
         string inputFilePath,
         TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime
+    );
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="inputFilePath"></param>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="fileInfo"></param>
+    /// <returns></returns>
+    bool TryResolvePathEnvironmentExecutableFile(
+        string inputFilePath,
+        TimeSpan? pathExtensionsCacheLifetime,
+        TimeSpan? pathCacheLifetime,
+        out FileInfo? fileInfo
     );
 }

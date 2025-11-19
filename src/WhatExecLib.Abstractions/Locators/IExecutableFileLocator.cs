@@ -16,18 +16,26 @@ public interface IExecutableFileLocator
     /// <summary>
     ///
     /// </summary>
+    /// <param name="drive"></param>
     /// <param name="executableFileName"></param>
+    /// <param name="directorySearchOption"></param>
     /// <returns></returns>
-    FileInfo? LocateExecutableInDrive(string executableFileName);
+    FileInfo? LocateExecutableInDrive(
+        DriveInfo drive,
+        string executableFileName,
+        SearchOption directorySearchOption
+    );
 
     /// <summary>
     ///
     /// </summary>
-    /// <param name="executableDirectory"></param>
+    /// <param name="directory"></param>
+    /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
     /// <returns></returns>
     FileInfo? LocateExecutableInDirectory(
-        string executableDirectory,
+        DirectoryInfo directory,
+        string executableFileName,
         SearchOption directorySearchOption
     );
 
@@ -35,6 +43,7 @@ public interface IExecutableFileLocator
     ///
     /// </summary>
     /// <param name="executableFileName"></param>
+    /// <param name="directorySearchOption"></param>
     /// <returns></returns>
-    FileInfo? LocateExecutable(string executableFileName);
+    FileInfo? LocateExecutable(string executableFileName, SearchOption directorySearchOption);
 }
