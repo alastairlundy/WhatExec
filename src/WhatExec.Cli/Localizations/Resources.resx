@@ -57,4 +57,7 @@
     <data name="ValidationErrors.File.InvalidMessage" xml:space="preserve">
         <value />
     </data>
+    <data name="Prompts.CommandInput.AddAnother" xml:space="preserve">
+        <value>Would yolu like to enter another command to search for?</value>
+    </data>
 </root>

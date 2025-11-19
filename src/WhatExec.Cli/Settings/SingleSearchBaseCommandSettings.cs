@@ -31,7 +31,7 @@ public abstract class SingleSearchBaseCommandSettings : CommandSettings
         {
             if (!DisableInteractivity)
             {
-                Commands ??= UserInputHelper.GetFileInput().Split(' ');
+                Commands ??= UserInputHelper.GetCommandInput();
             }
             else if (DisableInteractivity)
             {

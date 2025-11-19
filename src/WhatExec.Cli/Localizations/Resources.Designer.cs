@@ -122,5 +122,11 @@ namespace AlastairLundy.WhatExec.Cli.Localizations {
                 return ResourceManager.GetString("ValidationErrors.File.InvalidMessage", resourceCulture);
             }
         }
+        
+        internal static string Prompts_CommandInput_AddAnother {
+            get {
+                return ResourceManager.GetString("Prompts.CommandInput.AddAnother", resourceCulture);
+            }
+        }
     }
 }

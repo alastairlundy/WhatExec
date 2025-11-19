@@ -82,10 +82,10 @@ internal static class UserInputHelper
             );
 
             commands.Add(command);
-            
+
             keepAddingCommands = AnsiConsole.Prompt(
-                new ConfirmationPrompt(""))
-            
+                new ConfirmationPrompt(Resources.Prompts_CommandInput_AddAnother).ShowChoices()
+            );
         } while (keepAddingCommands);
 
         return commands.ToArray();
