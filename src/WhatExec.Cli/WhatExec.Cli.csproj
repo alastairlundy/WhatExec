@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
     <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.7" />
-    <PackageReference Include="Spectre.Console.Cli.Extensions.DependencyInjection" Version="0.17.1-preview.0.1" />
+    <PackageReference Include="Spectre.Console.Cli.Extensions.DependencyInjection" Version="0.17.1-preview.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
