@@ -28,7 +28,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AlastairLundy.DotPrimitives" Version="4.0.0-preview.2.1" />
+    <PackageReference Include="AlastairLundy.DotPrimitives" Version="4.0.0" />
     <PackageReference Include="AlastairLundy.DotExtensions" Version="9.1.0-preview.1" />
     <PackageReference
       Include="Polyfill"
