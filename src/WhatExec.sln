@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib.Caching", "What
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib.Extensions.DependencyInjection", "WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj", "{C536E97B-74FF-411E-8344-406137D48CCA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLiteCli", "WhatExecLiteCli\WhatExecLiteCli.csproj", "{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CLIs", "CLIs", "{14C4F29D-CB29-4F02-9069-09B3097D6D80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,10 @@ Global
 		{C536E97B-74FF-411E-8344-406137D48CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C536E97B-74FF-411E-8344-406137D48CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C536E97B-74FF-411E-8344-406137D48CCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D3A25A4C-3493-49EF-B6C4-3186BE9B34DB} = {BB3A9684-4F93-4B06-9456-730B2271307B}
