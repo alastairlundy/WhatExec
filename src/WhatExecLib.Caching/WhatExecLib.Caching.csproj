@@ -25,7 +25,7 @@
       Include="Polyfill"
       Condition="'$(TargetFramework)' == 'netstandard2.0'"
       PrivateAssets="all"
-      Version="9.1.0"
+      Version="9.3.0"
     />
   </ItemGroup>
 </Project>
