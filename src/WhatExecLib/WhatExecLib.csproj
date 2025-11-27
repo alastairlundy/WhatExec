@@ -29,7 +29,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AlastairLundy.DotPrimitives" Version="4.0.0" />
-    <PackageReference Include="AlastairLundy.DotExtensions" Version="9.1.0-preview.2" />
+    <PackageReference Include="AlastairLundy.DotExtensions" Version="9.1.0" />
     <PackageReference
       Include="Polyfill"
       Version="9.3.0"
