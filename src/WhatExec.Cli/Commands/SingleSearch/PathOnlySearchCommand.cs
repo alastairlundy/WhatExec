@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace AlastairLundy.WhatExec.Cli.Commands.SingleSearch;
 
 public class PathOnlySearchCommand : AsyncCommand<PathOnlySearchCommand.Settings>
