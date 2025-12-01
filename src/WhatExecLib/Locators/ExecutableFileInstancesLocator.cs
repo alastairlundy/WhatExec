@@ -112,13 +112,12 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
-        ParallelQuery<FileInfo> results = directory
+        IEnumerable<FileInfo> results = directory
             .EnumerateFiles("*", directorySearchOption)
-            .AsParallel()
+            .Where(f => File.Exists(f.FullName))
             .Where(file => _executableFileDetector.IsFileExecutable(file))
             .Where(file =>
-                file.Exists
-                && (file.Name.Equals(executableName) || file.FullName.Equals(executableName))
+                file.Name.Equals(executableName) || file.FullName.Equals(executableName)
             );
 
         return results;
