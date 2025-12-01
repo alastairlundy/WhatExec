@@ -102,7 +102,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
         bool fileDoesntExist = !File.Exists(fileInfo?.FullName);
 
-        if (result == false || fileInfo is null || fileDoesntExist)
+        if (!result || fileInfo is null || fileDoesntExist)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
         return fileInfo;
