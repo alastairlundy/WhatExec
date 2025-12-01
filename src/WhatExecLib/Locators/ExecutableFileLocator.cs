@@ -95,14 +95,11 @@ public class ExecutableFileLocator : IExecutableFileLocator
             .EnumerateFiles("*", directorySearchOption)
             .Where(file =>
             {
-                StringComparison stringComparison = StringComparison.Ordinal;
+                StringComparison stringComparison = OperatingSystem.IsWindows()
+                    ? StringComparison.OrdinalIgnoreCase
+                    : StringComparison.Ordinal;
 
-                if (OperatingSystem.IsWindows())
-                {
-                    stringComparison = StringComparison.OrdinalIgnoreCase;
-                }
-
-                return file.Exists && (file.Name.Equals(executableFileName, stringComparison));
+                return file.Exists && file.Name.Equals(executableFileName, stringComparison);
             })
             .FirstOrDefault(file => _executableFileDetector.IsFileExecutable(file));
 
