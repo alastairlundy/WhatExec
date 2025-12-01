@@ -83,6 +83,13 @@ public class ExecutableFileDetector : IExecutableFileDetector
 #pragma warning restore CA1416
         }*/
 
-        return file.HasExecutePermission();
+        try
+        {
+            return file.HasExecutePermission();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 }
