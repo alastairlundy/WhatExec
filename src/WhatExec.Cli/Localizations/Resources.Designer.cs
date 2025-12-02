@@ -128,5 +128,11 @@ namespace AlastairLundy.WhatExec.Cli.Localizations {
                 return ResourceManager.GetString("Prompts.CommandInput.AddAnother", resourceCulture);
             }
         }
+        
+        internal static string Exceptions_Commands_Find_Limit_MustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("Exceptions.Commands.Find.Limit.MustBeGreaterThanZero", resourceCulture);
+            }
+        }
     }
 }

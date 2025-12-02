@@ -19,12 +19,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DotMake.CommandLine" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
-    <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.11" />
-    <PackageReference
-      Include="Spectre.Console.Cli.Extensions.DependencyInjection"
-      Version="0.20.0"
-    />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
@@ -44,8 +41,5 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\MultiSearch\" />
   </ItemGroup>
 </Project>

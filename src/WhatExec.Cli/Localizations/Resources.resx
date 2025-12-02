@@ -60,4 +60,7 @@
     <data name="Prompts.CommandInput.AddAnother" xml:space="preserve">
         <value>Would yolu like to enter another command to search for?</value>
     </data>
+    <data name="Exceptions.Commands.Find.Limit.MustBeGreaterThanZero" xml:space="preserve">
+        <value>Limit must be greater than or equal to 1.</value>
+    </data>
 </root>

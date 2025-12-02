@@ -7,17 +7,11 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System.Globalization;
+using AlastairLundy.WhatExec.Cli.Commands;
 using AlastairLundy.WhatExecLib.Caching.Extensions;
 using AlastairLundy.WhatExecLib.Extensions.DependencyInjection;
+using DotMake.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
-using Spectre.Console.Cli.Extensions.DependencyInjection;
-
-IServiceCollection services = new ServiceCollection();
-
-services.AddMemoryCache();
-services.AddWhatExecLib(ServiceLifetime.Scoped);
-services.AddWhatExecLibCaching(ServiceLifetime.Scoped);
 
 if (args.Any(s => s.Contains("--interactive")))
 {
@@ -27,31 +21,11 @@ if (args.Any(s => s.Contains("--interactive")))
     Console.WriteLine();
 }
 
-using DependencyInjectionRegistrar registrar = new DependencyInjectionRegistrar(services);
-CommandApp app = new CommandApp(registrar);
-
-app.Configure(config =>
+Cli.Ext.ConfigureServices(services =>
 {
-    config.CaseSensitivity(CaseSensitivity.Commands);
-    config.SetApplicationCulture(CultureInfo.CurrentCulture);
-    config.SetApplicationName("whatexec");
-    config.UseAssemblyInformationalVersion();
-
-    config.AddBranch(
-        "search",
-        conf =>
-        {
-            conf.AddCommand<PathOnlySearchCommand>("path");
-
-            /*conf.AddCommand<DirectoryOnlySearchCommand>("directory").WithAlias("dir");
-
-            conf.AddCommand<DriveOnlySearchCommand>("drive");
-
-            conf.AddCommand<GlobalSearchCommand>("system");*/
-        }
-    );
+    services.AddMemoryCache();
+    services.AddWhatExecLib(ServiceLifetime.Scoped);
+    services.AddWhatExecLibCaching(ServiceLifetime.Scoped);
 });
 
-app.SetDefaultCommand<PathOnlySearchCommand>();
-
-return app.Run(args);
+Cli.Run<RootCliCommand>();
