@@ -44,6 +44,11 @@ public class PathExecutableResolver : IPathExecutableResolver
         IsWindows = OperatingSystem.IsWindows();
     }
 
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     protected bool ExecutableFileIsValid(string filePath, out FileInfo? fileInfo)
     {
         try
@@ -190,6 +195,11 @@ public class PathExecutableResolver : IPathExecutableResolver
         return false;
     }
 
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     protected bool CheckFileExists(
         string inputFilePath,
         out FileInfo? fileInfo,
