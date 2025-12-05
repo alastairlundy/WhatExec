@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace AlastairLundy.WhatExec.Cli.Helpers;
 
 internal static class UserInputHelper
