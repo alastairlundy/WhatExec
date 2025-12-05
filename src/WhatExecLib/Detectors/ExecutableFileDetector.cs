@@ -57,9 +57,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("browser")]
     public bool IsFileExecutable(FileInfo file)
     {
-        if (!file.Exists)
-            throw new FileNotFoundException();
-
         /*
         else if (OperatingSystem.IsLinux())
         {
@@ -81,6 +78,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
         try
         {
+            if (!file.Exists)
+                throw new FileNotFoundException();
+
             return file.HasExecutePermission();
         }
         catch (UnauthorizedAccessException)
