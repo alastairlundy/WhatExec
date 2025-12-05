@@ -7,14 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
-using AlastairLundy.WhatExecLib.Abstractions;
-using AlastairLundy.WhatExecLib.Abstractions.Locators;
-
 namespace AlastairLundy.WhatExecLib;
 
 /// <summary>
