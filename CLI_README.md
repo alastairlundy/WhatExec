@@ -8,14 +8,12 @@ This document serves as the README for the Command Line Interface (CLI) programs
 
 1. [WhatExec](#whatexec)
    - Description
-   - System Requirements
    - Installation Instructions
    - Usage Examples
    - Features and Capabilities
    - License Information
 2. [WhatExecLite](#whatexec-lite)
    - Description
-   - System Requirements
    - Installation Instructions
    - Usage Examples
    - Features and Capabilities
