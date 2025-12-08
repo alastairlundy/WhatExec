@@ -52,6 +52,14 @@ public class ExecutableFileLocator : IExecutableFileLocator
         return result;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="drive"></param>
+    /// <param name="executableFileName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<FileInfo?> LocateExecutableInDriveAsync(
         DriveInfo drive,
         string executableFileName,
@@ -136,6 +144,14 @@ public class ExecutableFileLocator : IExecutableFileLocator
         return null;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="executableFileName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<FileInfo?> LocateExecutableInDirectoryAsync(
         DirectoryInfo directory,
         string executableFileName,
@@ -188,6 +204,13 @@ public class ExecutableFileLocator : IExecutableFileLocator
         return result;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="executableFileName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<FileInfo?> LocateExecutableAsync(
         string executableFileName,
         SearchOption directorySearchOption,
