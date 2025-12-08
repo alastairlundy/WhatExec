@@ -1,8 +1,11 @@
 # WhatExec
 
 ## Description
-WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
+This project consists of WhatExecLib and WhatExec CLIs.
 
+[WhatExecLib](https://github.com/alastairlundy/whatexec/blob/main/src/WhatExecLib/README.md) is a C# library that finds executable files in PATH Environment Variables, Directories, or Drives.
+
+[WhatExec CLIs](https://github.com/alastairlundy/whatexec/blob/main/CLI_README.md) are standalone CLI programs that find executable files in PATH ENvironment Variables, Directories, or Drives.
 
 ## Features
 ## Installation Instructions
