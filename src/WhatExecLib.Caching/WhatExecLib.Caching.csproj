@@ -4,8 +4,6 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
-    <AssemblyName>AlastairLundy.WhatExecLib.Caching</AssemblyName>
-    <RootNamespace>AlastairLundy.WhatExecLib.Caching</RootNamespace>
     <PackageId>AlastairLundy.WhatExecLib.Caching</PackageId>
     <Authors>Alastair Lundy</Authors>
     <Company>AlastairLundy.WhatExecLib.Caching</Company>

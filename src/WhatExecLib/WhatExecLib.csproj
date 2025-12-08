@@ -4,9 +4,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
-    <AssemblyName>AlastairLundy.WhatExecLib</AssemblyName>
-    <RootNamespace>AlastairLundy.WhatExecLib</RootNamespace>
-    <PackageId>AlastairLundy.WhatExecLib</PackageId>
+    <PackageId>WhatExecLib</PackageId>
     <Title>WhatExecLib</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) Alastair Lundy</Copyright>

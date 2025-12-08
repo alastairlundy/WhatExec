@@ -1,4 +1,4 @@
-namespace AlastairLundy.WhatExec.Cli.Helpers;
+namespace WhatExec.Cli.Helpers;
 
 internal static class UserInputHelper
 {

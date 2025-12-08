@@ -9,7 +9,7 @@
 
 using AlastairLundy.DotExtensions.IO.Permissions;
 
-namespace AlastairLundy.WhatExecLib.Detectors;
+namespace WhatExecLib.Detectors;
 
 /// <summary>
 /// Provides functionality to detect whether a file is executable on the current operating system.

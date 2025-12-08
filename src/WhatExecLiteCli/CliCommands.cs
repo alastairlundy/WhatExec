@@ -1,6 +1,6 @@
-using AlastairLundy.WhatExecLib.Abstractions;
-using AlastairLundy.WhatExecLib.Caching;
 using ConsoleAppFramework;
+using WhatExecLib.Abstractions;
+using WhatExecLib.Caching;
 
 namespace WhatExecLite;
 

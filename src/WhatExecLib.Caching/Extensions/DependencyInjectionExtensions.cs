@@ -7,15 +7,10 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System;
-using AlastairLundy.WhatExecLib.Abstractions;
-using AlastairLundy.WhatExecLib.Abstractions.Detectors;
-using AlastairLundy.WhatExecLib.Caching.Resolvers;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace AlastairLundy.WhatExecLib.Caching.Extensions;
+namespace WhatExecLib.Caching.Extensions;
 
 /// <summary>
 ///

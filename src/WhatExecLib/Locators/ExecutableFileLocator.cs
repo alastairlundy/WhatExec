@@ -9,9 +9,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using AlastairLundy.WhatExecLib.Extensions;
 
-namespace AlastairLundy.WhatExecLib.Locators;
+namespace WhatExecLib.Locators;
 
 public class ExecutableFileLocator : IExecutableFileLocator
 {

@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace AlastairLundy.WhatExecLib.Abstractions.Detectors;
+namespace WhatExecLib.Abstractions.Detectors;
 
 /// <summary>
 /// Provides an interface for detecting executable files based on their file type and system permissions.

@@ -12,7 +12,7 @@ using AlastairLundy.DotPrimitives.IO.Paths;
 
 // ReSharper disable ConvertClosureToMethodGroup
 
-namespace AlastairLundy.WhatExecLib;
+namespace WhatExecLib;
 
 /// <summary>
 /// Provides functionality to resolve the path of an executable file based on the system's PATH environment variable.

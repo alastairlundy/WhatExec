@@ -6,8 +6,6 @@
     <LangVersion>14</LangVersion>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsTrimmable>true</IsTrimmable>
-    <AssemblyName>AlastairLundy.WhatExecLib.Extensions.DependencyInjection</AssemblyName>
-    <RootNamespace>AlastairLundy.WhatExecLib.Extensions.DependencyInjection</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference

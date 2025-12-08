@@ -7,9 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using AlastairLundy.WhatExecLib.Extensions;
-
-namespace AlastairLundy.WhatExecLib.Locators;
+namespace WhatExecLib.Locators;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.

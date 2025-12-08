@@ -10,7 +10,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AlastairLundy.WhatExecLib.Abstractions.Locators;
+namespace WhatExecLib.Abstractions.Locators;
 
 public interface IExecutableFileLocator
 {

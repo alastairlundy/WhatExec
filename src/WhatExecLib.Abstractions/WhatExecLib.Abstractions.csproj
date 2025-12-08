@@ -4,9 +4,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>13</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>AlastairLundy.WhatExecLib.Abstractions</AssemblyName>
-    <RootNamespace>AlastairLundy.WhatExecLib.Abstractions</RootNamespace>
-    <PackageId>AlastairLundy.WhatExecLib.Abstractions</PackageId>
+    <PackageId>WhatExecLib.Abstractions</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>AlastairLundy.WhatExecLib.Abstractions</Title>
     <Authors>Alastair Lundy</Authors>

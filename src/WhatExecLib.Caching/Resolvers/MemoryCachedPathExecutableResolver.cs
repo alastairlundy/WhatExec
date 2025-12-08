@@ -7,14 +7,11 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System;
 using System.IO;
 using System.Runtime.Versioning;
 using AlastairLundy.DotPrimitives.IO.Paths;
-using AlastairLundy.WhatExecLib.Abstractions.Detectors;
-using Microsoft.Extensions.Caching.Memory;
 
-namespace AlastairLundy.WhatExecLib.Caching.Resolvers;
+namespace WhatExecLib.Caching.Resolvers;
 
 /// <summary>
 ///

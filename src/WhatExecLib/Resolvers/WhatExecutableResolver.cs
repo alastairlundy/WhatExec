@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace AlastairLundy.WhatExecLib;
+namespace WhatExecLib;
 
 /// <summary>
 /// Provides functionality to resolve the full file path of an executable based on a given input path.

@@ -7,11 +7,10 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using AlastairLundy.WhatExec.Cli.Commands;
-using AlastairLundy.WhatExecLib.Caching.Extensions;
-using AlastairLundy.WhatExecLib.Extensions.DependencyInjection;
 using DotMake.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
+using WhatExec.Cli.Commands;
+using WhatExecLib.Extensions.DependencyInjection;
 
 if (args.Any(s => s.Contains("--interactive")))
 {

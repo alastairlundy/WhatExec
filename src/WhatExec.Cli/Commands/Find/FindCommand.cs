@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using AlastairLundy.WhatExecLib.Abstractions.Locators;
 using DotMake.CommandLine;
 
-namespace AlastairLundy.WhatExec.Cli.Commands.Find;
+namespace WhatExec.Cli.Commands.Find;
 
 [CliCommand(
     Name = "find",

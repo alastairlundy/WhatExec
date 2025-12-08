@@ -1,4 +1,4 @@
-namespace AlastairLundy.WhatExecLib.Extensions;
+namespace WhatExecLib.Extensions;
 
 public static class PrioritizeLocationsExtensions
 {
