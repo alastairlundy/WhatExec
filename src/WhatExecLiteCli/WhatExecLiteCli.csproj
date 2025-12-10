@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
-    <ProjectReference Include="..\WhatExecLib.Caching\WhatExecLib.Caching.csproj" />
     <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
   </ItemGroup>
