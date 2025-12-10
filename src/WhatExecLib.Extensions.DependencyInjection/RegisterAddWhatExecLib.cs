@@ -22,45 +22,51 @@ namespace WhatExecLib.Extensions.DependencyInjection;
 /// </summary>
 public static class RegisterAddWhatExecLib
 {
-    /// <summary>
-    ///
-    /// </summary>
     /// <param name="services"></param>
-    /// <param name="serviceLifetime"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddWhatExecLib(
-        this IServiceCollection services,
-        ServiceLifetime serviceLifetime
-    )
+    extension(IServiceCollection services)
     {
-        switch (serviceLifetime)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="serviceLifetime"></param>
+        /// <returns></returns>
+        public IServiceCollection AddWhatExecLib(ServiceLifetime serviceLifetime)
         {
-            case ServiceLifetime.Scoped:
-                services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
-                services.AddScoped<
-                    IExecutableFileInstancesLocator,
-                    ExecutableFileInstancesLocator
-                >();
-                services.AddScoped<IExecutableFileLocator, ExecutableFileLocator>();
-                services.AddScoped<IMultiExecutableLocator, MultiExecutableLocator>();
-            case ServiceLifetime.Singleton:
-                services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
-                services.AddSingleton<
-                    IExecutableFileInstancesLocator,
-                    ExecutableFileInstancesLocator
-                >();
-                services.AddSingleton<IExecutableFileLocator, ExecutableFileLocator>();
-                services.AddSingleton<IMultiExecutableLocator, MultiExecutableLocator>();
-            case ServiceLifetime.Transient:
-                services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
-                services.AddTransient<
-                    IExecutableFileInstancesLocator,
-                    ExecutableFileInstancesLocator
-                >();
-                services.AddTransient<IExecutableFileLocator, ExecutableFileLocator>();
-                services.AddTransient<IMultiExecutableLocator, MultiExecutableLocator>();
-        }
+            switch (serviceLifetime)
+            {
+                case ServiceLifetime.Scoped:
+                    services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
+                    services.AddScoped<
+                        IExecutableFileInstancesLocator,
+                        ExecutableFileInstancesLocator
+                    >();
+                    services.AddScoped<IExecutableFileLocator, ExecutableFileLocator>();
+                    services.AddScoped<IMultiExecutableLocator, MultiExecutableLocator>();
+                    services.TryAddScoped<IPathExecutableResolver, PathExecutableResolver>();
+                    break;
+                case ServiceLifetime.Singleton:
+                    services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
+                    services.AddSingleton<
+                        IExecutableFileInstancesLocator,
+                        ExecutableFileInstancesLocator
+                    >();
+                    services.AddSingleton<IExecutableFileLocator, ExecutableFileLocator>();
+                    services.AddSingleton<IMultiExecutableLocator, MultiExecutableLocator>();
+                    services.TryAddSingleton<IPathExecutableResolver, PathExecutableResolver>();
+                    break;
+                case ServiceLifetime.Transient:
+                    services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
+                    services.AddTransient<
+                        IExecutableFileInstancesLocator,
+                        ExecutableFileInstancesLocator
+                    >();
+                    services.AddTransient<IExecutableFileLocator, ExecutableFileLocator>();
+                    services.AddTransient<IMultiExecutableLocator, MultiExecutableLocator>();
+                    services.TryAddTransient<IPathExecutableResolver, PathExecutableResolver>();
+                    break;
+            }
 
-        return services;
+            return services;
+        }
     }
 }
