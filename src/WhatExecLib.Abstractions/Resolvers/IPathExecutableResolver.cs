@@ -19,7 +19,14 @@ public interface IPathExecutableResolver
     /// </summary>
     /// <param name="inputFilePath"></param>
     /// <returns></returns>
-    FileInfo ResolvePathEnvironmentExecutableFile(string inputFilePath);
+    FileInfo ResolveExecutableFile(string inputFilePath);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="inputFilePaths"></param>
+    /// <returns></returns>
+    FileInfo[] ResolveExecutableFiles(params string[] inputFilePaths);
 
     /// <summary>
     /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
@@ -27,5 +34,13 @@ public interface IPathExecutableResolver
     /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
     /// <param name="fileInfo">When this method returns, contains the resolved <see cref="FileInfo"/> object if the resolution is successful; otherwise, null.</param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
-    bool TryResolvePathEnvironmentExecutableFile(string inputFilePath, out FileInfo? fileInfo);
+    bool TryResolveExecutableFile(string inputFilePath, out FileInfo? fileInfo);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="inputFilePaths"></param>
+    /// <param name="fileInfos"></param>
+    /// <returns></returns>
+    bool TryResolveExecutableFiles(string[] inputFilePaths, out FileInfo[]? fileInfos);
 }
