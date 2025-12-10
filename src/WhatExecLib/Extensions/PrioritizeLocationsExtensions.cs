@@ -1,6 +1,6 @@
 namespace WhatExecLib.Extensions;
 
-public static class PrioritizeLocationsExtensions
+internal static class PrioritizeLocationsExtensions
 {
     private static int ComputeDirectoryPriorityScore(FileInfo fileInfo)
     {
@@ -53,8 +53,11 @@ public static class PrioritizeLocationsExtensions
         return 10;
     }
 
-    internal static IEnumerable<FileInfo> PrioritizeLocations(this IEnumerable<FileInfo> files)
+    extension(IEnumerable<FileInfo> files)
     {
-        return files.OrderBy(x => ComputeDirectoryPriorityScore(x));
+        internal IEnumerable<FileInfo> PrioritizeLocations()
+        {
+            return files.OrderBy(x => ComputeDirectoryPriorityScore(x));
+        }
     }
 }
