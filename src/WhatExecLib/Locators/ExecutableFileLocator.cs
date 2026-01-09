@@ -53,13 +53,14 @@ public class ExecutableFileLocator : IExecutableFileLocator
             .PrioritizeLocations()
             .FirstOrDefault(f =>
             {
+#if DEBUG
                 Console.WriteLine($"Searching file: {f.FullName}");
-
+#endif
                 try
                 {
                     return f.Exists
-                        && f.Name.Equals(executableFileName, stringComparison)
-                        && _executableFileDetector.IsFileExecutable(f);
+                           && f.Name.Equals(executableFileName, stringComparison)
+                           && _executableFileDetector.IsFileExecutable(f);
                 }
                 catch
                 {
@@ -206,7 +207,10 @@ public class ExecutableFileLocator : IExecutableFileLocator
         return drives
             .Select(d =>
             {
+#if DEBUG
                 Console.WriteLine($"Searching Drive: {d.VolumeLabel}");
+#endif
+                
                 return LocateExecutableInDrive(d, executableFileName, directorySearchOption);
             })
             .FirstOrDefault(x => x is not null);
@@ -222,8 +226,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
     public async Task<FileInfo?> LocateExecutableAsync(
         string executableFileName,
         SearchOption directorySearchOption,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableFileName);
 
