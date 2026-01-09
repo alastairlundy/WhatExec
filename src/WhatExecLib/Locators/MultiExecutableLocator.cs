@@ -7,6 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using DotExtensions.IO.Directories;
+
 namespace WhatExecLib.Locators;
 
 /// <summary>

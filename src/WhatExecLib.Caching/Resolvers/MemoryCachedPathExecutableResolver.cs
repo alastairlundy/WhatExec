@@ -9,7 +9,7 @@
 
 using System.IO;
 using System.Runtime.Versioning;
-using AlastairLundy.DotPrimitives.IO.Paths;
+using DotPrimitives.IO.Paths;
 
 namespace WhatExecLib.Caching.Resolvers;
 

@@ -7,8 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using AlastairLundy.DotExtensions.IO.Permissions;
-using AlastairLundy.DotPrimitives.IO.Paths;
+using DotExtensions.IO.Permissions;
+using DotPrimitives.IO.Paths;
 
 // ReSharper disable ConvertClosureToMethodGroup
 
