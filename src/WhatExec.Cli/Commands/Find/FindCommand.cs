@@ -88,7 +88,7 @@ public class FindCommand
         }
 
         bool foundInPath = TrySearchPath(out KeyValuePair<string, string>[]? pathSearchResults);
-
+        
         if (foundInPath && pathSearchResults is not null)
         {
             foreach (KeyValuePair<string, string> pathSearchResult in pathSearchResults)
@@ -100,6 +100,10 @@ public class FindCommand
             {
                 return PrintResults(commandLocations);
             }
+        }
+        else
+        {
+            Console.WriteLine("Commands were not found in path.");
         }
 
         string[] commandsLeftToLookFor = commandLocations
@@ -162,8 +166,10 @@ public class FindCommand
 
     private bool TrySearchPath(out KeyValuePair<string, string>[]? results)
     {
+        Console.WriteLine("Searching path...");
         if (Commands is null)
         {
+            Console.WriteLine("Commands were null.");
             results = null;
             return false;
         }
@@ -174,6 +180,8 @@ public class FindCommand
             Commands,
             out FileInfo[]? fileInfos
         );
+        
+        Console.WriteLine($"Path search result: {success}");
 
         if (success && fileInfos is not null)
         {
@@ -181,8 +189,8 @@ public class FindCommand
             {
                 output.Add(
                     new KeyValuePair<string, string>(
-                        Commands.FirstOrDefault(c => info.Name == c)
-                            ?? Path.GetFileNameWithoutExtension(info.Name),
+                        Commands.FirstOrDefault(command => info.Name == command)
+                        ?? info.Name,
                         info.FullName
                     )
                 );
@@ -190,7 +198,7 @@ public class FindCommand
         }
 
         results = output.ToArray();
-        return output.Count > 0;
+        return results.Any();
     }
 
     private async Task<KeyValuePair<string, string>[]> TrySearchSystem_DoNotLocateAll(
@@ -201,7 +209,7 @@ public class FindCommand
 
         foreach (string command in commandLeftToLookFor)
         {
-            Console.WriteLine($"Looking for {command}");
+            Console.WriteLine(Resources.LocateExecutable_Status_LookingForCommand, command);
 
             FileInfo? info = await _executableFileLocator.LocateExecutableAsync(
                 command,
@@ -209,6 +217,7 @@ public class FindCommand
                 CancellationToken.None
             );
 
+#if DEBUG
             if (info is not null)
             {
                 output.Add(new KeyValuePair<string, string>(command, info.FullName));
@@ -218,6 +227,7 @@ public class FindCommand
             {
                 Console.WriteLine($"Result for {command} was null");
             }
+#endif
         }
 
         return output.ToArray();
