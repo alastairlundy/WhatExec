@@ -86,7 +86,17 @@ public class PathExecutableResolver : IPathExecutableResolver
         string pathExtension
     )
     {
-        string filePath = Path.Combine(pathEntry, $"{inputFilePath}{pathExtension}");
+        string filePath;
+        
+        if (Path.HasExtension(inputFilePath))
+        {
+            filePath = Path.Combine(pathEntry, 
+                $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension}");
+        }
+        else
+        {
+            filePath = Path.Combine(pathEntry, $"{inputFilePath}{pathExtension}");
+        }
 
         if (File.Exists(filePath))
         {
@@ -271,11 +281,9 @@ public class PathExecutableResolver : IPathExecutableResolver
 
         foreach (string inputFilePath in inputFilePaths)
         {
-            if (
-                Path.IsPathRooted(inputFilePath)
+            if (Path.IsPathRooted(inputFilePath)
                 || inputFilePath.Contains(Path.DirectorySeparatorChar)
-                || inputFilePath.Contains(Path.AltDirectorySeparatorChar)
-            )
+                || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
             {
                 if (File.Exists(inputFilePath))
                 {
