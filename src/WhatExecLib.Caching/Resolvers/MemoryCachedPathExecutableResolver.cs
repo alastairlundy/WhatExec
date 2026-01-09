@@ -31,24 +31,19 @@ public class MemoryCachedPathExecutableResolver
     /// <summary>
     ///
     /// </summary>
-    /// <param name="executableFileDetector"></param>
     /// <param name="cache"></param>
     public MemoryCachedPathExecutableResolver(
-        IExecutableFileDetector executableFileDetector,
         IMemoryCache cache
     )
-        : base()
     {
         _cache = cache;
     }
 
     public MemoryCachedPathExecutableResolver(
-        IExecutableFileDetector executableFileDetector,
         IMemoryCache cache,
         TimeSpan defaultPathCacheLifespan,
         TimeSpan defaultPathExtensionsCacheLifespan
     )
-        : base()
     {
         _cache = cache;
         DefaultPathCacheLifespan = defaultPathCacheLifespan;

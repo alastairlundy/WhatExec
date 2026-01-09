@@ -67,7 +67,6 @@ public static class DependencyInjectionExtensions
                     case ServiceLifetime.Scoped:
                         services.AddScoped<ICachedPathExecutableResolver>(
                             sp => new MemoryCachedPathExecutableResolver(
-                                sp.GetRequiredService<IExecutableFileDetector>(),
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -77,7 +76,6 @@ public static class DependencyInjectionExtensions
                     case ServiceLifetime.Singleton:
                         services.AddSingleton<ICachedPathExecutableResolver>(
                             sp => new MemoryCachedPathExecutableResolver(
-                                sp.GetRequiredService<IExecutableFileDetector>(),
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -88,7 +86,6 @@ public static class DependencyInjectionExtensions
                     case ServiceLifetime.Transient:
                         services.AddTransient<ICachedPathExecutableResolver>(
                             sp => new MemoryCachedPathExecutableResolver(
-                                sp.GetRequiredService<IExecutableFileDetector>(),
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -147,7 +144,6 @@ public static class DependencyInjectionExtensions
                     case ServiceLifetime.Scoped:
                         services.TryAddScoped<IPathExecutableResolver>(
                             sp => new MemoryCachedPathExecutableResolver(
-                                sp.GetRequiredService<IExecutableFileDetector>(),
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -157,7 +153,6 @@ public static class DependencyInjectionExtensions
                     case ServiceLifetime.Singleton:
                         services.TryAddSingleton<IPathExecutableResolver>(
                             sp => new MemoryCachedPathExecutableResolver(
-                                sp.GetRequiredService<IExecutableFileDetector>(),
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -168,7 +163,6 @@ public static class DependencyInjectionExtensions
                     case ServiceLifetime.Transient:
                         services.TryAddTransient<IPathExecutableResolver>(
                             sp => new MemoryCachedPathExecutableResolver(
-                                sp.GetRequiredService<IExecutableFileDetector>(),
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
