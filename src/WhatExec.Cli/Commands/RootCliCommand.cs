@@ -7,8 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using DotMake.CommandLine;
-
 namespace WhatExec.Cli.Commands;
 
 [CliCommand(Name = "", Description = "WhatExec root Cli Command")]

@@ -9,7 +9,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using DotExtensions.IO.Directories;
 
 namespace WhatExecLib.Locators;
 

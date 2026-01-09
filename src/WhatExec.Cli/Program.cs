@@ -7,7 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using DotMake.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using WhatExec.Cli.Commands;
 using WhatExecLib.Extensions.DependencyInjection;
