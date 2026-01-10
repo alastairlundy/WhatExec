@@ -7,6 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using ValidationResult = Spectre.Console.ValidationResult;
+
 namespace WhatExec.Cli.Helpers;
 
 internal static class UserInputHelper
@@ -63,9 +65,9 @@ internal static class UserInputHelper
         {
             string command = AnsiConsole.Prompt(
                 new TextPrompt<string>(
-                    Resources.Prompts_TextInput_File,
-                    StringComparer.CurrentCulture
-                )
+                        Resources.Prompts_TextInput_File,
+                        StringComparer.CurrentCulture
+                    )
                     .InvalidChoiceMessage("")
                     .Validate(s =>
                     {

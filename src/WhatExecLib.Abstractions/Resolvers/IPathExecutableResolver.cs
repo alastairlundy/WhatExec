@@ -21,6 +21,11 @@ public interface IPathExecutableResolver
     /// <returns></returns>
     FileInfo GetResolvedExecutable(string inputFilePath);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="inputFilePaths"></param>
+    /// <returns></returns>
     IEnumerable<FileInfo> EnumerateResolvedExecutables(IEnumerable<string> inputFilePaths);
 
     /// <summary>
