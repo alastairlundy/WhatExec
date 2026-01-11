@@ -12,7 +12,7 @@ namespace WhatExecLib.Abstractions.Locators;
 /// <summary>
 /// Defines an interface for locating all executable files within a specified directory or drive.
 /// </summary>
-public interface IMultiExecutableLocator
+public interface IExecutablesLocator
 {
     /// <summary>
     /// Locates all executable files within a specified directory asynchronously.
@@ -22,7 +22,7 @@ public interface IMultiExecutableLocator
     /// <param name="directorySearchOption"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
-    IEnumerable<FileInfo> LocateAllExecutablesWithinDirectory(
+    FileInfo[] LocateAllExecutablesWithinDirectory(
         DirectoryInfo directory,
         SearchOption directorySearchOption
     );
@@ -35,8 +35,6 @@ public interface IMultiExecutableLocator
     /// <param name="searchOption"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
-    IEnumerable<FileInfo> LocateAllExecutablesWithinDrive(
-        DriveInfo driveInfo,
-        SearchOption searchOption
-    );
+    FileInfo[] LocateAllExecutablesWithinDrive(DriveInfo driveInfo,
+        SearchOption searchOption);
 }

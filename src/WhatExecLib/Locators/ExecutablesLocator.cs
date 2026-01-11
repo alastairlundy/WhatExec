@@ -11,16 +11,16 @@ namespace WhatExecLib.Locators;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.
-/// Implements the <see cref="IMultiExecutableLocator"/> interface to provide functionality for locating executables.
+/// Implements the <see cref="IExecutablesLocator"/> interface to provide functionality for locating executables.
 /// </summary>
-public class MultiExecutableLocator : IMultiExecutableLocator
+public class ExecutablesLocator : IExecutablesLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
 
     /// <summary>
     /// Represents a locator for identifying all executable files within specified directories or drives.
     /// </summary>
-    public MultiExecutableLocator(IExecutableFileDetector executableFileDetector)
+    public ExecutablesLocator(IExecutableFileDetector executableFileDetector)
     {
         _executableFileDetector = executableFileDetector;
     }
@@ -37,17 +37,14 @@ public class MultiExecutableLocator : IMultiExecutableLocator
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IEnumerable<FileInfo> LocateAllExecutablesWithinDirectory(
-        DirectoryInfo directory,
-        SearchOption directorySearchOption
-    )
+    public FileInfo[] LocateAllExecutablesWithinDirectory(DirectoryInfo directory,
+        SearchOption directorySearchOption)
     {
-        IEnumerable<FileInfo> results = directory
+        return directory
             .SafelyEnumerateFiles("*", directorySearchOption)
             .PrioritizeLocations()
-            .Where(file => _executableFileDetector.IsFileExecutable(file));
-
-        return results;
+            .Where(file => file is not null && file.Exists && _executableFileDetector.IsFileExecutable(file))
+            .ToArray();
     }
 
     /// <summary>
@@ -61,18 +58,15 @@ public class MultiExecutableLocator : IMultiExecutableLocator
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IEnumerable<FileInfo> LocateAllExecutablesWithinDrive(
+    public FileInfo[] LocateAllExecutablesWithinDrive(
         DriveInfo driveInfo,
-        SearchOption directorySearchOption
-    )
+        SearchOption directorySearchOption)
     {
-        IEnumerable<FileInfo> results = driveInfo
+        return driveInfo
             .RootDirectory.SafelyEnumerateFiles("*", directorySearchOption)
             .PrioritizeLocations()
             .Where(file =>
-                file is not null && file.Exists && _executableFileDetector.IsFileExecutable(file)
-            );
-
-        return results;
+                file is not null && file.Exists && _executableFileDetector.IsFileExecutable(file))
+            .ToArray();
     }
 }
