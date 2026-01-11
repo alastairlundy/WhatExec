@@ -7,6 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using DotExtensions.Platforms;
+
 namespace WhatExecLib.Detectors;
 
 /// <summary>
@@ -28,11 +30,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     {
         IsMac = OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst();
 
-        IsUnix =
-            OperatingSystem.IsLinux()
-            || IsMac
-            || OperatingSystem.IsFreeBSD()
-            || OperatingSystem.IsAndroid();
+        IsUnix = OperatingSystem.IsUnix();
 
         IsBsdBased = IsMac || OperatingSystem.IsFreeBSD();
 

@@ -43,7 +43,7 @@ public class ExecutablesLocator : IExecutablesLocator
         return directory
             .SafelyEnumerateFiles("*", directorySearchOption)
             .PrioritizeLocations()
-            .Where(file => file is not null && file.Exists && _executableFileDetector.IsFileExecutable(file))
+            .Where(file => file.Exists && _executableFileDetector.IsFileExecutable(file))
             .ToArray();
     }
 
@@ -65,8 +65,7 @@ public class ExecutablesLocator : IExecutablesLocator
         return driveInfo
             .RootDirectory.SafelyEnumerateFiles("*", directorySearchOption)
             .PrioritizeLocations()
-            .Where(file =>
-                file is not null && file.Exists && _executableFileDetector.IsFileExecutable(file))
+            .Where(file => file.Exists && _executableFileDetector.IsFileExecutable(file))
             .ToArray();
     }
 }

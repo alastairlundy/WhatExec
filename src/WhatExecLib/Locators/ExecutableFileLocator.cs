@@ -50,9 +50,6 @@ public class ExecutableFileLocator : IExecutableFileLocator
             .PrioritizeLocations()
             .FirstOrDefault(f =>
             {
-#if DEBUG
-                Console.WriteLine($"Searching file: {f.FullName}");
-#endif
                 try
                 {
                     return f.Exists
@@ -125,14 +122,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
         IEnumerable<DriveInfo> drives = DriveDetector.EnumerateDrives();
 
         return drives
-            .Select(d =>
-            {
-#if DEBUG
-                Console.WriteLine($"Searching Drive: {d.VolumeLabel}");
-#endif
-                
-                return LocateExecutableInDrive(d, executableFileName, directorySearchOption);
-            })
+            .Select(d => LocateExecutableInDrive(d, executableFileName, directorySearchOption))
             .FirstOrDefault(x => x is not null);
     }
 }

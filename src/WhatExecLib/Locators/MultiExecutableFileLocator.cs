@@ -90,9 +90,6 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
                     .PrioritizeLocations()
                     .FirstOrDefault(f =>
                     {
-#if DEBUG
-                        Console.WriteLine($"Searching file: {f.FullName}");
-#endif
                         try
                         {
                             return f.Exists && f.Name.Equals(executable, stringComparison)
