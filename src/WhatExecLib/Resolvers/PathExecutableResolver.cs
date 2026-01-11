@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using DotExtensions.Platforms;
 using DotPrimitives.IO.Paths;
 
 // ReSharper disable ConvertClosureToMethodGroup
@@ -25,12 +26,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     /// </summary>
     public PathExecutableResolver()
     {
-        IsUnix =
-            OperatingSystem.IsLinux()
-            || OperatingSystem.IsMacOS()
-            || OperatingSystem.IsMacCatalyst()
-            || OperatingSystem.IsFreeBSD()
-            || OperatingSystem.IsAndroid();
+        IsUnix = OperatingSystem.IsUnix();
     }
 
     #region Helper Methods
