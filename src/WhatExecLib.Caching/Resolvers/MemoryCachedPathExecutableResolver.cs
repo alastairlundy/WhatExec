@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
 using DotPrimitives.IO.Paths;
@@ -88,8 +89,8 @@ public class MemoryCachedPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public new FileInfo GetResolvedExecutable(string inputFilePath) =>
-        ResolveExecutableFile(
+    public new KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath)
+        => ResolveExecutableFile(
             inputFilePath,
             DefaultPathCacheLifespan,
             DefaultPathExtensionsCacheLifespan
@@ -107,7 +108,7 @@ public class MemoryCachedPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public new bool TryResolveExecutable(string inputFilePath, out FileInfo? fileInfo) =>
+    public new bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? fileInfo) =>
         TryResolveExecutableFile(
             inputFilePath,
             DefaultPathCacheLifespan,
@@ -116,22 +117,20 @@ public class MemoryCachedPathExecutableResolver
         );
 
     /// <summary>
-    ///
+    /// 
     /// </summary>
     /// <param name="inputFilePath"></param>
-    /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
+    /// <param name="pathExtensionsCacheLifetime"></param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo ResolveExecutableFile(
-        string inputFilePath,
+    public KeyValuePair<string, FileInfo> ResolveExecutableFile(string inputFilePath,
         TimeSpan? pathCacheLifetime,
-        TimeSpan? pathExtensionsCacheLifetime
-    )
+        TimeSpan? pathExtensionsCacheLifetime)
     {
         pathCacheLifetime ??= DefaultPathCacheLifespan;
         pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
@@ -140,37 +139,35 @@ public class MemoryCachedPathExecutableResolver
             inputFilePath,
             pathCacheLifetime,
             pathExtensionsCacheLifetime,
-            out FileInfo? fileInfo
+            out KeyValuePair<string, FileInfo>? fileInfo
         );
 
         if (result == false || fileInfo is null)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
-        if (File.Exists(fileInfo.FullName) == false)
+        if (fileInfo.Value.Value.Exists == false)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
-        return fileInfo;
+        return new KeyValuePair<string, FileInfo>(inputFilePath, fileInfo.Value.Value);
     }
 
     /// <summary>
-    ///
+    /// 
     /// </summary>
     /// <param name="inputFilePath"></param>
-    /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
-    /// <param name="fileInfo"></param>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="resolvedExecutables"></param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveExecutableFile(
-        string inputFilePath,
+    public bool TryResolveExecutableFile(string inputFilePath,
         TimeSpan? pathCacheLifetime,
         TimeSpan? pathExtensionsCacheLifetime,
-        out FileInfo? fileInfo
-    )
+        out KeyValuePair<string, FileInfo>? resolvedExecutables)
     {
         ArgumentException.ThrowIfNullOrEmpty(inputFilePath);
 
@@ -187,12 +184,12 @@ public class MemoryCachedPathExecutableResolver
             {
                 if (ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null)
                 {
-                    fileInfo = info;
+                    resolvedExecutables = new KeyValuePair<string, FileInfo>(inputFilePath, info);
                     return true;
                 }
             }
 
-            fileInfo = null;
+            resolvedExecutables = null;
             return false;
         }
 
@@ -209,7 +206,7 @@ public class MemoryCachedPathExecutableResolver
         }
         catch (InvalidOperationException)
         {
-            fileInfo = null;
+            resolvedExecutables = null;
             return false;
         }
 
@@ -224,17 +221,20 @@ public class MemoryCachedPathExecutableResolver
             {
                 bool result = CheckFileExists(
                     inputFilePath,
-                    out fileInfo,
+                    out FileInfo? fileInfo,
                     pathEntry,
                     pathExtension
                 );
 
-                if (result)
-                    return result;
+                if (result && fileInfo is not null)
+                {
+                    resolvedExecutables = new KeyValuePair<string,FileInfo>(inputFilePath, fileInfo);
+                    return true;
+                }
             }
         }
 
-        fileInfo = null;
+        resolvedExecutables = null;
         return false;
     }
 }

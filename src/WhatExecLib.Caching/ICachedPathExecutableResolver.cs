@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Collections.Generic;
 using System.IO;
 
 namespace WhatExecLib.Caching;
@@ -17,20 +18,20 @@ namespace WhatExecLib.Caching;
 public interface ICachedPathExecutableResolver : IPathExecutableResolver
 {
     /// <summary>
-    ///
+    /// 
     /// </summary>
     /// <param name="inputFilePath"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
     /// <returns></returns>
-    FileInfo ResolveExecutableFile(
+    KeyValuePair<string, FileInfo> ResolveExecutableFile(
         string inputFilePath,
         TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime
     );
 
     /// <summary>
-    ///
+    /// 
     /// </summary>
     /// <param name="inputFilePath"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
@@ -41,6 +42,6 @@ public interface ICachedPathExecutableResolver : IPathExecutableResolver
         string inputFilePath,
         TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
-        out FileInfo? fileInfo
+        out KeyValuePair<string, FileInfo>? fileInfo
     );
 }
