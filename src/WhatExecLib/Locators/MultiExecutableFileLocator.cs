@@ -39,9 +39,7 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
             throw new FileNotFoundException("Could not locate the specified executable files.");
 
         if (!executableFiles.Keys.Equals(executableFileNames))
-        {
             throw new FileNotFoundException("Could not locate all specified executable files.");
-        }
 
         return executableFiles;
     }
