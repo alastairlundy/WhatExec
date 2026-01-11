@@ -44,10 +44,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
     /// <param name="file">The file to be checked for executability.</param>
     /// <returns>True if the file is executable, false otherwise.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified file does not exist.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("android")]
     [UnsupportedOSPlatform("browser")]
