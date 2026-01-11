@@ -36,10 +36,8 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IEnumerable<FileInfo> LocateExecutableInstances(
-        string executableName,
-        SearchOption directorySearchOption
-    )
+    public FileInfo[] LocateExecutableInstances(string executableName,
+        SearchOption directorySearchOption)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
@@ -51,7 +49,7 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
             )
             .AsParallel();
 
-        return result;
+        return result.ToArray();
     }
 
     /// <summary>
@@ -66,11 +64,9 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IEnumerable<FileInfo> LocateExecutableInstancesInDrive(
-        DriveInfo driveInfo,
+    public FileInfo[] LocateExecutableInstancesInDrive(DriveInfo driveInfo,
         string executableName,
-        SearchOption directorySearchOption
-    )
+        SearchOption directorySearchOption)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
@@ -88,7 +84,7 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
                 && f.Name.Equals(executableName)
             );
 
-        return results;
+        return results.ToArray();
     }
 
     /// <summary>
@@ -103,11 +99,9 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IEnumerable<FileInfo> LocateExecutableInstancesInDirectory(
-        DirectoryInfo directory,
+    public FileInfo[] LocateExecutableInstancesInDirectory(DirectoryInfo directory,
         string executableName,
-        SearchOption directorySearchOption
-    )
+        SearchOption directorySearchOption)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
@@ -120,6 +114,6 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
             .Where(file => _executableFileDetector.IsFileExecutable(file))
             .Where(file => file.Name.Equals(executableName));
 
-        return results;
+        return results.ToArray();
     }
 }

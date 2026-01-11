@@ -20,7 +20,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
     /// <returns>An array of FileInfo objects representing the located executable file instances.</returns>
-    IEnumerable<FileInfo> LocateExecutableInstances(
+    FileInfo[] LocateExecutableInstances(
         string executableName,
         SearchOption directorySearchOption
     );
@@ -32,7 +32,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
     /// <returns>An array of FileInfo objects representing the located executable file instances within the specified drive.</returns>
-    IEnumerable<FileInfo> LocateExecutableInstancesInDrive(
+    FileInfo[] LocateExecutableInstancesInDrive(
         DriveInfo driveInfo,
         string executableName,
         SearchOption directorySearchOption
@@ -45,7 +45,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="executableName">The name of the executable file to search for.</param>
     /// <param name="directorySearchOption"></param>
     /// <returns>An array of FileInfo objects representing the located executable files within the directory.</returns>
-    IEnumerable<FileInfo> LocateExecutableInstancesInDirectory(
+    FileInfo[] LocateExecutableInstancesInDirectory(
         DirectoryInfo directory,
         string executableName,
         SearchOption directorySearchOption
