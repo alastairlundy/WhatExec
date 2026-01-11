@@ -23,7 +23,7 @@ public class CliCommands
     {
         try
         {
-            bool success = pathExecutableResolver.TryResolveAllExecutables(commands,
+            bool success = pathExecutableResolver.TryResolveAllExecutableFilePaths(commands,
                 out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
             
 

@@ -89,7 +89,7 @@ public class FindCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
 
-        bool foundInPath = _pathExecutableResolver.TryResolveAllExecutables(
+        bool foundInPath = _pathExecutableResolver.TryResolveAllExecutableFilePaths(
             Commands,
             out IReadOnlyDictionary<string, FileInfo> pathResolvedExecutables
         );

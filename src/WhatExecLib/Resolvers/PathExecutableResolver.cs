@@ -213,7 +213,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("android")]
     public bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? resolvedExecutable)
     {
-        bool success = TryResolveAllExecutables([inputFilePath], out IReadOnlyDictionary<string, FileInfo>? fileInfos);
+        bool success = TryResolveAllExecutableFilePaths([inputFilePath], out IReadOnlyDictionary<string, FileInfo>? fileInfos);
 
         resolvedExecutable = fileInfos?.FirstOrDefault(f => f.Key == inputFilePath);
        
@@ -237,7 +237,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveAllExecutables(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables)
+    public bool TryResolveAllExecutableFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 

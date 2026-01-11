@@ -45,5 +45,5 @@ public interface IPathExecutableResolver
     /// <param name="inputFilePaths">An array of file names to resolve.</param>
     /// <param name="resolvedExecutables">When this method returns, contains an array of FileInfo objects for the resolved files if the operation is successful; otherwise, null.</param>
     /// <returns>True if at least one file path was successfully resolved; otherwise, false.</returns>
-    bool TryResolveAllExecutables(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
+    bool TryResolveAllExecutableFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
 }
