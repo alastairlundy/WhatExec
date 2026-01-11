@@ -19,15 +19,8 @@ public interface IPathExecutableResolver
     /// </summary>
     /// <param name="inputFilePath"></param>
     /// <returns></returns>
-    FileInfo GetResolvedExecutable(string inputFilePath);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="inputFilePaths"></param>
-    /// <returns></returns>
-    IEnumerable<FileInfo> EnumerateResolvedExecutables(IEnumerable<string> inputFilePaths);
-
+    KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath);
+    
     /// <summary>
     /// Resolves the file paths of multiple file names that are in the PATH Environment Variable.
     /// </summary>
@@ -36,21 +29,21 @@ public interface IPathExecutableResolver
     /// <exception cref="FileNotFoundException">
     /// Thrown when one or more of the specified file names could not be found in the PATH environment variable.
     /// </exception>
-    FileInfo[] GetResolvedExecutables(params string[] inputFilePaths);
+    IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFilePaths(params string[] inputFilePaths);
 
     /// <summary>
     /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
     /// </summary>
     /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
-    /// <param name="fileInfo">When this method returns, contains the resolved <see cref="FileInfo"/> object if the resolution is successful; otherwise, null.</param>
+    /// <param name="resolvedExecutable">When this method returns, contains the resolved <see cref="FileInfo"/> object if the resolution is successful; otherwise, null.</param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
-    bool TryResolveExecutable(string inputFilePath, out FileInfo? fileInfo);
+    bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? resolvedExecutable);
 
     /// <summary>
     /// Tries to resolve the file paths for a set of input file names that are in the PATH Environment Variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of file names to resolve.</param>
-    /// <param name="fileInfos">When this method returns, contains an array of FileInfo objects for the resolved files if the operation is successful; otherwise, null.</param>
+    /// <param name="resolvedExecutables">When this method returns, contains an array of FileInfo objects for the resolved files if the operation is successful; otherwise, null.</param>
     /// <returns>True if at least one file path was successfully resolved; otherwise, false.</returns>
-    bool TryResolveExecutables(string[] inputFilePaths, out FileInfo[]? fileInfos);
+    bool TryResolveAllExecutables(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
 }

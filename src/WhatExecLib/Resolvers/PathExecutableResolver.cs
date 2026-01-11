@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Collections.ObjectModel;
 using DotExtensions.Platforms;
 using DotPrimitives.IO.Paths;
 
@@ -121,82 +122,8 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo GetResolvedExecutable(string inputFilePath) =>
-        EnumerateResolvedExecutables([inputFilePath]).First();
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="inputFilePaths"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <exception cref="FileNotFoundException"></exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
-    public IEnumerable<FileInfo> EnumerateResolvedExecutables(IEnumerable<string> inputFilePaths)
-    {
-        ArgumentNullException.ThrowIfNull(inputFilePaths);
-
-        string[] pathExtensions = PathEnvironmentVariable.GetPathFileExtensions();
-        string[] pathContents =
-            PathEnvironmentVariable.GetDirectories()
-            ?? throw new InvalidOperationException("PATH Variable could not be found.");
-
-        bool foundAny = false;
-
-        foreach (string inputFilePath in inputFilePaths)
-        {
-            if (
-                Path.IsPathRooted(inputFilePath)
-                || inputFilePath.Contains(Path.DirectorySeparatorChar)
-                || inputFilePath.Contains(Path.AltDirectorySeparatorChar)
-            )
-            {
-                if (File.Exists(inputFilePath))
-                {
-                    if (
-                        ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null
-                    )
-                    {
-                        foundAny = true;
-                        yield return info;
-                    }
-                }
-            }
-
-            bool fileHasExtension = Path.GetExtension(inputFilePath) != string.Empty;
-
-            foreach (string pathEntry in pathContents)
-            {
-                if (!fileHasExtension)
-                {
-                    pathExtensions = [""];
-                }
-
-                foreach (string pathExtension in pathExtensions)
-                {
-                    bool result = CheckFileExists(
-                        inputFilePath,
-                        out FileInfo? fileInfo,
-                        pathEntry,
-                        pathExtension
-                    );
-
-                    if (result && fileInfo is not null)
-                    {
-                        foundAny = true;
-                        yield return fileInfo;
-                    }
-                }
-            }
-        }
-
-        if (!foundAny)
-            throw new FileNotFoundException($"Could not find file(s) in {nameof(inputFilePaths)}");
-    }
+    public KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath) =>
+        ResolveAllExecutableFilePaths([inputFilePath]).First(p => p.Key == inputFilePath);
 
     /// <summary>
     /// Resolves a collection of files from the system's PATH environment variable using the provided file name.
@@ -211,14 +138,71 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo[] GetResolvedExecutables(params string[] inputFilePaths) =>
-        EnumerateResolvedExecutables(inputFilePaths).ToArray();
+    public IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFilePaths(params string[] inputFilePaths)
+    {
+        ArgumentNullException.ThrowIfNull(inputFilePaths);
+
+        string[] pathExtensions = PathEnvironmentVariable.GetPathFileExtensions();
+        string[] pathContents =
+            PathEnvironmentVariable.GetDirectories()
+            ?? throw new InvalidOperationException("PATH Variable could not be found.");
+
+        Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
+
+        foreach (string inputFilePath in inputFilePaths)
+        {
+            if (
+                Path.IsPathRooted(inputFilePath)
+                || inputFilePath.Contains(Path.DirectorySeparatorChar)
+                || inputFilePath.Contains(Path.AltDirectorySeparatorChar)
+            )
+            {
+                if (File.Exists(inputFilePath))
+                {
+                    if (ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null) 
+                        output.Add(inputFilePath, info);
+                }
+            }
+
+            bool fileHasExtension = Path.GetExtension(inputFilePath) != string.Empty;
+
+            foreach (string pathEntry in pathContents)
+            {
+                if (!fileHasExtension)
+                {
+                    pathExtensions = [""];
+                }
+
+                foreach (string pathExtension in pathExtensions)
+                {
+                    bool result = CheckFileExists(
+                        inputFilePath,
+                        out FileInfo? fileInfo,
+                        pathEntry,
+                        pathExtension
+                    );
+
+                    if (result && fileInfo is not null)
+                    {
+                        output.Add(inputFilePath, fileInfo);
+                    }
+                }
+            }
+            
+            bool found = output.ContainsKey(inputFilePath);
+            
+            if(!found)
+                throw new FileNotFoundException($"Could not resolve file path of {inputFilePath}.");
+        }
+        
+        return new ReadOnlyDictionary<string, FileInfo>(output);
+    }
 
     /// <summary>
     /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
     /// </summary>
     /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
-    /// <param name="fileInfo">When this method returns, contains the resolved <see cref="FileInfo"/>
+    /// <param name="resolvedExecutable">When this method returns, contains the resolved <see cref="FileInfo"/>
     /// object if the resolution is successful; otherwise, null.</param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
@@ -227,12 +211,12 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveExecutable(string inputFilePath, out FileInfo? fileInfo)
+    public bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? resolvedExecutable)
     {
-        bool success = TryResolveExecutables([inputFilePath], out FileInfo[]? fileInfos);
+        bool success = TryResolveAllExecutables([inputFilePath], out IReadOnlyDictionary<string, FileInfo>? fileInfos);
 
-        fileInfo = fileInfos?.FirstOrDefault() ?? null;
-
+        resolvedExecutable = fileInfos?.FirstOrDefault(f => f.Key == inputFilePath);
+       
         return success;
     }
 
@@ -240,9 +224,9 @@ public class PathExecutableResolver : IPathExecutableResolver
     /// Attempts to resolve a set of file paths into executable files based on the system's PATH environment variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of file names or paths to resolve. These can include relative or absolute paths.</param>
-    /// <param name="fileInfos">
-    /// When the method completes, contains an array of <see cref="FileInfo"/> objects representing the resolved files,
-    /// if any files are successfully resolved. Null if no files are resolved.
+    /// <param name="resolvedExecutables">
+    ///     When the method completes, contains an array of <see cref="FileInfo"/> objects representing the resolved files,
+    ///     if any files are successfully resolved. Null if no files are resolved.
     /// </param>
     /// <returns>A boolean value indicating whether any of the specified files were successfully resolved.</returns>
     /// <exception cref="InvalidOperationException">
@@ -253,7 +237,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveExecutables(string[] inputFilePaths, out FileInfo[]? fileInfos)
+    public bool TryResolveAllExecutables(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
@@ -268,12 +252,11 @@ public class PathExecutableResolver : IPathExecutableResolver
         }
         catch (InvalidOperationException)
         {
-            fileInfos = null;
+            resolvedExecutables = new ReadOnlyDictionary<string, FileInfo>(new Dictionary<string, FileInfo>());
             return false;
         }
 
-        bool foundAny = false;
-        List<FileInfo> output = new();
+        Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
 
         foreach (string inputFilePath in inputFilePaths)
         {
@@ -287,8 +270,7 @@ public class PathExecutableResolver : IPathExecutableResolver
                         ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null
                     )
                     {
-                        output.Add(info);
-                        foundAny = true;
+                        output.Add(inputFilePath, info);
                     }
                 }
             }
@@ -313,20 +295,13 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                     if (result && fileInfo is not null)
                     {
-                        foundAny = true;
-                        output.Add(fileInfo);
+                        output.Add(inputFilePath, fileInfo);
                     }
                 }
             }
         }
-
-        if (foundAny)
-        {
-            fileInfos = output.ToArray();
-            return true;
-        }
-
-        fileInfos = null;
-        return false;
+        
+        resolvedExecutables = new ReadOnlyDictionary<string, FileInfo>(output);
+        return output.Count != 0;
     }
 }
