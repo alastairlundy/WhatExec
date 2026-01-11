@@ -45,7 +45,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     /// <returns>True if the file is executable, false otherwise.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified file does not exist.</exception>
     [UnsupportedOSPlatform("ios")]
-    [UnsupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
     public bool IsFileExecutable(FileInfo file)
     {
