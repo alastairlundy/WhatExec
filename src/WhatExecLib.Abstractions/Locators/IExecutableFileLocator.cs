@@ -7,9 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace WhatExecLib.Abstractions.Locators;
 
 public interface IExecutableFileLocator
@@ -28,21 +25,6 @@ public interface IExecutableFileLocator
     );
 
     /// <summary>
-    ///
-    /// </summary>
-    /// <param name="drive"></param>
-    /// <param name="executableFileName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<FileInfo?> LocateExecutableInDriveAsync(
-        DriveInfo drive,
-        string executableFileName,
-        SearchOption directorySearchOption,
-        CancellationToken cancellationToken
-    );
-
-    /// <summary>
     /// Locates an executable file within the specified directory that matches the given file name and search option criteria.
     /// </summary>
     /// <param name="directory">The directory to search within.</param>
@@ -55,13 +37,6 @@ public interface IExecutableFileLocator
         SearchOption directorySearchOption
     );
 
-    Task<FileInfo?> LocateExecutableInDirectoryAsync(
-        DirectoryInfo directory,
-        string executableFileName,
-        SearchOption directorySearchOption,
-        CancellationToken cancellationToken
-    );
-
     /// <summary>
     ///
     /// </summary>
@@ -69,10 +44,4 @@ public interface IExecutableFileLocator
     /// <param name="directorySearchOption"></param>
     /// <returns></returns>
     FileInfo? LocateExecutable(string executableFileName, SearchOption directorySearchOption);
-
-    Task<FileInfo?> LocateExecutableAsync(
-        string executableFileName,
-        SearchOption directorySearchOption,
-        CancellationToken cancellationToken
-    );
 }
