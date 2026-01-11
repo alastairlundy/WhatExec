@@ -49,21 +49,4 @@ public class CliCommands
             return 1;
         }
     }
-
-    private IEnumerable<FileInfo> ResolveCommands(
-        IPathExecutableResolver pathExecutableResolver,
-        string[] commands
-    )
-    {
-        bool foundAny = pathExecutableResolver.TryResolveExecutables(
-            commands,
-            out FileInfo[]? files
-        );
-
-        if (foundAny && files is not null)
-        {
-            return files;
-        }
-        return [];
-    }
 }
