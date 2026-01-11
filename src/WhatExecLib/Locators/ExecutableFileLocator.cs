@@ -35,7 +35,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
         ArgumentNullException.ThrowIfNull(drive);
 
         if (Path.IsPathRooted(executableFileName))
-            return HandleRootedPath(executableFileName);
+            return FileLocatorHelper.HandleRootedPath(_executableFileDetector, executableFileName);
 
         StringComparison stringComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
@@ -83,7 +83,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
     )
     {
         if (Path.IsPathRooted(executableFileName))
-            return HandleRootedPath(executableFileName);
+            return FileLocatorHelper.HandleRootedPath(_executableFileDetector, executableFileName);
 
         ArgumentException.ThrowIfNullOrEmpty(executableFileName);
         ArgumentNullException.ThrowIfNull(directory);
@@ -118,7 +118,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
         ArgumentException.ThrowIfNullOrEmpty(executableFileName);
 
         if (Path.IsPathRooted(executableFileName))
-            return HandleRootedPath(executableFileName);
+            return FileLocatorHelper.HandleRootedPath(_executableFileDetector, executableFileName);
 
         Console.WriteLine($"Found drives: {string.Join(",", DriveDetector.EnumerateDrives())}");
 
