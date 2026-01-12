@@ -9,6 +9,7 @@
 
 using ConsoleAppFramework;
 using WhatExecLib.Abstractions;
+using WhatExecLite.Localizations;
 
 namespace WhatExecLite;
 
@@ -35,9 +36,7 @@ public class CliCommands
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(
-                "We ran into a problem. Here are the Exception details in case you need it: "
-            );
+            Console.Error.WriteLine(Resources.Exceptions_Details);
             Console.Error.WriteLine(e.Message);
 
             if (verbose)
