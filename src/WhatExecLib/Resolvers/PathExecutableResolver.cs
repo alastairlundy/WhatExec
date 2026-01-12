@@ -8,7 +8,6 @@
  */
 
 using System.Collections.ObjectModel;
-using DotExtensions.Platforms;
 using DotPrimitives.IO.Paths;
 
 // ReSharper disable ConvertClosureToMethodGroup
@@ -20,14 +19,11 @@ namespace WhatExecLib;
 /// </summary>
 public class PathExecutableResolver : IPathExecutableResolver
 {
-    protected bool IsUnix { get; }
-
     /// <summary>
     ///
     /// </summary>
     public PathExecutableResolver()
     {
-        IsUnix = OperatingSystem.IsUnix();
     }
 
     #region Helper Methods
@@ -36,71 +32,23 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected bool ExecutableFileIsValid(string filePath, out FileInfo? fileInfo)
+    protected bool CheckFileExistsAndIsExecutable(
+        string filePath,
+        out FileInfo? fileInfo)
     {
-        try
-        {
-            string fullFilePath = Path.GetFullPath(filePath);
+        string fullFilePath = Path.GetFullPath(filePath);
 
-            FileInfo file = new FileInfo(fullFilePath);
-
-            if (IsUnix)
-            {
-                if (file.HasExecutePermission())
-                {
-                    fileInfo = file;
-                    return true;
-                }
-            }
-            else
-            {
-                if (File.Exists(fullFilePath))
-                {
-                    fileInfo = file;
-                    return true;
-                }
-            }
-
-            fileInfo = null;
-            return false;
-        }
-        catch (ArgumentException)
-        {
-            fileInfo = null;
-            return false;
-        }
-    }
-
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
-    protected bool CheckFileExists(
-        string inputFilePath,
-        out FileInfo? fileInfo,
-        string pathEntry,
-        string pathExtension
-    )
-    {
-        string filePath;
+        bool fullPathRequired = !File.Exists(filePath) && File.Exists(fullFilePath);
         
-        if (Path.HasExtension(inputFilePath))
+        if (File.Exists(fullFilePath) || File.Exists(filePath))
         {
-            filePath = Path.Combine(pathEntry, 
-                $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension}");
-        }
-        else
-        {
-            filePath = Path.Combine(pathEntry, $"{inputFilePath}{pathExtension}");
-        }
+            string newFilePath = fullPathRequired ? fullFilePath : filePath;
+            FileInfo file = new(newFilePath);
 
-        if (File.Exists(filePath))
-        {
-            if (ExecutableFileIsValid(filePath, out FileInfo? info) && info is not null)
+            if (file.Exists && file.HasExecutePermission())
             {
-                fileInfo = info;
-                return File.Exists(Path.GetFullPath(filePath));
+                fileInfo = file;
+                return true;
             }
         }
 
@@ -143,9 +91,8 @@ public class PathExecutableResolver : IPathExecutableResolver
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
         string[] pathExtensions = PathEnvironmentVariable.GetPathFileExtensions();
-        string[] pathContents =
-            PathEnvironmentVariable.GetDirectories()
-            ?? throw new InvalidOperationException("PATH Variable could not be found.");
+        string[] pathContents = PathEnvironmentVariable.GetDirectories()
+                                ?? throw new InvalidOperationException("PATH Variable could not be found.");
 
         Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
 
@@ -154,13 +101,11 @@ public class PathExecutableResolver : IPathExecutableResolver
             if (
                 Path.IsPathRooted(inputFilePath)
                 || inputFilePath.Contains(Path.DirectorySeparatorChar)
-                || inputFilePath.Contains(Path.AltDirectorySeparatorChar)
-            )
+                || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
             {
-                if (File.Exists(inputFilePath))
+                if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? fileInfo) && fileInfo is not null)
                 {
-                    if (ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null) 
-                        output.Add(inputFilePath, info);
+                    output.Add(inputFilePath, fileInfo);
                 }
             }
 
@@ -168,23 +113,39 @@ public class PathExecutableResolver : IPathExecutableResolver
 
             foreach (string pathEntry in pathContents)
             {
-                if (!fileHasExtension)
+                if (fileHasExtension)
                 {
-                    pathExtensions = [""];
-                }
+                    foreach (string pathExtension in pathExtensions)
+                    {
+                        string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension}" : $"{inputFilePath}{pathExtension}");
 
-                foreach (string pathExtension in pathExtensions)
+                    
+                        bool result = CheckFileExistsAndIsExecutable(
+                            filePath,
+                            out FileInfo? fileInfo
+                        );
+
+                        if (result && fileInfo is not null)
+                        {
+                            output.Add(filePath, fileInfo);
+                        }
+                    }
+                }
+                else
                 {
-                    bool result = CheckFileExists(
-                        inputFilePath,
-                        out FileInfo? fileInfo,
-                        pathEntry,
-                        pathExtension
+                    string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
+                        $"{Path.GetFileNameWithoutExtension(inputFilePath)}" : $"{inputFilePath}");
+
+                    
+                    bool result = CheckFileExistsAndIsExecutable(
+                        filePath,
+                        out FileInfo? fileInfo
                     );
 
                     if (result && fileInfo is not null)
                     {
-                        output.Add(inputFilePath, fileInfo);
+                        output.Add(filePath, fileInfo);
                     }
                 }
             }
@@ -213,9 +174,9 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("android")]
     public bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? resolvedExecutable)
     {
-        bool success = TryResolveAllExecutableFilePaths([inputFilePath], out IReadOnlyDictionary<string, FileInfo>? fileInfos);
+        bool success = TryResolveAllExecutableFilePaths([inputFilePath], out IReadOnlyDictionary<string, FileInfo> fileInfos);
 
-        resolvedExecutable = fileInfos?.FirstOrDefault(f => f.Key == inputFilePath);
+        resolvedExecutable = fileInfos.FirstOrDefault(f => f.Key == inputFilePath);
        
         return success;
     }
@@ -224,9 +185,8 @@ public class PathExecutableResolver : IPathExecutableResolver
     /// Attempts to resolve a set of file paths into executable files based on the system's PATH environment variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of file names or paths to resolve. These can include relative or absolute paths.</param>
-    /// <param name="resolvedExecutables">
-    ///     When the method completes, contains an array of <see cref="FileInfo"/> objects representing the resolved files,
-    ///     if any files are successfully resolved. Null if no files are resolved.
+    /// <param name="resolvedExecutables">When the method completes, contains an array of <see cref="FileInfo"/> objects representing the resolved files,
+    /// if any files are successfully resolved. Null if no files are resolved.
     /// </param>
     /// <returns>A boolean value indicating whether any of the specified files were successfully resolved.</returns>
     /// <exception cref="InvalidOperationException">
@@ -246,9 +206,8 @@ public class PathExecutableResolver : IPathExecutableResolver
 
         try
         {
-            pathContents =
-                PathEnvironmentVariable.GetDirectories()
-                ?? throw new InvalidOperationException("PATH Variable could not be found.");
+            pathContents = PathEnvironmentVariable.GetDirectories()
+                           ?? throw new InvalidOperationException("PATH Variable could not be found.");
         }
         catch (InvalidOperationException)
         {
@@ -264,14 +223,9 @@ public class PathExecutableResolver : IPathExecutableResolver
                 || inputFilePath.Contains(Path.DirectorySeparatorChar)
                 || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
             {
-                if (File.Exists(inputFilePath))
+                if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? fileInfo) && fileInfo is not null)
                 {
-                    if (
-                        ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null
-                    )
-                    {
-                        output.Add(inputFilePath, info);
-                    }
+                    output.Add(inputFilePath, fileInfo);
                 }
             }
 
@@ -279,23 +233,31 @@ public class PathExecutableResolver : IPathExecutableResolver
 
             foreach (string pathEntry in pathContents)
             {
-                if (!fileHasExtension)
+                if (fileHasExtension)
                 {
-                    pathExtensions = [""];
-                }
+                    foreach (string pathExtension in pathExtensions)
+                    {
+                        string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension}" : $"{inputFilePath}{pathExtension}");
+                        
+                        bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
 
-                foreach (string pathExtension in pathExtensions)
+                        if (result && fileInfo is not null)
+                        {
+                            output.Add(filePath, fileInfo);
+                        }
+                    }
+                }
+                else
                 {
-                    bool result = CheckFileExists(
-                        inputFilePath,
-                        out FileInfo? fileInfo,
-                        pathEntry,
-                        pathExtension
-                    );
+                    string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
+                        $"{Path.GetFileNameWithoutExtension(inputFilePath)}" : $"{inputFilePath}");
+                    
+                    bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
 
                     if (result && fileInfo is not null)
                     {
-                        output.Add(inputFilePath, fileInfo);
+                        output.Add(filePath, fileInfo);
                     }
                 }
             }
