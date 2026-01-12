@@ -182,7 +182,7 @@ public class MemoryCachedPathExecutableResolver
         {
             if (File.Exists(inputFilePath))
             {
-                if (ExecutableFileIsValid(inputFilePath, out FileInfo? info) && info is not null)
+                if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? info) && info is not null)
                 {
                     resolvedExecutables = new KeyValuePair<string, FileInfo>(inputFilePath, info);
                     return true;
