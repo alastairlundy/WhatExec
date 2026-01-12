@@ -11,6 +11,14 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <AssemblyName>whatexec-lite</AssemblyName>
     <RootNamespace>WhatExecLite</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Title>whatexec-lite</Title>
+    <Authors>Alastair Lundy</Authors>
+    <Copyright>Copyright (c) 2026 Alastair Lundy</Copyright>
+    <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ConsoleAppFramework" Version="5.7.13">
