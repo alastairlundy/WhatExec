@@ -36,12 +36,38 @@ public interface ICachedPathExecutableResolver : IPathExecutableResolver
     /// <param name="inputFilePath"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
-    /// <param name="fileInfo"></param>
+    /// <param name="resolvedExecutable"></param>
     /// <returns></returns>
     bool TryResolveExecutableFile(
         string inputFilePath,
         TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
-        out KeyValuePair<string, FileInfo>? fileInfo
+        out KeyValuePair<string, FileInfo>? resolvedExecutable
     );
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="inputFilePaths"></param>
+    /// <returns></returns>
+    IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFiles(
+        TimeSpan? pathExtensionsCacheLifetime,
+        TimeSpan? pathCacheLifetime,
+        params string[] inputFilePaths
+    );
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="resolvedExecutables"></param>
+    /// <param name="inputFilePaths"></param>
+    /// <returns></returns>
+    bool TryResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime,
+        TimeSpan? pathCacheLifetime,
+        out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
+        params string[] inputFilePaths); 
 }

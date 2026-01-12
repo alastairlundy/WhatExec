@@ -9,6 +9,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Versioning;
 using DotPrimitives.IO.Paths;
 
@@ -17,9 +18,7 @@ namespace WhatExecLib.Caching.Resolvers;
 /// <summary>
 ///
 /// </summary>
-public class MemoryCachedPathExecutableResolver
-    : PathExecutableResolver,
-        ICachedPathExecutableResolver
+public class MemoryCachedPathExecutableResolver : PathExecutableResolver, ICachedPathExecutableResolver
 {
     private readonly IMemoryCache _cache;
 
@@ -34,8 +33,7 @@ public class MemoryCachedPathExecutableResolver
     /// </summary>
     /// <param name="cache"></param>
     public MemoryCachedPathExecutableResolver(
-        IMemoryCache cache
-    )
+        IMemoryCache cache)
     {
         _cache = cache;
     }
@@ -43,8 +41,7 @@ public class MemoryCachedPathExecutableResolver
     public MemoryCachedPathExecutableResolver(
         IMemoryCache cache,
         TimeSpan defaultPathCacheLifespan,
-        TimeSpan defaultPathExtensionsCacheLifespan
-    )
+        TimeSpan defaultPathExtensionsCacheLifespan)
     {
         _cache = cache;
         DefaultPathCacheLifespan = defaultPathCacheLifespan;
@@ -78,43 +75,12 @@ public class MemoryCachedPathExecutableResolver
 
         return pathContentsExtensions;
     }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="inputFilePath"></param>
-    /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
-    public new KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath)
-        => ResolveExecutableFile(
-            inputFilePath,
-            DefaultPathCacheLifespan,
-            DefaultPathExtensionsCacheLifespan
-        );
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="inputFilePath"></param>
-    /// <param name="fileInfo"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
-    public new bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? fileInfo) =>
-        TryResolveExecutableFile(
-            inputFilePath,
-            DefaultPathCacheLifespan,
-            DefaultPathExtensionsCacheLifespan,
-            out fileInfo
-        );
+    
+    protected new string[]? GetPathContents() => 
+        GetPathContents(DefaultPathCacheLifespan);
+    
+    protected new string[] GetPathExtensions() => 
+        GetPathExtensions(DefaultPathExtensionsCacheLifespan);
 
     /// <summary>
     /// 
@@ -135,17 +101,13 @@ public class MemoryCachedPathExecutableResolver
         pathCacheLifetime ??= DefaultPathCacheLifespan;
         pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
 
-        bool result = TryResolveExecutableFile(
-            inputFilePath,
-            pathCacheLifetime,
-            pathExtensionsCacheLifetime,
-            out KeyValuePair<string, FileInfo>? fileInfo
-        );
+        bool result = TryResolveExecutableFile(inputFilePath, pathCacheLifetime,
+            pathExtensionsCacheLifetime, out KeyValuePair<string, FileInfo>? fileInfo);
 
-        if (result == false || fileInfo is null)
+        if (!result || fileInfo is null)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
-        if (fileInfo.Value.Value.Exists == false)
+        if (!fileInfo.Value.Value.Exists)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
         return new KeyValuePair<string, FileInfo>(inputFilePath, fileInfo.Value.Value);
@@ -155,86 +117,58 @@ public class MemoryCachedPathExecutableResolver
     /// 
     /// </summary>
     /// <param name="inputFilePath"></param>
-    /// <param name="pathCacheLifetime"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
-    /// <param name="resolvedExecutables"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="resolvedExecutable"></param>
     /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
-    public bool TryResolveExecutableFile(string inputFilePath,
+    public bool TryResolveExecutableFile(string inputFilePath, TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
-        TimeSpan? pathExtensionsCacheLifetime,
-        out KeyValuePair<string, FileInfo>? resolvedExecutables)
+        out KeyValuePair<string, FileInfo>? resolvedExecutable)
     {
-        ArgumentException.ThrowIfNullOrEmpty(inputFilePath);
+        bool success = TryResolveAllExecutableFiles(pathExtensionsCacheLifetime, pathCacheLifetime, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables, inputFilePath);
+        resolvedExecutable = resolvedExecutables.First(f => f.Key == inputFilePath);
+        
+        return success;
+    }
 
+    
+    public IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
+        params string[] inputFilePaths)
+    {
         pathCacheLifetime ??= DefaultPathCacheLifespan;
         pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
 
-        if (
-            Path.IsPathRooted(inputFilePath)
-            || inputFilePath.Contains(Path.DirectorySeparatorChar)
-            || inputFilePath.Contains(Path.AltDirectorySeparatorChar)
-        )
-        {
-            if (File.Exists(inputFilePath))
-            {
-                if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? info) && info is not null)
-                {
-                    resolvedExecutables = new KeyValuePair<string, FileInfo>(inputFilePath, info);
-                    return true;
-                }
-            }
+        ArgumentNullException.ThrowIfNull(inputFilePaths);
 
-            resolvedExecutables = null;
-            return false;
-        }
+        string[] pathExtensions = GetPathExtensions(pathExtensionsCacheLifetime.Value);
+        string[] pathContents = GetPathContents(pathCacheLifetime.Value)
+                                ?? throw new InvalidOperationException("PATH Variable could not be found.");
+        
+        return InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions);
+    }
 
-        bool fileHasExtension = Path.GetExtension(inputFilePath) != string.Empty;
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="resolvedExecutables"></param>
+    /// <param name="inputFilePaths"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public bool TryResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
+        out IReadOnlyDictionary<string, FileInfo> resolvedExecutables, params string[] inputFilePaths)
+    {
+        pathCacheLifetime ??= DefaultPathCacheLifespan;
+        pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
 
-        string[] pathExtensions = GetPathExtensions((TimeSpan)pathExtensionsCacheLifetime);
-        string[] pathContents;
+        ArgumentNullException.ThrowIfNull(inputFilePaths);
 
-        try
-        {
-            pathContents =
-                GetPathContents((TimeSpan)pathCacheLifetime)
-                ?? throw new InvalidOperationException("PATH Variable could not be found.");
-        }
-        catch (InvalidOperationException)
-        {
-            resolvedExecutables = null;
-            return false;
-        }
+        string[] pathExtensions = GetPathExtensions(pathExtensionsCacheLifetime.Value);
+        string[] pathContents = GetPathContents(pathCacheLifetime.Value)
+                                ?? throw new InvalidOperationException("PATH Variable could not be found.");
 
-        foreach (string pathEntry in pathContents)
-        {
-            if (!fileHasExtension)
-            {
-                pathExtensions = [""];
-            }
-
-            foreach (string pathExtension in pathExtensions)
-            {
-                bool result = CheckFileExists(
-                    inputFilePath,
-                    out FileInfo? fileInfo,
-                    pathEntry,
-                    pathExtension
-                );
-
-                if (result && fileInfo is not null)
-                {
-                    resolvedExecutables = new KeyValuePair<string,FileInfo>(inputFilePath, fileInfo);
-                    return true;
-                }
-            }
-        }
-
-        resolvedExecutables = null;
-        return false;
+        return InternalTryResolveFilePaths(inputFilePaths, out resolvedExecutables, pathContents, pathExtensions);
     }
 }
