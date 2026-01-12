@@ -57,17 +57,16 @@ internal static class UserInputHelper
 
     internal static string[] GetCommandInput()
     {
-        bool keepAddingCommands = false;
+        bool keepAddingCommands;
 
-        List<string> commands = new();
+        List<string> commands = [];
 
         do
         {
             string command = AnsiConsole.Prompt(
                 new TextPrompt<string>(
                         Resources.Prompts_TextInput_File,
-                        StringComparer.CurrentCulture
-                    )
+                        StringComparer.CurrentCulture)
                     .InvalidChoiceMessage("")
                     .Validate(s =>
                     {
@@ -76,10 +75,8 @@ internal static class UserInputHelper
                                 Resources.ValidationErrors_File_EmptyOrWhitespace
                             );
 
-                        if (
-                            s.Contains(Path.DirectorySeparatorChar)
-                            || s.Contains(Path.AltDirectorySeparatorChar)
-                        )
+                        if (s.Contains(Path.DirectorySeparatorChar)
+                            || s.Contains(Path.AltDirectorySeparatorChar))
                         {
                             return ValidationResult.Error(
                                 Resources.ValidationErrors_File_CannotContainDirectorySeparator
