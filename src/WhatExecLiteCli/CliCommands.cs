@@ -26,7 +26,6 @@ public class CliCommands
             bool success = pathExecutableResolver.TryResolveAllExecutableFilePaths(commands,
                 out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
             
-
             foreach (FileInfo resolvedCommand in resolvedExecutables.Values)
             {
                 Console.Out.WriteLine(resolvedCommand.FullName);

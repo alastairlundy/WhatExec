@@ -43,11 +43,8 @@ internal static class PrioritizeLocationsExtensions
         if (dirPathName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.System)))
             return 2;
 
-        if (
-            dirPathName.StartsWith(
-                Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
-            )
-        )
+        if (dirPathName.StartsWith(
+                Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)))
             return 4;
 
         return 10;

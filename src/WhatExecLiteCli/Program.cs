@@ -8,6 +8,7 @@
  */
 
 using ConsoleAppFramework;
+
 using Microsoft.Extensions.DependencyInjection;
 using WhatExecLib.Extensions.DependencyInjection;
 using WhatExecLite;
