@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
     <PackageReference
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="10.0.1"
+      Version="10.0.2"
     />
     <PackageReference
       Include="Polyfill"
