@@ -25,6 +25,11 @@ public class ExecutableFileLocator : IExecutableFileLocator
     /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
     /// <returns></returns>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public FileInfo? LocateExecutableInDrive(
         DriveInfo drive,
         string executableFileName,
@@ -73,6 +78,11 @@ public class ExecutableFileLocator : IExecutableFileLocator
     /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
     /// <returns></returns>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public FileInfo? LocateExecutableInDirectory(
         DirectoryInfo directory,
         string executableFileName,
@@ -110,6 +120,11 @@ public class ExecutableFileLocator : IExecutableFileLocator
     /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
     /// <returns></returns>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public FileInfo? LocateExecutable(string executableFileName, SearchOption directorySearchOption)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableFileName);

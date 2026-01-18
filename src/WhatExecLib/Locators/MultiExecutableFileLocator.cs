@@ -31,6 +31,11 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     /// <param name="executableFileNames"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public IReadOnlyDictionary<string, FileInfo> LocateExecutableFiles(params string[] executableFileNames)
     {
         bool success = TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, executableFileNames);
@@ -50,6 +55,11 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     /// <param name="executableFiles"></param>
     /// <param name="executableFileNames"></param>
     /// <returns></returns>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public bool TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, params string[] executableFileNames)
     {
         Dictionary<string, FileInfo> output = new();
@@ -73,6 +83,11 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
         return output.Count != 0;
     }
 
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     private KeyValuePair<string, FileInfo>[] LocateExecutablesInDrive(DriveInfo driveInfo,
         string[] executableFileNames, SearchOption directorySearchOption)
     {

@@ -47,6 +47,12 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
+    [SupportedOSPlatform("maccatalyst")]
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public bool IsFileExecutable(FileInfo file)
     {
         /*
