@@ -205,7 +205,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                         if (result && fileInfo is not null)
                         {
-                            output.Add(filePath, fileInfo);
+                            output.Add(inputFilePath, fileInfo);
                         }
                     }
                 }
@@ -222,7 +222,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                     if (result && fileInfo is not null)
                     {
-                        output.Add(filePath, fileInfo);
+                        output.Add(inputFilePath, fileInfo);
                     }
                 }
             }
@@ -274,7 +274,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                         if (result && fileInfo is not null)
                         {
-                            output.Add(filePath, fileInfo);
+                            output.Add(inputFilePath, fileInfo);
                         }
                     }
                 }
@@ -287,7 +287,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                     if (result && fileInfo is not null)
                     {
-                        output.Add(filePath, fileInfo);
+                        output.Add(inputFilePath, fileInfo);
                     }
                 }
             }
