@@ -54,7 +54,7 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     {
         Dictionary<string, FileInfo> output = new();
 
-        foreach (DriveInfo drive in DriveDetector.EnumerateDrives())
+        foreach (DriveInfo drive in StorageDrives.EnumeratePhysicalDrives())
         {
             KeyValuePair<string, FileInfo>[] driveResults = LocateExecutablesInDrive(drive, executableFileNames, SearchOption.TopDirectoryOnly);
 

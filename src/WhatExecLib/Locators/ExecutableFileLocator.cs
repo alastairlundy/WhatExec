@@ -116,10 +116,8 @@ public class ExecutableFileLocator : IExecutableFileLocator
 
         if (Path.IsPathRooted(executableFileName))
             return FileLocatorHelper.HandleRootedPath(_executableFileDetector, executableFileName);
-
-        Console.WriteLine($"Found drives: {string.Join(",", DriveDetector.EnumerateDrives())}");
-
-        IEnumerable<DriveInfo> drives = DriveDetector.EnumerateDrives();
+        
+        IEnumerable<DriveInfo> drives = StorageDrives.EnumeratePhysicalDrives();
 
         return drives
             .Select(d => LocateExecutableInDrive(d, executableFileName, directorySearchOption))

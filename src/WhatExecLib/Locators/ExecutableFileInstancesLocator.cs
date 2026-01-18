@@ -41,12 +41,11 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
-        IEnumerable<DriveInfo> drives = DriveDetector.EnumerateDrives();
+        IEnumerable<DriveInfo> drives = StorageDrives.EnumeratePhysicalDrives();
 
         IEnumerable<FileInfo> result = drives
             .SelectMany(drive =>
-                LocateExecutableInstancesInDrive(drive, executableName, directorySearchOption)
-            )
+                LocateExecutableInstancesInDrive(drive, executableName, directorySearchOption))
             .AsParallel();
 
         return result.ToArray();
@@ -72,8 +71,7 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
         
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
             .SelectMany(sp =>
-                driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption)
-            )
+                driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
             .PrioritizeLocations()
             .Where(f => f.Exists
                         && _executableFileDetector.IsFileExecutable(f)
