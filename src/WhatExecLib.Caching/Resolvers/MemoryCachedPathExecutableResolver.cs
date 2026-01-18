@@ -121,6 +121,11 @@ public class MemoryCachedPathExecutableResolver : PathExecutableResolver, ICache
     /// <param name="pathCacheLifetime"></param>
     /// <param name="resolvedExecutable"></param>
     /// <returns></returns>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public bool TryResolveExecutableFile(string inputFilePath, TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
         out KeyValuePair<string, FileInfo>? resolvedExecutable)
@@ -131,7 +136,19 @@ public class MemoryCachedPathExecutableResolver : PathExecutableResolver, ICache
         return success;
     }
 
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="inputFilePaths"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
         params string[] inputFilePaths)
     {
@@ -157,6 +174,11 @@ public class MemoryCachedPathExecutableResolver : PathExecutableResolver, ICache
     /// <param name="inputFilePaths"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     public bool TryResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
         out IReadOnlyDictionary<string, FileInfo> resolvedExecutables, params string[] inputFilePaths)
     {

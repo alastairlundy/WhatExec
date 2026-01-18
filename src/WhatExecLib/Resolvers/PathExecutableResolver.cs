@@ -164,6 +164,11 @@ public class PathExecutableResolver : IPathExecutableResolver
     }
 
     #region File Resolving Code
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     protected IReadOnlyDictionary<string, FileInfo> InternalResolveFilePaths(string[] inputFilePaths, string[] pathContents, string[] pathExtensions)
     {
         Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
@@ -230,6 +235,11 @@ public class PathExecutableResolver : IPathExecutableResolver
         return new ReadOnlyDictionary<string, FileInfo>(output);
     }
 
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("freebsd")]
+    [SupportedOSPlatform("android")]
     protected bool InternalTryResolveFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
         string[] pathContents, string[] pathExtensions)
     {
