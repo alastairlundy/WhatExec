@@ -181,7 +181,8 @@ public class PathExecutableResolver : IPathExecutableResolver
             {
                 if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? fileInfo) && fileInfo is not null)
                 {
-                    output.Add(inputFilePath, fileInfo);
+                    output.TryAdd(inputFilePath, fileInfo);
+                    continue;
                 }
             }
 
@@ -205,7 +206,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                         if (result && fileInfo is not null)
                         {
-                            output.Add(inputFilePath, fileInfo);
+                            output.TryAdd(inputFilePath, fileInfo);
                         }
                     }
                 }
@@ -222,7 +223,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                     if (result && fileInfo is not null)
                     {
-                        output.Add(inputFilePath, fileInfo);
+                        output.TryAdd(inputFilePath, fileInfo);
                     }
                 }
             }
@@ -254,7 +255,8 @@ public class PathExecutableResolver : IPathExecutableResolver
             {
                 if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? fileInfo) && fileInfo is not null)
                 {
-                    output.Add(inputFilePath, fileInfo);
+                    output.TryAdd(inputFilePath, fileInfo);
+                    continue;
                 }
             }
 
@@ -274,7 +276,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                         if (result && fileInfo is not null)
                         {
-                            output.Add(inputFilePath, fileInfo);
+                            output.TryAdd(inputFilePath, fileInfo);
                         }
                     }
                 }
@@ -287,7 +289,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
                     if (result && fileInfo is not null)
                     {
-                        output.Add(inputFilePath, fileInfo);
+                        output.TryAdd(inputFilePath, fileInfo);
                     }
                 }
             }
