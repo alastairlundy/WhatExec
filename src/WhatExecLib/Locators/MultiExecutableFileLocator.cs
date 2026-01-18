@@ -60,13 +60,15 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, params string[] executableFileNames)
+    public bool TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, 
+        params string[] executableFileNames)
     {
         Dictionary<string, FileInfo> output = new();
 
         foreach (DriveInfo drive in StorageDrives.EnumeratePhysicalDrives())
         {
-            KeyValuePair<string, FileInfo>[] driveResults = LocateExecutablesInDrive(drive, executableFileNames, SearchOption.TopDirectoryOnly);
+            KeyValuePair<string, FileInfo>[] driveResults = LocateExecutablesInDrive(drive, 
+                executableFileNames, SearchOption.TopDirectoryOnly);
 
             foreach (KeyValuePair<string, FileInfo> result in driveResults)
             {
