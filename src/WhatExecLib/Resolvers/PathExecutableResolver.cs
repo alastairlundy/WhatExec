@@ -194,7 +194,8 @@ public class PathExecutableResolver : IPathExecutableResolver
                     foreach (string pathExtension in pathExtensions)
                     {
                         string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
-                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension}" : $"{inputFilePath}{pathExtension}");
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}" :
+                            $"{inputFilePath}{pathExtension.ToLower()}");
 
                     
                         bool result = CheckFileExistsAndIsExecutable(
@@ -266,7 +267,8 @@ public class PathExecutableResolver : IPathExecutableResolver
                     foreach (string pathExtension in pathExtensions)
                     {
                         string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
-                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}" : $"{inputFilePath}{pathExtension.ToLower()}");
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}" :
+                            $"{inputFilePath}{pathExtension.ToLower()}");
                         
                         bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
 
