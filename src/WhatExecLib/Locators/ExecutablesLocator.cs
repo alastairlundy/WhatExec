@@ -40,6 +40,9 @@ public class ExecutablesLocator : IExecutablesLocator
     public FileInfo[] LocateAllExecutablesWithinDirectory(DirectoryInfo directory,
         SearchOption directorySearchOption)
     {
+        if(!directory.Exists)
+            throw new DirectoryNotFoundException("The specified directory does not exist");
+        
         return directory
             .SafelyEnumerateFiles("*", directorySearchOption)
             .PrioritizeLocations()
@@ -62,6 +65,9 @@ public class ExecutablesLocator : IExecutablesLocator
         DriveInfo driveInfo,
         SearchOption directorySearchOption)
     {
+        if(!driveInfo.IsReady)
+            throw new ArgumentException("The specified drive is not ready");
+            
         return driveInfo
             .RootDirectory.SafelyEnumerateFiles("*", directorySearchOption)
             .PrioritizeLocations()
