@@ -7,15 +7,26 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using WhatExecLib.Helpers;
+
 namespace WhatExecLib.Locators;
 
 public class ExecutableFileLocator : IExecutableFileLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
+    private readonly IStorageDriveDetector _storageDriveDetector;
 
     public ExecutableFileLocator(IExecutableFileDetector executableFileDetector)
     {
         _executableFileDetector = executableFileDetector;
+        _storageDriveDetector = StorageDrives.Shared;
+    }
+
+    public ExecutableFileLocator(IExecutableFileDetector executableFileDetector, 
+        IStorageDriveDetector storageDriveDetector)
+    {
+        _executableFileDetector = executableFileDetector;
+        _storageDriveDetector = storageDriveDetector;
     }
 
     /// <summary>
@@ -33,8 +44,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
     public FileInfo? LocateExecutableInDrive(
         DriveInfo drive,
         string executableFileName,
-        SearchOption directorySearchOption
-    )
+        SearchOption directorySearchOption)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableFileName);
         ArgumentNullException.ThrowIfNull(drive);
@@ -132,7 +142,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
         if (Path.IsPathRooted(executableFileName))
             return FileLocatorHelper.HandleRootedPath(_executableFileDetector, executableFileName);
         
-        IEnumerable<DriveInfo> drives = StorageDrives.EnumeratePhysicalDrives();
+        IEnumerable<DriveInfo> drives = _storageDriveDetector.EnumeratePhysicalDrives();
 
         return drives
             .Select(d => LocateExecutableInDrive(d, executableFileName, directorySearchOption))

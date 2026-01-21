@@ -16,6 +16,7 @@ namespace WhatExecLib.Locators;
 public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
+    private readonly IStorageDriveDetector _storageDriveDetector;
 
     /// <summary>
     /// Provides functionality for locating instances of executable files across drives, directories, and files.
@@ -23,8 +24,16 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     public ExecutableFileInstancesLocator(IExecutableFileDetector executableDetector)
     {
         _executableFileDetector = executableDetector;
+        _storageDriveDetector = StorageDrives.Shared;
     }
 
+    public ExecutableFileInstancesLocator(IExecutableFileDetector executableFileDetector,
+        IStorageDriveDetector storageDriveDetector)
+    {
+        _executableFileDetector = executableFileDetector;
+        _storageDriveDetector = storageDriveDetector;
+    }
+    
     /// <summary>
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
@@ -41,7 +50,7 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
-        IEnumerable<DriveInfo> drives = StorageDrives.EnumeratePhysicalDrives();
+        IEnumerable<DriveInfo> drives = _storageDriveDetector.EnumeratePhysicalDrives();
 
         IEnumerable<FileInfo> result = drives
             .SelectMany(drive =>

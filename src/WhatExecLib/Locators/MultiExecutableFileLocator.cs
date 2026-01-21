@@ -15,14 +15,24 @@ namespace WhatExecLib.Locators;
 public class MultiExecutableFileLocator : IMultiExecutableFileLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
+    private readonly IStorageDriveDetector _storageDriveDetector;
+
+    public MultiExecutableFileLocator(IExecutableFileDetector executableFileDetector)
+    {
+        _executableFileDetector = executableFileDetector;
+        _storageDriveDetector = StorageDrives.Shared;
+    }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="executableFileDetector"></param>
-    public MultiExecutableFileLocator(IExecutableFileDetector executableFileDetector)
+    /// <param name="storageDriveDetector"></param>
+    public MultiExecutableFileLocator(IExecutableFileDetector executableFileDetector,
+        IStorageDriveDetector storageDriveDetector)
     {
         _executableFileDetector = executableFileDetector;
+        _storageDriveDetector = storageDriveDetector;
     }
     
     /// <summary>
@@ -65,7 +75,7 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     {
         Dictionary<string, FileInfo> output = new();
 
-        foreach (DriveInfo drive in StorageDrives.EnumeratePhysicalDrives())
+        foreach (DriveInfo drive in _storageDriveDetector.EnumeratePhysicalDrives())
         {
             KeyValuePair<string, FileInfo>[] driveResults = LocateExecutablesInDrive(drive, 
                 executableFileNames, SearchOption.TopDirectoryOnly);

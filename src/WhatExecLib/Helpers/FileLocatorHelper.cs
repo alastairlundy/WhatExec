@@ -1,4 +1,4 @@
-namespace WhatExecLib.Locators;
+namespace WhatExecLib.Helpers;
 
 internal class FileLocatorHelper
 {
