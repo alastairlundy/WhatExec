@@ -9,8 +9,6 @@
 
 using System.Collections.ObjectModel;
 
-// ReSharper disable ConvertClosureToMethodGroup
-
 namespace WhatExecLib;
 
 /// <summary>
@@ -39,14 +37,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         string filePath,
         out FileInfo? fileInfo)
     {
-        string fullFilePath = Path.GetFullPath(filePath);
-
-        bool fullPathRequired = !File.Exists(filePath) && File.Exists(fullFilePath);
-        
-        if (File.Exists(fullFilePath) || File.Exists(filePath))
+        if (File.Exists(filePath))
         {
-            string newFilePath = fullPathRequired ? fullFilePath : filePath;
-            FileInfo file = new(newFilePath);
+            FileInfo file = new(filePath);
 
             if (file.Exists && file.HasExecutePermission())
             {
@@ -64,7 +57,6 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
     protected virtual string[]? GetPathContents()
         => _pathVariableDetector.GetDirectories();
-    
     #endregion
 
     /// <summary>
@@ -193,7 +185,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
             foreach (string pathEntry in pathContents)
             {
-                if (fileHasExtension)
+                if (!fileHasExtension && OperatingSystem.IsWindows())
                 {
                     foreach (string pathExtension in pathExtensions)
                     {
