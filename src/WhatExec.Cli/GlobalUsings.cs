@@ -12,5 +12,3 @@ global using WhatExec.Cli.Helpers;
 global using WhatExec.Cli.Localizations;
 global using WhatExecLib.Abstractions;
 global using WhatExecLib.Abstractions.Locators;
-global using WhatExecLib.Caching;
-global using WhatExecLib.Caching.Extensions;
