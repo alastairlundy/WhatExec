@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>AlastairLundy.WhatExecLib.Abstractions</Title>
     <Authors>Alastair Lundy</Authors>
-    <Copyright>Copyright (c) Alastair Lundy 2025</Copyright>
+    <Copyright>Copyright (c) Alastair Lundy 2025-2026</Copyright>
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>

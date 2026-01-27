@@ -8,7 +8,6 @@
  */
 
 using System.Runtime.CompilerServices;
-using DotPrimitives.IO.Drives;
 
 namespace WhatExec.Cli.Commands.Search;
 
