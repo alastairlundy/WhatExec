@@ -1,7 +1,19 @@
-﻿namespace WhatExecLib.Tests.Resolvers;
+﻿using WhatExecLib.Abstractions;
+using WhatExecLib.Abstractions.Detectors;
+using WhatExecLib.Detectors;
+
+namespace WhatExecLib.Tests.Resolvers;
 
 public class PathExecutableResolverTests
 {
+    private readonly IPathEnvironmentVariableResolver _pathVariableResolver;
+
+    public PathExecutableResolverTests()
+    {
+        IPathEnvironmentVariableDetector pathVariableDetector = new PathEnvironmentVariableDetector();
+        _pathVariableResolver = new PathEnvironmentVariableResolver(pathVariableDetector);
+    }
+    
     private string ProgramFilesDirectory => Environment.GetFolderPath(Environment.Is64BitOperatingSystem
         ? Environment.SpecialFolder.ProgramFiles
         : Environment.SpecialFolder.ProgramFilesX86);
@@ -9,10 +21,8 @@ public class PathExecutableResolverTests
     [Test]
     public async Task Resolve_Dotnet_Path_Executable()
     {
-        PathExecutableResolver filePathResolver = new PathExecutableResolver();
-
         FileInfo actual =
-            filePathResolver.ResolveExecutableFilePath(OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet")
+            _pathVariableResolver.ResolveExecutableFilePath(OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet")
                 .Value;
         
         FileInfo expected;

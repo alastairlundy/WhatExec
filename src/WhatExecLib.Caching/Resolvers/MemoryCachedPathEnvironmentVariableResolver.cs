@@ -33,6 +33,8 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     /// </summary>
     /// <param name="cache"></param>
     /// <param name="pathEnvironmentVariableDetector"></param>
+    public MemoryCachedPathEnvironmentVariableResolver(
+        IMemoryCache cache, IPathEnvironmentVariableDetector pathEnvironmentVariableDetector) : base(pathEnvironmentVariableDetector)
     {
         _cache = cache;
     }
@@ -40,7 +42,8 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     public MemoryCachedPathEnvironmentVariableResolver(
         IMemoryCache cache,
         TimeSpan defaultPathCacheLifespan,
-        TimeSpan defaultPathExtensionsCacheLifespan)
+        TimeSpan defaultPathExtensionsCacheLifespan,
+        IPathEnvironmentVariableDetector pathEnvironmentVariableDetector) : base(pathEnvironmentVariableDetector)
     {
         _cache = cache;
         DefaultPathCacheLifespan = defaultPathCacheLifespan;

@@ -69,7 +69,8 @@ public static class DependencyInjectionExtensions
                             sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
-                                (TimeSpan)pathExtensionsCacheLifespan
+                                (TimeSpan)pathExtensionsCacheLifespan,
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
                             )
                         );
                         break;
@@ -78,7 +79,8 @@ public static class DependencyInjectionExtensions
                             sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
-                                (TimeSpan)pathExtensionsCacheLifespan
+                                (TimeSpan)pathExtensionsCacheLifespan,
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
                             )
                         );
                         ;
@@ -88,7 +90,8 @@ public static class DependencyInjectionExtensions
                             sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
-                                (TimeSpan)pathExtensionsCacheLifespan
+                                (TimeSpan)pathExtensionsCacheLifespan,
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
                             )
                         );
                         ;
@@ -146,7 +149,8 @@ public static class DependencyInjectionExtensions
                             sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
-                                (TimeSpan)pathExtensionsCacheLifespan
+                                (TimeSpan)pathExtensionsCacheLifespan,
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
                             )
                         );
                         break;
@@ -155,7 +159,8 @@ public static class DependencyInjectionExtensions
                             sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
-                                (TimeSpan)pathExtensionsCacheLifespan
+                                (TimeSpan)pathExtensionsCacheLifespan,
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
                             )
                         );
                         ;
@@ -165,7 +170,8 @@ public static class DependencyInjectionExtensions
                             sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
-                                (TimeSpan)pathExtensionsCacheLifespan
+                                (TimeSpan)pathExtensionsCacheLifespan,
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
                             )
                         );
                         ;

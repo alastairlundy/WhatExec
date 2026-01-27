@@ -1,6 +1,6 @@
 /*
     WhatExecLib
-    Copyright (c) 2025 Alastair Lundy
+    Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,7 +8,6 @@
  */
 
 using System.Collections.ObjectModel;
-using DotPrimitives.IO.Paths;
 
 // ReSharper disable ConvertClosureToMethodGroup
 
@@ -19,11 +18,15 @@ namespace WhatExecLib;
 /// </summary>
 public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 {
+    private readonly IPathEnvironmentVariableDetector _pathVariableDetector;
+
     /// <summary>
-    ///
+    /// Represents a class that resolves file paths based on the system's PATH environment variable.
     /// </summary>
-    public PathExecutableResolver()
+    /// <param name="pathVariableDetector">The path environment variable detector to use.</param>
+    public PathEnvironmentVariableResolver(IPathEnvironmentVariableDetector pathVariableDetector)
     {
+        _pathVariableDetector = pathVariableDetector;
     }
 
     #region Helper Methods
@@ -57,10 +60,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     }
 
     protected virtual string[] GetPathExtensions()
-        => PathEnvironmentVariable.GetPathFileExtensions();
+        => _pathVariableDetector.GetPathFileExtensions();
 
     protected virtual string[]? GetPathContents()
-        => PathEnvironmentVariable.GetDirectories();
+        => _pathVariableDetector.GetDirectories();
     
     #endregion
 
