@@ -146,7 +146,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
-        string[] pathExtensions = PathEnvironmentVariable.GetPathFileExtensions();
+        string[] pathExtensions = GetPathExtensions();
         string[] pathContents;
 
         try
