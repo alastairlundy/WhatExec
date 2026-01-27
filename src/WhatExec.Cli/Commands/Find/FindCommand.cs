@@ -18,17 +18,17 @@ namespace WhatExec.Cli.Commands.Find;
 )]
 public class FindCommand
 {
-    private readonly IPathExecutableResolver _pathExecutableResolver;
+    private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
     private readonly IExecutableFileInstancesLocator _executableFileInstancesLocator;
     private readonly IMultiExecutableFileLocator _multiExecutableFileLocator;
 
     public FindCommand(
-        IPathExecutableResolver pathExecutableResolver,
+        IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         IExecutableFileInstancesLocator executableFileInstancesLocator,
         IMultiExecutableFileLocator multiExecutableFileLocator
     )
     {
-        _pathExecutableResolver = pathExecutableResolver;
+        _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
         _executableFileInstancesLocator = executableFileInstancesLocator;
         _multiExecutableFileLocator = multiExecutableFileLocator;
     }
@@ -85,7 +85,7 @@ public class FindCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
 
-        bool foundInPath = _pathExecutableResolver.TryResolveAllExecutableFilePaths(
+        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(
             Commands,
             out IReadOnlyDictionary<string, FileInfo> pathResolvedExecutables
         );

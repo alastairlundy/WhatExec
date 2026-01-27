@@ -17,14 +17,14 @@ public class CliCommands
 {
     [Command("")]
     public int Run(
-        [FromServices] IPathExecutableResolver pathExecutableResolver,
+        [FromServices] IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         bool verbose = false,
         [Argument] params string[] commands
     )
     {
         try
         {
-            bool success = pathExecutableResolver.TryResolveAllExecutableFilePaths(commands,
+            bool success = pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(commands,
                 out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
             
             foreach (FileInfo resolvedCommand in resolvedExecutables.Values)
