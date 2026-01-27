@@ -69,6 +69,15 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Exceptions_DriveNotFound {
+            get {
+                return ResourceManager.GetString("Exceptions.DriveNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Looking for {0}.
         /// </summary>
         internal static string LocateExecutable_Status_LookingForCommand {

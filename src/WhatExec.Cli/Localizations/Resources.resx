@@ -66,4 +66,7 @@
     <data name="LocateExecutable.Status.LookingForCommand" xml:space="preserve">
         <value>Looking for {0}</value>
     </data>
+    <data name="Exceptions.DriveNotFound" xml:space="preserve">
+        <value />
+    </data>
 </root>
