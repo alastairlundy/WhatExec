@@ -29,16 +29,15 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     private TimeSpan DefaultPathExtensionsCacheLifespan { get; } = TimeSpan.FromMinutes(10);
 
     /// <summary>
-    ///
+    /// 
     /// </summary>
     /// <param name="cache"></param>
-    public MemoryCachedPathExecutableResolver(
-        IMemoryCache cache)
+    /// <param name="pathEnvironmentVariableDetector"></param>
     {
         _cache = cache;
     }
 
-    public MemoryCachedPathExecutableResolver(
+    public MemoryCachedPathEnvironmentVariableResolver(
         IMemoryCache cache,
         TimeSpan defaultPathCacheLifespan,
         TimeSpan defaultPathExtensionsCacheLifespan)
