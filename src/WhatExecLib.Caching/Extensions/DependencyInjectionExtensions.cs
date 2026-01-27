@@ -42,20 +42,20 @@ public static class DependencyInjectionExtensions
                 {
                     case ServiceLifetime.Scoped:
                         services.AddScoped<
-                            ICachedPathExecutableResolver,
-                            MemoryCachedPathExecutableResolver
+                            ICachedPathEnvironmentVariableResolver,
+                            MemoryCachedPathEnvironmentVariableResolver
                         >();
                         break;
                     case ServiceLifetime.Singleton:
                         services.AddSingleton<
-                            ICachedPathExecutableResolver,
-                            MemoryCachedPathExecutableResolver
+                            ICachedPathEnvironmentVariableResolver,
+                            MemoryCachedPathEnvironmentVariableResolver
                         >();
                         break;
                     case ServiceLifetime.Transient:
                         services.AddTransient<
-                            ICachedPathExecutableResolver,
-                            MemoryCachedPathExecutableResolver
+                            ICachedPathEnvironmentVariableResolver,
+                            MemoryCachedPathEnvironmentVariableResolver
                         >();
                         break;
                 }
@@ -65,8 +65,8 @@ public static class DependencyInjectionExtensions
                 switch (serviceLifetime)
                 {
                     case ServiceLifetime.Scoped:
-                        services.AddScoped<ICachedPathExecutableResolver>(
-                            sp => new MemoryCachedPathExecutableResolver(
+                        services.AddScoped<ICachedPathEnvironmentVariableResolver>(
+                            sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -74,8 +74,8 @@ public static class DependencyInjectionExtensions
                         );
                         break;
                     case ServiceLifetime.Singleton:
-                        services.AddSingleton<ICachedPathExecutableResolver>(
-                            sp => new MemoryCachedPathExecutableResolver(
+                        services.AddSingleton<ICachedPathEnvironmentVariableResolver>(
+                            sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -84,8 +84,8 @@ public static class DependencyInjectionExtensions
                         ;
                         break;
                     case ServiceLifetime.Transient:
-                        services.AddTransient<ICachedPathExecutableResolver>(
-                            sp => new MemoryCachedPathExecutableResolver(
+                        services.AddTransient<ICachedPathEnvironmentVariableResolver>(
+                            sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -119,20 +119,20 @@ public static class DependencyInjectionExtensions
                 {
                     case ServiceLifetime.Scoped:
                         services.TryAddScoped<
-                            IPathExecutableResolver,
-                            MemoryCachedPathExecutableResolver
+                            IPathEnvironmentVariableResolver,
+                            MemoryCachedPathEnvironmentVariableResolver
                         >();
                         break;
                     case ServiceLifetime.Singleton:
                         services.TryAddSingleton<
-                            IPathExecutableResolver,
-                            MemoryCachedPathExecutableResolver
+                            IPathEnvironmentVariableResolver,
+                            MemoryCachedPathEnvironmentVariableResolver
                         >();
                         break;
                     case ServiceLifetime.Transient:
                         services.TryAddTransient<
-                            IPathExecutableResolver,
-                            MemoryCachedPathExecutableResolver
+                            IPathEnvironmentVariableResolver,
+                            MemoryCachedPathEnvironmentVariableResolver
                         >();
                         break;
                 }
@@ -142,8 +142,8 @@ public static class DependencyInjectionExtensions
                 switch (serviceLifetime)
                 {
                     case ServiceLifetime.Scoped:
-                        services.TryAddScoped<IPathExecutableResolver>(
-                            sp => new MemoryCachedPathExecutableResolver(
+                        services.TryAddScoped<IPathEnvironmentVariableResolver>(
+                            sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -151,8 +151,8 @@ public static class DependencyInjectionExtensions
                         );
                         break;
                     case ServiceLifetime.Singleton:
-                        services.TryAddSingleton<IPathExecutableResolver>(
-                            sp => new MemoryCachedPathExecutableResolver(
+                        services.TryAddSingleton<IPathEnvironmentVariableResolver>(
+                            sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
@@ -161,8 +161,8 @@ public static class DependencyInjectionExtensions
                         ;
                         break;
                     case ServiceLifetime.Transient:
-                        services.TryAddTransient<IPathExecutableResolver>(
-                            sp => new MemoryCachedPathExecutableResolver(
+                        services.TryAddTransient<IPathEnvironmentVariableResolver>(
+                            sp => new MemoryCachedPathEnvironmentVariableResolver(
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan
