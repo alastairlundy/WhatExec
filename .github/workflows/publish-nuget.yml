@@ -1,0 +1,75 @@
+name: Publish Packages to Nuget
+
+on:
+  workflow_dispatch:
+     inputs:
+      core-version:
+         type: string
+         required: true
+      main-version:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-publish:
+      runs-on: ubuntu-latest
+  
+      permissions:
+        id-token: write 
+      environment: production
+        
+      steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@e3f713f2d8f53843e71c69a996d56f51aa9adfb9 # v2.14.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309 # v5.1.0
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: src/CliInvoke.Core
+      - name: Create packages
+        run: dotnet build -c Release
+        working-directory: src/CliInvoke.Core
+        
+          # Get a short-lived NuGet API key
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544 # v1.1.0
+        id: login
+        with:
+            user: ${{ secrets.NUGET_USER }}
+              
+          # Push the Core package
+      - name: NuGet push
+        run: dotnet nuget push src/WhatExecLib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Sleep for 300 seconds
+        run: sleep 300s
+        shell: bash
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: src/WhatExecLib
+      - name: Create packages
+        run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}
+        working-directory: src/WhatExecLib
+        # Push the Main package
+      - name: NuGet push
+        run: dotnet nuget push src/WhatExecLib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Sleep for 300 seconds
+        run: sleep 300s
+        shell: bash
+        working-directory: src/WhatExecLib.Extensions.DependencyInjection
+      - name: Create packages
+        run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
+        working-directory: src/WhatExecLib.Extensions.DependencyInjection
+
+      # Push the Main package
+      - name: NuGet push
+        run: dotnet nuget push src/WhatExecLib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
