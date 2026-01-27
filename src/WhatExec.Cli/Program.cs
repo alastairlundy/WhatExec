@@ -13,7 +13,7 @@ using WhatExecLib.Extensions.DependencyInjection;
 
 if (args.Any(s => s.Contains("--interactive")))
 {
-    FigletText titleText = new FigletText("WhatExec").Centered();
+    FigletText titleText = new FigletText("WhatExec").LeftJustified();
 
     AnsiConsole.Write(titleText);
     Console.WriteLine();
