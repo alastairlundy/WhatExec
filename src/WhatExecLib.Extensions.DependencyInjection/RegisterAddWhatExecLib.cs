@@ -11,9 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WhatExecLib.Abstractions;
 using WhatExecLib.Abstractions.Detectors;
-using WhatExecLib.Abstractions.Locators;
 using WhatExecLib.Detectors;
-using WhatExecLib.Locators;
 
 namespace WhatExecLib.Extensions.DependencyInjection;
 
@@ -38,36 +36,36 @@ public static class RegisterAddWhatExecLib
                     services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
                     services.AddScoped<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddScoped<
-                        IExecutableFileInstancesLocator,
-                        ExecutableFileInstancesLocator
+                        IExecutableFileInstancesResolver,
+                        ExecutableFileInstancesResolver
                     >();
-                    services.AddScoped<IExecutableFileLocator, ExecutableFileLocator>();
-                    services.AddScoped<IExecutablesLocator, ExecutablesLocator>();
-                    services.AddScoped<IMultiExecutableFileLocator, MultiExecutableFileLocator>();
+                    services.AddScoped<IExecutableFileResolver, ExecutableFileResolver>();
+                    services.AddScoped<IExecutablesResolver, ExecutablesResolver>();
+                    services.AddScoped<IMultiExecutableFileResolver, MultiExecutableFileResolver>();
                     services.TryAddScoped<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                     break;
                 case ServiceLifetime.Singleton:
                     services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
                     services.AddSingleton<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddSingleton<
-                        IExecutableFileInstancesLocator,
-                        ExecutableFileInstancesLocator
+                        IExecutableFileInstancesResolver,
+                        ExecutableFileInstancesResolver
                     >();
-                    services.AddSingleton<IExecutableFileLocator, ExecutableFileLocator>();
-                    services.AddSingleton<IExecutablesLocator, ExecutablesLocator>();
-                    services.AddSingleton<IMultiExecutableFileLocator, MultiExecutableFileLocator>();
+                    services.AddSingleton<IExecutableFileResolver, ExecutableFileResolver>();
+                    services.AddSingleton<IExecutablesResolver, ExecutablesResolver>();
+                    services.AddSingleton<IMultiExecutableFileResolver, MultiExecutableFileResolver>();
                     services.TryAddSingleton<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                     break;
                 case ServiceLifetime.Transient:
                     services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
                     services.AddTransient<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddTransient<
-                        IExecutableFileInstancesLocator,
-                        ExecutableFileInstancesLocator
+                        IExecutableFileInstancesResolver,
+                        ExecutableFileInstancesResolver
                     >();
-                    services.AddTransient<IExecutableFileLocator, ExecutableFileLocator>();
-                    services.AddTransient<IExecutablesLocator, ExecutablesLocator>();
-                    services.AddTransient<IMultiExecutableFileLocator, MultiExecutableFileLocator>();
+                    services.AddTransient<IExecutableFileResolver, ExecutableFileResolver>();
+                    services.AddTransient<IExecutablesResolver, ExecutablesResolver>();
+                    services.AddTransient<IMultiExecutableFileResolver, MultiExecutableFileResolver>();
                     services.TryAddTransient<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                     break;
             }

@@ -9,15 +9,15 @@
 
 using WhatExecLib.Helpers;
 
-namespace WhatExecLib.Locators;
+namespace WhatExecLib;
 
-public class ExecutableFileLocator : IExecutableFileLocator
+public class ExecutableFileResolver : IExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
     private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public ExecutableFileLocator(IExecutableFileDetector executableFileDetector, 
+    public ExecutableFileResolver(IExecutableFileDetector executableFileDetector, 
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver)
     {
         _executableFileDetector = executableFileDetector;
@@ -25,7 +25,7 @@ public class ExecutableFileLocator : IExecutableFileLocator
         _storageDriveDetector = StorageDrives.Shared;
     }
 
-    public ExecutableFileLocator(IExecutableFileDetector executableFileDetector, 
+    public ExecutableFileResolver(IExecutableFileDetector executableFileDetector, 
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         IStorageDriveDetector storageDriveDetector)
     {

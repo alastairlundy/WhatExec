@@ -7,12 +7,12 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Abstractions.Locators;
+namespace WhatExecLib.Abstractions;
 
 /// <summary>
 /// Represents a service capable of locating multiple executable files within a system.
 /// </summary>
-public interface IMultiExecutableFileLocator
+public interface IMultiExecutableFileResolver
 {
     /// <summary>
     /// Locates the specified executable files and returns a dictionary containing their names and corresponding file information.

@@ -10,5 +10,4 @@ global using DotExtensions.IO.Permissions;
 global using DotPrimitives.IO.Drives;
 global using WhatExecLib.Abstractions;
 global using WhatExecLib.Abstractions.Detectors;
-global using WhatExecLib.Abstractions.Locators;
 global using WhatExecLib.Extensions;

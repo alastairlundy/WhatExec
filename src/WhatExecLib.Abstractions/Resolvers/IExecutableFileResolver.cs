@@ -7,9 +7,9 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Abstractions.Locators;
+namespace WhatExecLib.Abstractions;
 
-public interface IExecutableFileLocator
+public interface IExecutableFileResolver
 {
     /// <summary>
     /// Locates an executable file within the specified drive based on the given search criteria.

@@ -7,13 +7,13 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Locators;
+namespace WhatExecLib;
 
 /// <summary>
 /// Represents a class that provides functionality to locate instances of executable files
 /// across multiple drives, directories, and files in a system.
 /// </summary>
-public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
+public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
     private readonly IStorageDriveDetector _storageDriveDetector;
@@ -21,13 +21,13 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     /// <summary>
     /// Provides functionality for locating instances of executable files across drives, directories, and files.
     /// </summary>
-    public ExecutableFileInstancesLocator(IExecutableFileDetector executableDetector)
+    public ExecutableFileInstancesResolver(IExecutableFileDetector executableDetector)
     {
         _executableFileDetector = executableDetector;
         _storageDriveDetector = StorageDrives.Shared;
     }
 
-    public ExecutableFileInstancesLocator(IExecutableFileDetector executableFileDetector,
+    public ExecutableFileInstancesResolver(IExecutableFileDetector executableFileDetector,
         IStorageDriveDetector storageDriveDetector)
     {
         _executableFileDetector = executableFileDetector;

@@ -18,12 +18,12 @@ namespace WhatExec.Cli.Commands.Search;
 )]
 public class SearchCommand
 {
-    private readonly IExecutablesLocator _executablesLocator;
+    private readonly IExecutablesResolver _executablesResolver;
     private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public SearchCommand(IExecutablesLocator executablesLocator, IStorageDriveDetector storageDriveDetector)
+    public SearchCommand(IExecutablesResolver executablesResolver, IStorageDriveDetector storageDriveDetector)
     {
-        _executablesLocator = executablesLocator;
+        _executablesResolver = executablesResolver;
         _storageDriveDetector = storageDriveDetector;
     }
 
@@ -57,7 +57,7 @@ public class SearchCommand
         for (int index = 0; index < tasks.Length; index++)
         {
             int index1 = index;
-            tasks[index1] =  new Task<FileInfo[]>(() => _executablesLocator.LocateAllExecutablesWithinDrive(drives[index1], 
+            tasks[index1] =  new Task<FileInfo[]>(() => _executablesResolver.LocateAllExecutablesWithinDrive(drives[index1], 
                 SearchOption.AllDirectories), cancellationToken);
             
             tasks[index1].Start();

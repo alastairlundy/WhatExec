@@ -7,40 +7,40 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Locators;
+namespace WhatExecLib;
 
 /// <summary>
-/// 
+/// Implements a service capable of locating multiple executable files within a system.
 /// </summary>
-public class MultiExecutableFileLocator : IMultiExecutableFileLocator
+public class MultiExecutableFileResolver : IMultiExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
     private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public MultiExecutableFileLocator(IExecutableFileDetector executableFileDetector)
+    /// <summary>
+    /// Implements a service capable of locating multiple executable files within a system.
+    /// </summary>
+    /// <param name="executableFileDetector">The executable file detector to use.</param>
+    public MultiExecutableFileResolver(IExecutableFileDetector executableFileDetector)
     {
         _executableFileDetector = executableFileDetector;
         _storageDriveDetector = StorageDrives.Shared;
     }
 
     /// <summary>
-    /// 
+    /// Implements a service capable of locating multiple executable files within a system.
     /// </summary>
-    /// <param name="executableFileDetector"></param>
-    /// <param name="storageDriveDetector"></param>
-    public MultiExecutableFileLocator(IExecutableFileDetector executableFileDetector,
+    /// <param name="executableFileDetector">The executable file detector to use.</param>
+    /// <param name="storageDriveDetector">The storage drive detector to use.</param>
+    public MultiExecutableFileResolver(IExecutableFileDetector executableFileDetector,
         IStorageDriveDetector storageDriveDetector)
     {
         _executableFileDetector = executableFileDetector;
         _storageDriveDetector = storageDriveDetector;
     }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="executableFileNames"></param>
-    /// <returns></returns>
-    /// <exception cref="FileNotFoundException"></exception>
+    
+    /// <inheritdoc/> 
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
@@ -60,13 +60,8 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
 
         return executableFiles;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="executableFiles"></param>
-    /// <param name="executableFileNames"></param>
-    /// <returns></returns>
+    
+    /// <inheritdoc/>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
@@ -77,7 +72,7 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     {
         Dictionary<string, FileInfo> output = new();
 
-        foreach (DriveInfo drive in _storageDriveDetector.EnumeratePhysicalDrives())
+        foreach (DriveInfo drive in _storageDriveDetector.EnumerateLogicalDrives())
         {
             KeyValuePair<string, FileInfo>[] driveResults = LocateExecutablesInDrive(drive, 
                 executableFileNames, SearchOption.TopDirectoryOnly);

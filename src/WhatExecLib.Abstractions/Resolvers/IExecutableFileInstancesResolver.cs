@@ -7,12 +7,12 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Abstractions.Locators;
+namespace WhatExecLib.Abstractions;
 
 /// <summary>
 /// Defines methods for locating executable file instances across various locations such as drives and directories.
 /// </summary>
-public interface IExecutableFileInstancesLocator
+public interface IExecutableFileInstancesResolver
 {
     /// <summary>
     /// Locates all instances of the specified executable file across all available drives on the system.

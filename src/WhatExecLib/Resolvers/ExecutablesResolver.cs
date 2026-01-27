@@ -7,20 +7,20 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Locators;
+namespace WhatExecLib;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.
-/// Implements the <see cref="IExecutablesLocator"/> interface to provide functionality for locating executables.
+/// Implements the <see cref="IExecutablesResolver"/> interface to provide functionality for locating executables.
 /// </summary>
-public class ExecutablesLocator : IExecutablesLocator
+public class ExecutablesResolver : IExecutablesResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
 
     /// <summary>
     /// Represents a locator for identifying all executable files within specified directories or drives.
     /// </summary>
-    public ExecutablesLocator(IExecutableFileDetector executableFileDetector)
+    public ExecutablesResolver(IExecutableFileDetector executableFileDetector)
     {
         _executableFileDetector = executableFileDetector;
     }

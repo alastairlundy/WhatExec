@@ -12,4 +12,3 @@ global using Spectre.Console;
 global using WhatExec.Cli.Helpers;
 global using WhatExec.Cli.Localizations;
 global using WhatExecLib.Abstractions;
-global using WhatExecLib.Abstractions.Locators;

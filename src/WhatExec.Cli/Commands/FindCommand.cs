@@ -18,18 +18,18 @@ namespace WhatExec.Cli.Commands;
 public class FindCommand
 {
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
-    private readonly IExecutableFileInstancesLocator _executableFileInstancesLocator;
-    private readonly IMultiExecutableFileLocator _multiExecutableFileLocator;
+    private readonly IExecutableFileInstancesResolver _executableFileInstancesResolver;
+    private readonly IMultiExecutableFileResolver _multiExecutableFileResolver;
 
     public FindCommand(
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
-        IExecutableFileInstancesLocator executableFileInstancesLocator,
-        IMultiExecutableFileLocator multiExecutableFileLocator
+        IExecutableFileInstancesResolver executableFileInstancesResolver,
+        IMultiExecutableFileResolver multiExecutableFileResolver
     )
     {
         _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
-        _executableFileInstancesLocator = executableFileInstancesLocator;
-        _multiExecutableFileLocator = multiExecutableFileLocator;
+        _executableFileInstancesResolver = executableFileInstancesResolver;
+        _multiExecutableFileResolver = multiExecutableFileResolver;
     }
 
     [CliArgument(
@@ -155,7 +155,7 @@ public class FindCommand
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
         string[] commandLeftToLookFor)
     {
-        _multiExecutableFileLocator.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
+        _multiExecutableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
             commandLeftToLookFor);
 
         return resolvedExecutables;
@@ -170,7 +170,7 @@ public class FindCommand
         {
             Console.WriteLine($"Looking for {command}");
             
-            FileInfo[] info = _executableFileInstancesLocator.LocateExecutableInstances(
+            FileInfo[] info = _executableFileInstancesResolver.LocateExecutableInstances(
                 command,
                 SearchOption.AllDirectories
             );
