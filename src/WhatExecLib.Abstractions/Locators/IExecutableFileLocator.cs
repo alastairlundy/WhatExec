@@ -38,10 +38,10 @@ public interface IExecutableFileLocator
     );
 
     /// <summary>
-    ///
+    /// Locates an executable file within a specified drive based on the given search criteria.
     /// </summary>
-    /// <param name="executableFileName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <returns></returns>
+    /// <param name="executableFileName">The name of the executable file to locate.</param>
+    /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
+    /// <returns>A <see cref="FileInfo"/> representing the located executable file if found; otherwise, null.</returns>
     FileInfo? LocateExecutable(string executableFileName, SearchOption directorySearchOption);
 }

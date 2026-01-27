@@ -14,18 +14,23 @@ namespace WhatExecLib.Locators;
 public class ExecutableFileLocator : IExecutableFileLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
+    private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
     private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public ExecutableFileLocator(IExecutableFileDetector executableFileDetector)
+    public ExecutableFileLocator(IExecutableFileDetector executableFileDetector, 
+        IPathEnvironmentVariableResolver pathEnvironmentVariableResolver)
     {
         _executableFileDetector = executableFileDetector;
+        _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
         _storageDriveDetector = StorageDrives.Shared;
     }
 
     public ExecutableFileLocator(IExecutableFileDetector executableFileDetector, 
+        IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         IStorageDriveDetector storageDriveDetector)
     {
         _executableFileDetector = executableFileDetector;
+        _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
         _storageDriveDetector = storageDriveDetector;
     }
 
@@ -55,7 +60,13 @@ public class ExecutableFileLocator : IExecutableFileLocator
         StringComparison stringComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
+        
+        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveExecutable(executableFileName, 
+            out KeyValuePair<string, FileInfo>? resolvedPath);
 
+        if (foundInPath && resolvedPath is not null)
+            return resolvedPath.Value.Value;
+        
         IEnumerable<string> searchPatterns = executableFileName.GetSearchPatterns();
 
         FileInfo? result = searchPatterns
@@ -104,6 +115,12 @@ public class ExecutableFileLocator : IExecutableFileLocator
 
         ArgumentException.ThrowIfNullOrEmpty(executableFileName);
         ArgumentNullException.ThrowIfNull(directory);
+        
+        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveExecutable(executableFileName, 
+            out KeyValuePair<string, FileInfo>? resolvedPath);
+
+        if (foundInPath && resolvedPath is not null)
+            return resolvedPath.Value.Value;
 
         IEnumerable<string> searchPatterns = executableFileName.GetSearchPatterns();
 
@@ -141,6 +158,12 @@ public class ExecutableFileLocator : IExecutableFileLocator
 
         if (Path.IsPathRooted(executableFileName))
             return FileLocatorHelper.HandleRootedPath(_executableFileDetector, executableFileName);
+        
+        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveExecutable(executableFileName, 
+            out KeyValuePair<string, FileInfo>? resolvedPath);
+
+        if (foundInPath && resolvedPath is not null)
+            return resolvedPath.Value.Value;
         
         IEnumerable<DriveInfo> drives = _storageDriveDetector.EnumeratePhysicalDrives();
 
