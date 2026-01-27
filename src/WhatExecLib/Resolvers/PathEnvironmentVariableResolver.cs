@@ -17,7 +17,7 @@ namespace WhatExecLib;
 /// <summary>
 /// Provides functionality to resolve the path of an executable file based on the system's PATH environment variable.
 /// </summary>
-public class PathExecutableResolver : IPathExecutableResolver
+public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 {
     /// <summary>
     ///

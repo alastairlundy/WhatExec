@@ -15,7 +15,7 @@ namespace WhatExecLib.Caching;
 /// <summary>
 ///
 /// </summary>
-public interface ICachedPathExecutableResolver : IPathExecutableResolver
+public interface ICachedPathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 {
     /// <summary>
     /// 

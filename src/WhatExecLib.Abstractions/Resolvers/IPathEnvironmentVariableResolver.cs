@@ -12,7 +12,7 @@ namespace WhatExecLib.Abstractions;
 /// <summary>
 /// Defines methods to resolve file paths for executable files based on the system's PATH environment variable.
 /// </summary>
-public interface IPathExecutableResolver
+public interface IPathEnvironmentVariableResolver
 {
     /// <summary>
     /// Resolves the file path of a file name that is in the PATH Environment Variable.

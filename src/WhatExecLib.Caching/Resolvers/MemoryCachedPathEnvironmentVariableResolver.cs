@@ -18,7 +18,7 @@ namespace WhatExecLib.Caching.Resolvers;
 /// <summary>
 ///
 /// </summary>
-public class MemoryCachedPathExecutableResolver : PathExecutableResolver, ICachedPathExecutableResolver
+public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariableResolver, ICachedPathEnvironmentVariableResolver
 {
     private readonly IMemoryCache _cache;
 
