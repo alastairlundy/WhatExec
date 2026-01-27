@@ -195,11 +195,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 {
                     foreach (string pathExtension in pathExtensions)
                     {
-                        string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
-                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}" :
-                            $"{inputFilePath}{pathExtension.ToLower()}");
-
-                    
+                        string filePath = Path.Combine(pathEntry,
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}");
+                        
                         bool result = CheckFileExistsAndIsExecutable(
                             filePath,
                             out FileInfo? fileInfo
@@ -213,9 +211,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 }
                 else
                 {
-                    string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
-                        $"{Path.GetFileNameWithoutExtension(inputFilePath)}" : $"{inputFilePath}");
-
+                    string filePath = Path.Combine(pathEntry, Path.GetFileName(inputFilePath));
                     
                     bool result = CheckFileExistsAndIsExecutable(
                         filePath,
@@ -265,13 +261,12 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
             foreach (string pathEntry in pathContents)
             {
-                if (fileHasExtension)
+                if (!fileHasExtension && OperatingSystem.IsWindows())
                 {
                     foreach (string pathExtension in pathExtensions)
                     {
-                        string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
-                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}" :
-                            $"{inputFilePath}{pathExtension.ToLower()}");
+                        string filePath = Path.Combine(pathEntry,
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}");
                         
                         bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
 
@@ -283,8 +278,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 }
                 else
                 {
-                    string filePath = Path.Combine(pathEntry, Path.HasExtension(inputFilePath) ? 
-                        $"{Path.GetFileNameWithoutExtension(inputFilePath)}" : $"{inputFilePath}");
+                    string filePath = Path.Combine(pathEntry, Path.GetFileName(inputFilePath));
                     
                     bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
 
