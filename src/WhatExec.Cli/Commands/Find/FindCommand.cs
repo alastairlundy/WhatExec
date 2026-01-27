@@ -65,22 +65,18 @@ public class FindCommand
 
         if (LocaleAllInstances)
             Limit = int.MaxValue;
-
+        
         if (Limit < 1)
-        {
-            AnsiConsole.WriteException(
-                new ArgumentOutOfRangeException(
-                    nameof(Limit),
-                    Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero
-                )
-            );
+        { 
+            Console.WriteLine(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
+            return -1;
         }
 
         if (Commands is null && Interactive)
             Commands = UserInputHelper.GetCommandInput();
         else if (Commands is null)
         {
-            AnsiConsole.WriteException(new ArgumentNullException(nameof(Commands)));
+            Console.WriteLine();
             return -1;
         }
 
