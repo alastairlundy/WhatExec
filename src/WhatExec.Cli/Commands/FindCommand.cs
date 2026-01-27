@@ -1,6 +1,6 @@
 /*
     WhatExec
-    Copyright (c) 2025 Alastair Lundy
+    Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,12 +9,11 @@
 
 using System.Collections.ObjectModel;
 
-namespace WhatExec.Cli.Commands.Find;
+namespace WhatExec.Cli.Commands;
 
 [CliCommand(
-    Name = "find",
-    Description = "Locate commands and/or executable files.",
-    Parent = typeof(RootCliCommand)
+    Name = "",
+    Description = "Locate commands and/or executable files."
 )]
 public class FindCommand
 {
@@ -50,7 +49,7 @@ public class FindCommand
     [CliOption(
         Name = "--limit",
         Alias = "-l",
-        Description = "Limit the number of results returned per command or file."
+        Description = "Limits the number of results returned per command or file."
     )]
     [Range(1, int.MaxValue)]
     public int Limit { get; set; } = 1;
@@ -99,7 +98,7 @@ public class FindCommand
 
             if (!LocaleAllInstances && commandLocations.All(x => x.Value.Count > 0))
             {
-                return PrintResults(commandLocations);
+                return ResultHelper.PrintResults(commandLocations, Limit);
             }
         }
         else
@@ -138,7 +137,7 @@ public class FindCommand
                 commandLocations[pair.Key].AddRange(pair.Value);
             }
 
-            return PrintResults(commandLocations);
+            return ResultHelper.PrintResults(commandLocations, Limit);
         }
         if (nonLocateAllResults is not null)
         {
@@ -147,25 +146,10 @@ public class FindCommand
                 commandLocations[pair.Key].Add(pair.Value);
             }
 
-            return PrintResults(commandLocations);
+            return ResultHelper.PrintResults(commandLocations, Limit);
         }
 
         return -1;
-    }
-
-    private int PrintResults(Dictionary<string, List<FileInfo>> results)
-    {
-        foreach (KeyValuePair<string, List<FileInfo>> result in results)
-        {
-            IEnumerable<string> allowedResults = result.Value.Take(Limit)
-                .Select(f => f.FullName);
-
-            string joinedString = string.Join(Environment.NewLine, allowedResults);
-
-            AnsiConsole.WriteLine(joinedString);
-        }
-
-        return 0;
     }
 
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
