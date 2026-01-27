@@ -21,9 +21,7 @@ if (args.Any(s => s.Contains("--interactive")))
 
 Cli.Ext.ConfigureServices(services =>
 {
-    services.AddMemoryCache();
     services.AddWhatExecLib(ServiceLifetime.Scoped);
-    services.AddWhatExecLibCaching(ServiceLifetime.Scoped);
 });
 
-Cli.Run<RootCliCommand>();
+Cli.Run<FindCommand>();
