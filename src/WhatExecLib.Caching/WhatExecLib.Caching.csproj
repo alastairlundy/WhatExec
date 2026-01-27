@@ -4,7 +4,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
-    <PackageId>AlastairLundy.WhatExecLib.Caching</PackageId>
+    <PackageId>WhatExecLib.Caching</PackageId>
     <Authors>Alastair Lundy</Authors>
     <Company>AlastairLundy.WhatExecLib.Caching</Company>
     <Product>AlastairLundy.WhatExecLib.Caching</Product>
