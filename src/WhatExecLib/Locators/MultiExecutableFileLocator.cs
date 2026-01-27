@@ -48,6 +48,8 @@ public class MultiExecutableFileLocator : IMultiExecutableFileLocator
     [SupportedOSPlatform("android")]
     public IReadOnlyDictionary<string, FileInfo> LocateExecutableFiles(params string[] executableFileNames)
     {
+        ArgumentNullException.ThrowIfNull(executableFileNames);
+
         bool success = TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, executableFileNames);
         
         if(!success)

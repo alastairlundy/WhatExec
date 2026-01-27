@@ -32,7 +32,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected bool CheckFileExistsAndIsExecutable(
+    protected virtual bool CheckFileExistsAndIsExecutable(
         string filePath,
         out FileInfo? fileInfo)
     {
@@ -56,10 +56,10 @@ public class PathExecutableResolver : IPathExecutableResolver
         return false;
     }
 
-    protected string[] GetPathExtensions()
+    protected virtual string[] GetPathExtensions()
         => PathEnvironmentVariable.GetPathFileExtensions();
 
-    protected string[]? GetPathContents()
+    protected virtual string[]? GetPathContents()
         => PathEnvironmentVariable.GetDirectories();
     
     #endregion
@@ -151,7 +151,7 @@ public class PathExecutableResolver : IPathExecutableResolver
 
         try
         {
-            pathContents = PathEnvironmentVariable.GetDirectories()
+            pathContents = GetPathContents()
                            ?? throw new InvalidOperationException("PATH Variable could not be found.");
         }
         catch (InvalidOperationException)
@@ -169,7 +169,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected IReadOnlyDictionary<string, FileInfo> InternalResolveFilePaths(string[] inputFilePaths, string[] pathContents, string[] pathExtensions)
+    protected virtual IReadOnlyDictionary<string, FileInfo> InternalResolveFilePaths(string[] inputFilePaths, string[] pathContents, string[] pathExtensions)
     {
         Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
 
@@ -242,7 +242,7 @@ public class PathExecutableResolver : IPathExecutableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected bool InternalTryResolveFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
+    protected virtual bool InternalTryResolveFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
         string[] pathContents, string[] pathExtensions)
     {
         Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
