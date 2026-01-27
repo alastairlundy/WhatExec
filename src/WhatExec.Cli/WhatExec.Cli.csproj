@@ -19,7 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DotMake.CommandLine" Version="3.1.0" />
-    <PackageReference Include="DotPrimitives" Version="4.3.0-preview.2" />
+    <PackageReference Include="DotPrimitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
   </ItemGroup>
