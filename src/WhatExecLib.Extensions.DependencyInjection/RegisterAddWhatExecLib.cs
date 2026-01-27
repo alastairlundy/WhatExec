@@ -26,10 +26,10 @@ public static class RegisterAddWhatExecLib
     extension(IServiceCollection services)
     {
         /// <summary>
-        ///
+        /// Adds the AddWhatExecLib extension methods to IServiceCollection.
         /// </summary>
-        /// <param name="serviceLifetime"></param>
-        /// <returns></returns>
+        /// <param name="serviceLifetime">The service lifetime.</param>
+        /// <returns>The IServiceCollection with the added extensions.</returns>
         public IServiceCollection AddWhatExecLib(ServiceLifetime serviceLifetime)
         {
             switch (serviceLifetime)
