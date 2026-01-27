@@ -37,6 +37,12 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         string filePath,
         out FileInfo? fileInfo)
     {
+        if (!Path.IsPathRooted(filePath))
+        {
+            fileInfo = null;
+            return false;
+        }
+            
         if (File.Exists(filePath))
         {
             FileInfo file = new(filePath);
