@@ -8,12 +8,12 @@ WhatExecLib implements ``WhatExecLib.Abstractions``'s interfaces.
 
 ### Resolvers
 
-| Scenario                                 | Interface               | Class                    |
-|------------------------------------------|-------------------------|--------------------------|
-| Finding all Executable files on a Drive or Directory | ``IExecutablesResolver``    | ``ExecutableResolver``        |
-| Finding all Executable files with the same name       | ``IExecutableFileInstancesResolver``   | ``ExecutableFileInstancesResolver`` |
-| Resolve Executable file paths | ``IExecutableFileResolver``   | ``ExecutableFileResolver``    |
-| Resolve an Executable file path using just the PATH Environment variable | ``IPathEnvironmentVariableResolver``   | ``PathEnvironmentVariableResolver`` |
+| Scenario                                                                 | Interface                            | Class                               |
+|--------------------------------------------------------------------------|--------------------------------------|-------------------------------------|
+| Finding all Executable files on a Drive or Directory                     | ``IExecutablesResolver``             | ``ExecutableResolver``              |
+| Finding all Executable files with the same name                          | ``IExecutableFileInstancesResolver`` | ``ExecutableFileInstancesResolver`` |
+| Resolve Executable file paths                                            | ``IExecutableFileResolver``          | ``ExecutableFileResolver``          |
+| Resolve an Executable file path using just the PATH Environment variable | ``IPathEnvironmentVariableResolver`` | ``PathEnvironmentVariableResolver`` |
 
 ## Installation
 
