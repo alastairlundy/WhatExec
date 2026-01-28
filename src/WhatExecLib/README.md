@@ -19,4 +19,4 @@ WhatExecLib implements ``WhatExecLib.Abstractions``'s interfaces.
 
 To install WhatExecLib, run the following command
 
-``dotnet add package AlastairLundy.WhatExecLib``
+``dotnet add package WhatExecLib``
