@@ -12,8 +12,8 @@
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>* Updated to Polyfill 9.3.0 from 9.1.0
 * Updated implementation to work with Abstractions Preview 2
 * Reduced technical debt and simplified implementation code</PackageReleaseNotes>

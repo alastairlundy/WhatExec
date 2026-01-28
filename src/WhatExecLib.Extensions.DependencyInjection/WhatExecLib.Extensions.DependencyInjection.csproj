@@ -13,6 +13,9 @@
     <Copyright>Copyright (c) 2025-2026 Alastair Lundy</Copyright>
     <RepositoryUrl>https://github.com/alastairlundy/WhatExec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Registers WhatExecLib with Microsoft.Extensions.DependencyInjection</Description>
