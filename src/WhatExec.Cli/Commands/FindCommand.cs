@@ -19,17 +19,17 @@ public class FindCommand
 {
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
     private readonly IExecutableFileInstancesResolver _executableFileInstancesResolver;
-    private readonly IMultiExecutableFileResolver _multiExecutableFileResolver;
+    private readonly IExecutableFileResolver _executableFileResolver;
 
     public FindCommand(
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         IExecutableFileInstancesResolver executableFileInstancesResolver,
-        IMultiExecutableFileResolver multiExecutableFileResolver
+        IExecutableFileResolver executableFileResolver
     )
     {
         _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
         _executableFileInstancesResolver = executableFileInstancesResolver;
-        _multiExecutableFileResolver = multiExecutableFileResolver;
+        _executableFileResolver = executableFileResolver;
     }
 
     [CliArgument(
@@ -155,7 +155,7 @@ public class FindCommand
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
         string[] commandLeftToLookFor)
     {
-        _multiExecutableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
+        _executableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
             commandLeftToLookFor);
 
         return resolvedExecutables;
