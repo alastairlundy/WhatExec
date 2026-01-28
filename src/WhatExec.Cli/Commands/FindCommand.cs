@@ -17,17 +17,14 @@ namespace WhatExec.Cli.Commands;
 )]
 public class FindCommand
 {
-    private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
     private readonly IExecutableFileInstancesResolver _executableFileInstancesResolver;
     private readonly IExecutableFileResolver _executableFileResolver;
 
     public FindCommand(
-        IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         IExecutableFileInstancesResolver executableFileInstancesResolver,
         IExecutableFileResolver executableFileResolver
     )
     {
-        _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
         _executableFileInstancesResolver = executableFileInstancesResolver;
         _executableFileResolver = executableFileResolver;
     }
@@ -84,39 +81,12 @@ public class FindCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
 
-        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(
-            Commands,
-            out IReadOnlyDictionary<string, FileInfo> pathResolvedExecutables
-        );
-        
-        if (foundInPath)
-        {
-            foreach (KeyValuePair<string, FileInfo> pathSearchResult in pathResolvedExecutables)
-            {
-                commandLocations[pathSearchResult.Key].Add(pathSearchResult.Value);
-            }
-
-            if (!LocaleAllInstances && commandLocations.All(x => x.Value.Count > 0))
-            {
-                return ResultHelper.PrintResults(commandLocations, Limit);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Commands were not found in the path environment variable.");
-        }
-
-        string[] commandsLeftToLookFor = commandLocations
-            .Where(x => x.Value.Count == 0)
-            .Select(x => x.Key)
-            .ToArray();
-
         IReadOnlyDictionary<string, FileInfo[]>? locateAllResults = null;
         IReadOnlyDictionary<string, FileInfo>? nonLocateAllResults = null;
 
         if (LocaleAllInstances)
         {
-            Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(commandsLeftToLookFor));
+            Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(Commands));
             task.Wait();
 
             locateAllResults = task.Result; 
@@ -124,7 +94,7 @@ public class FindCommand
         else
         {
             Task<IReadOnlyDictionary<string, FileInfo>> task = Task.Run(() => TrySearchSystem_DoNotLocateAll(
-                commandsLeftToLookFor));
+                Commands));
             task.Wait();
 
             nonLocateAllResults = task.Result;
