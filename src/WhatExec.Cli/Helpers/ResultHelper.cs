@@ -1,4 +1,6 @@
-﻿namespace WhatExec.Cli.Helpers;
+﻿using System.Text;
+
+namespace WhatExec.Cli.Helpers;
 
 public class ResultHelper
 {
@@ -23,8 +25,7 @@ public class ResultHelper
         {
             if (current < limit)
             {
-                AnsiConsole.WriteLine(result.FullName);
-                
+                Console.WriteLine(result.FullName.TrimEnd(" ").TrimEnd(Environment.NewLine));
                 Interlocked.Increment(ref current);
             }
 
@@ -42,6 +43,8 @@ public class ResultHelper
         IEnumerable<string> allowedResults = results.Take(limit)
             .Select(f => f.FullName);
 
+        
+        
         string joinedString = string.Join(Environment.NewLine, allowedResults);
 
         AnsiConsole.WriteLine(joinedString);
@@ -62,5 +65,25 @@ public class ResultHelper
         }
 
         return 0;
+    }
+    
+    public static int PrintResults(Dictionary<string, FileInfo> results, string[] commands)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (results.Count > 0)
+        {
+            foreach (KeyValuePair<string, FileInfo> result in results)
+            {
+                stringBuilder.AppendLine(result.Value.FullName);
+            }
+
+            Console.Write(stringBuilder.ToString());
+
+            return 0;
+        }
+
+        Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", commands)).TrimEnd(", "));
+        return 1;
     }
 }
