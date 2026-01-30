@@ -45,7 +45,6 @@ public class ExecutablesResolver : IExecutablesResolver
         
         return directory
             .SafelyEnumerateFiles("*", directorySearchOption)
-            .PrioritizeLocations()
             .Where(file => file.Exists && _executableFileDetector.IsFileExecutable(file))
             .ToArray();
     }
@@ -70,7 +69,6 @@ public class ExecutablesResolver : IExecutablesResolver
             
         return driveInfo
             .RootDirectory.SafelyEnumerateFiles("*", directorySearchOption)
-            .PrioritizeLocations()
             .Where(file => file.Exists && _executableFileDetector.IsFileExecutable(file))
             .ToArray();
     }

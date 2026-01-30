@@ -189,7 +189,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
             : StringComparison.Ordinal;
         
         FileInfo[] files = driveInfo.RootDirectory.SafelyEnumerateFiles("*", directorySearchOption)
-            .PrioritizeLocations()
             .Where(f => executableFileNames.Any(e => e.Equals(f.Name, stringComparison)))
             .Where(f => f.Exists && _executableFileDetector.IsFileExecutable(f))
             .ToArray();

@@ -81,7 +81,6 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
             .SelectMany(sp =>
                 driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
-            .PrioritizeLocations()
             .Where(f => f.Exists
                         && _executableFileDetector.IsFileExecutable(f)
                         && f.Name.Equals(executableName)
@@ -110,7 +109,6 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
             .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
-            .PrioritizeLocations()
             .Where(f => f.Exists)
             .Where(file => _executableFileDetector.IsFileExecutable(file))
             .Where(file => file.Name.Equals(executableName));
