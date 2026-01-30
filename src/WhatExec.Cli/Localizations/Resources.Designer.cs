@@ -60,6 +60,24 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: No commands or executables were specified..
+        /// </summary>
+        internal static string Errors_Commands_NoCommandsSpecified {
+            get {
+                return ResourceManager.GetString("Errors.Commands.NoCommandsSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Could not resolve the specified command(s) or executable(s): {x}.
+        /// </summary>
+        internal static string Errors_Results_CommandsNotFound {
+            get {
+                return ResourceManager.GetString("Errors.Results.CommandsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Limit must be greater than or equal to 1..
         /// </summary>
         internal static string Exceptions_Commands_Find_Limit_MustBeGreaterThanZero {

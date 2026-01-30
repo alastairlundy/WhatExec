@@ -69,4 +69,10 @@
     <data name="Exceptions.DriveNotFound" xml:space="preserve">
         <value />
     </data>
+    <data name="Errors.Results.CommandsNotFound" xml:space="preserve">
+        <value>Error: Could not resolve the specified command(s) or executable(s): {x}</value>
+    </data>
+    <data name="Errors.Commands.NoCommandsSpecified" xml:space="preserve">
+        <value>Error: No commands or executables were specified.</value>
+    </data>
 </root>
