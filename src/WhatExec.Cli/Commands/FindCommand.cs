@@ -7,6 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Diagnostics;
+
 namespace WhatExec.Cli.Commands;
 
 [CliCommand(
@@ -15,15 +17,12 @@ namespace WhatExec.Cli.Commands;
 )]
 public class FindCommand
 {
-    private readonly IExecutableFileInstancesResolver _executableFileInstancesResolver;
     private readonly IExecutableFileResolver _executableFileResolver;
 
     public FindCommand(
-        IExecutableFileInstancesResolver executableFileInstancesResolver,
         IExecutableFileResolver executableFileResolver
     )
     {
-        _executableFileInstancesResolver = executableFileInstancesResolver;
         _executableFileResolver = executableFileResolver;
     }
 
@@ -45,9 +44,12 @@ public class FindCommand
     [DefaultValue(false)]
     public bool Interactive { get; set; }
 
+    private Stopwatch _stopwatch = new Stopwatch();
+    
     public int Run()
     {
-        Dictionary<string, List<FileInfo>> commandLocations = new();
+        _stopwatch.Start();
+        Dictionary<string, FileInfo> commandLocations = new();
         
         if (Limit < 1)
         { 
@@ -59,29 +61,26 @@ public class FindCommand
             Commands = UserInputHelper.GetCommandInput();
         else if (Commands is null)
         {
-            Console.WriteLine();
+            Console.WriteLine(Resources.Errors_Commands_NoCommandsSpecified);
             return -1;
         }
 
-        foreach (string command in Commands)
-        {
-            commandLocations.Add(command, new List<FileInfo>());
-        }
+        Task<IReadOnlyDictionary<string, FileInfo>> task = Task.Run(() => TrySearchSystem_DoNotLocateAll(
+            Commands));
+        task.Wait();
 
-        IReadOnlyDictionary<string, FileInfo>? nonLocateAllResults = null;
-        
-            Task<IReadOnlyDictionary<string, FileInfo>> task = Task.Run(() => TrySearchSystem_DoNotLocateAll(
-                Commands));
-            task.Wait();
-
-            nonLocateAllResults = task.Result;
+        IReadOnlyDictionary<string, FileInfo> nonLocateAllResults = task.Result;
 
         foreach (KeyValuePair<string, FileInfo> pair in nonLocateAllResults)
         {
-            commandLocations[pair.Key].Add(pair.Value);
+            commandLocations[pair.Key] = pair.Value;
         }
 
-        return ResultHelper.PrintResults(commandLocations, Limit);
+        int res = ResultHelper.PrintResults(commandLocations, Commands);
+        _stopwatch.Stop();
+        
+        Console.WriteLine($"Took {_stopwatch.ElapsedMilliseconds}ms to get results");
+        return res;
     }
 
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
