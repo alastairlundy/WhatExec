@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using DotPrimitives.IO.Directories;
 using WhatExecLib.Localizations;
 
 namespace WhatExecLib;
@@ -40,11 +41,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
     /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
     public FileInfo LocateExecutable(string executableFileName, SearchOption directorySearchOption)
     {
         bool success = TryLocateExecutable(executableFileName, directorySearchOption, out FileInfo? fileInfo);
@@ -85,45 +81,21 @@ public class ExecutableFileResolver : IExecutableFileResolver
         return output is not null;
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="executableFileNames"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException"></exception>
     public IReadOnlyDictionary<string, FileInfo> LocateExecutableFiles(SearchOption directorySearchOption, params string[] executableFileNames)
     {
-        string[] executablesToLookFor;
-        Dictionary<string, FileInfo> output = new(capacity: executableFileNames.Length);
-
-        bool foundInPath =
-            _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(executableFileNames, out IReadOnlyDictionary<string, FileInfo> pathExecutables);
-
-        if (foundInPath && pathExecutables.Count == executableFileNames.Length)
-        {
-            return pathExecutables;
-        }
-        if (pathExecutables.Count > 0)
-        {
-            foreach (KeyValuePair<string, FileInfo> pair in pathExecutables)
-            {
-                output.TryAdd(pair.Key, pair.Value);
-            }
-            
-            executablesToLookFor = executableFileNames.SkipWhile(f => pathExecutables.ContainsKey(f)).ToArray();
-        }
-        else
-        {
-            executablesToLookFor = executableFileNames;
-        }
+        bool success = TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> output, directorySearchOption,
+            executableFileNames);
         
-        IEnumerable<KeyValuePair<string, FileInfo>> results = _storageDriveDetector.EnumerateLogicalDrives()
-            .SelectMany(d => LocateExecutablesInDrive(d, executablesToLookFor, directorySearchOption))
-            .Where(f => !output.Keys.Contains(f.Key));
-
-        foreach (KeyValuePair<string, FileInfo> result in results)
+        if (!success && output.Count < executableFileNames.Length)
         {
-            output.TryAdd(result.Key, result.Value);
-        }
-        
-        if (output.Count < executableFileNames.Length)
-        {
-            string filesNotFound = string.Join(", ", executablesToLookFor.Except(executableFileNames));
+            string filesNotFound = string.Join(", ", executableFileNames.Except(output.Keys));
             
             throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{x}", filesNotFound));
         }
@@ -132,38 +104,46 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <inheritdoc/>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
     public bool TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, 
         SearchOption directorySearchOption,
         params string[] executableFileNames)
     {
+        string[] executablesToLookFor;
         Dictionary<string, FileInfo> output = new(capacity: executableFileNames.Length);
         
         bool foundInPath = _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(executableFileNames, 
-            out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
+            out IReadOnlyDictionary<string, FileInfo> pathExecutables);
 
-        if (foundInPath && resolvedExecutables.Count == executableFileNames.Length)
+        if (foundInPath && pathExecutables.Count == executableFileNames.Length)
         {
-            executableFiles = resolvedExecutables;
+            executableFiles = pathExecutables;
             return true;
         }
-        else if(resolvedExecutables.Count > 0)
+        if(pathExecutables.Count > 0)
         {
-            foreach (KeyValuePair<string, FileInfo> result in resolvedExecutables)
+            foreach (KeyValuePair<string, FileInfo> result in pathExecutables)
             {
                 output.Add(result.Key, result.Value);
             }
+            
+            executablesToLookFor = executableFileNames.Where(f => !pathExecutables.ContainsKey(f)).ToArray();
+        }
+        else
+        {
+            executablesToLookFor = executableFileNames;
         }
 
+        IEnumerable<string> logicalDrives = _storageDriveDetector.EnumeratePhysicalDrives()
+            .Select(d => d.Name);
+        
+        Console.WriteLine($"Found drives: {string.Join(", ", logicalDrives)}");
+        
         IEnumerable<KeyValuePair<string, FileInfo>> driveResults = _storageDriveDetector.EnumerateLogicalDrives()
-            .SelectMany(d => LocateExecutablesInDrive(d, executableFileNames, SearchOption.AllDirectories));
+            .SelectMany(d => LocateExecutablesInDrive(d, executablesToLookFor, directorySearchOption));
 
         foreach (KeyValuePair<string, FileInfo> result in driveResults)
         {
+            Console.WriteLine($"We found a result from disk: {result.Value.Name}");
             bool addSuccess = output.TryAdd(result.Key, result.Value);
             
             if (!addSuccess)
@@ -173,32 +153,30 @@ public class ExecutableFileResolver : IExecutableFileResolver
         executableFiles = new Dictionary<string, FileInfo>(output);
         return output.Count == executableFileNames.Length;
     }
-
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    
     private KeyValuePair<string, FileInfo>[] LocateExecutablesInDrive(DriveInfo driveInfo,
         string[] executableFileNames, SearchOption directorySearchOption)
     {
         ArgumentNullException.ThrowIfNull(executableFileNames);
+
+        List<KeyValuePair<string, FileInfo>> output = new(capacity: executableFileNames.Length);
         
         StringComparison stringComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
+
+        foreach (string executableFileName in executableFileNames)
+        {
+            Console.WriteLine($"Finding executables at root directory: {driveInfo.RootDirectory.Name}");
+            
+            FileInfo? file = SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(driveInfo.RootDirectory,"*", directorySearchOption)
+                .Where(f => executableFileName.Equals(f.Name, stringComparison))
+                .FirstOrDefault(f => f.Exists && _executableFileDetector.IsFileExecutable(f));
+           
+            if(file is not null)
+                output.Add(new KeyValuePair<string, FileInfo>(executableFileName, file));
+        }
         
-        FileInfo[] files = driveInfo.RootDirectory.SafelyEnumerateFiles("*", directorySearchOption)
-            .Where(f => executableFileNames.Any(e => e.Equals(f.Name, stringComparison)))
-            .Where(f => f.Exists && _executableFileDetector.IsFileExecutable(f))
-            .ToArray();
-        
-        if(files.Length == 0)
-            return [];
-        
-        return files.Select(f =>
-                new KeyValuePair<string, FileInfo>(executableFileNames.First(e => e.Equals(f.Name, stringComparison)),
-                    f))
-            .ToArray();
+        return output.ToArray();
     }
-}   
+}
