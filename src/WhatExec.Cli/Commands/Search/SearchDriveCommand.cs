@@ -39,7 +39,7 @@ public class SearchDriveCommand
     public bool Interactive { get; set; }
     
     [CliArgument(Order = 0, Name = "<drive>", Description = "Locate the drive to search for.")]
-    public string Drive { get; set; }
+    public string? Drive { get; set; }
 
     [CliOption(Name = "--verbose", Description = "Enable verbose exception output.")]
     [DefaultValue(false)]

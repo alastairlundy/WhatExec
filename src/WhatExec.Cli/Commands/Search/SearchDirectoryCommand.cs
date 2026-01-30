@@ -38,7 +38,7 @@ public class SearchDirectoryCommand
     public bool Verbose { get; set; }
     
     [CliArgument(Order = 0, Name = "<directory>", Description = "The directory to be searched.")]
-    public string Directory { get; set; }
+    public string? Directory { get; set; }
     
     public int Run()
     {
