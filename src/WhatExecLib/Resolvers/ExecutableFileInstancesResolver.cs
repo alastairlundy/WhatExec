@@ -7,6 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using DotPrimitives.IO.Directories;
+
 namespace WhatExecLib;
 
 /// <summary>
@@ -79,12 +81,11 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         ArgumentException.ThrowIfNullOrEmpty(executableName);
         
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
-            .SelectMany(sp =>
-                driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
-            .Where(f => f.Exists
-                        && _executableFileDetector.IsFileExecutable(f)
-                        && f.Name.Equals(executableName)
-            );
+            .SelectMany(sp => SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(driveInfo.RootDirectory, sp, directorySearchOption)
+                .Where(f => f.Exists
+                            && _executableFileDetector.IsFileExecutable(f)
+                            && f.Name.Equals(executableName)
+                ));
 
         return results.ToArray();
     }
@@ -108,10 +109,10 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         ArgumentException.ThrowIfNullOrEmpty(executableName);
         
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
-            .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
-            .Where(f => f.Exists)
-            .Where(file => _executableFileDetector.IsFileExecutable(file))
-            .Where(file => file.Name.Equals(executableName));
+            .SelectMany(sp => SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(directory, sp, directorySearchOption)
+                .Where(f => f.Exists)
+                .Where(file => _executableFileDetector.IsFileExecutable(file))
+                .Where(file => file.Name.Equals(executableName)));
 
         return results.ToArray();
     }
