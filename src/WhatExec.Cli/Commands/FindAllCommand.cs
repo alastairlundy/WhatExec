@@ -27,6 +27,13 @@ public class FindAllCommand
     )]
     public string[]? Commands { get; set; }
     
+    [CliOption(
+        Name = "--limit",
+        Alias = "-l",
+        Description = "Limits the number of results returned per command or file."
+    )]
+    [Range(1, int.MaxValue)]
+    public int Limit { get; set; } = 1;
     
     public int Run()
     {
@@ -40,18 +47,15 @@ public class FindAllCommand
             return -1;
         }
         
-
-            Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(Commands));
-            task.Wait();
-
-            locateAllResults = task.Result; 
+        Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(Commands));
+        task.Wait();
      
-            foreach (KeyValuePair<string, FileInfo[]> pair in locateAllResults)
-            {
-                commandLocations[pair.Key].AddRange(pair.Value);
-            }
+        foreach (KeyValuePair<string, FileInfo[]> pair in task.Result)
+        {
+            commandLocations[pair.Key].AddRange(pair.Value);
+        }
 
-            return ResultHelper.PrintResults(commandLocations, Limit);
+        return ResultHelper.PrintResults(commandLocations, Limit);
     }
     
     private IReadOnlyDictionary<string, FileInfo[]> TrySearchSystem_LocateAllInstances(
@@ -61,8 +65,9 @@ public class FindAllCommand
 
         foreach (string command in commandsLeftToLookFor)
         {
-            Console.WriteLine($"Looking for {command}");
-            
+#if DEBUG
+            Console.WriteLine(Resources.LocateExecutable_Status_LookingForCommand, command);
+#endif
             FileInfo[] info = _executableFileInstancesResolver.LocateExecutableInstances(
                 command,
                 SearchOption.AllDirectories
