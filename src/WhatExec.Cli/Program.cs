@@ -21,7 +21,7 @@ if (args.Any(s => s.Contains("--interactive")))
 
 Cli.Ext.ConfigureServices(services =>
 {
-    services.AddWhatExecLib(ServiceLifetime.Scoped);
+    services.AddWhatExecLib(ServiceLifetime.Singleton);
 });
 
 Cli.Run<FindCommand>();
