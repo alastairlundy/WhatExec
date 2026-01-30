@@ -171,7 +171,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         }
         
         executableFiles = new Dictionary<string, FileInfo>(output);
-        return output.Count > 0;
+        return output.Count == executableFileNames.Length;
     }
 
     [SupportedOSPlatform("windows")]
