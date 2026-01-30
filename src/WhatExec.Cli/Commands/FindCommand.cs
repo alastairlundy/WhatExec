@@ -7,8 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System.Collections.ObjectModel;
-
 namespace WhatExec.Cli.Commands;
 
 [CliCommand(
@@ -34,15 +32,7 @@ public class FindCommand
         Description = "The commands or executable files to locate."
     )]
     public string[]? Commands { get; set; }
-
-    [CliOption(
-        Alias = "--a",
-        Name = "--all",
-        Description = "Find all instances of the specified Commands and/or Executable Files"
-    )]
-    [DefaultValue(false)]
-    public bool LocaleAllInstances { get; set; }
-
+    
     [CliOption(
         Name = "--limit",
         Alias = "-l",
@@ -58,9 +48,6 @@ public class FindCommand
     public int Run()
     {
         Dictionary<string, List<FileInfo>> commandLocations = new();
-
-        if (LocaleAllInstances)
-            Limit = int.MaxValue;
         
         if (Limit < 1)
         { 
@@ -81,73 +68,35 @@ public class FindCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
 
-        IReadOnlyDictionary<string, FileInfo[]>? locateAllResults = null;
         IReadOnlyDictionary<string, FileInfo>? nonLocateAllResults = null;
-
-        if (LocaleAllInstances)
-        {
-            Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(Commands));
-            task.Wait();
-
-            locateAllResults = task.Result; 
-        }
-        else
-        {
+        
             Task<IReadOnlyDictionary<string, FileInfo>> task = Task.Run(() => TrySearchSystem_DoNotLocateAll(
                 Commands));
             task.Wait();
 
             nonLocateAllResults = task.Result;
-        }
 
-        if (locateAllResults is not null)
+        foreach (KeyValuePair<string, FileInfo> pair in nonLocateAllResults)
         {
-            foreach (KeyValuePair<string, FileInfo[]> pair in locateAllResults)
-            {
-                commandLocations[pair.Key].AddRange(pair.Value);
-            }
-
-            return ResultHelper.PrintResults(commandLocations, Limit);
-        }
-        if (nonLocateAllResults is not null)
-        {
-            foreach (KeyValuePair<string, FileInfo> pair in nonLocateAllResults)
-            {
-                commandLocations[pair.Key].Add(pair.Value);
-            }
-
-            return ResultHelper.PrintResults(commandLocations, Limit);
+            commandLocations[pair.Key].Add(pair.Value);
         }
 
-        return -1;
+        return ResultHelper.PrintResults(commandLocations, Limit);
     }
 
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
         string[] commandLeftToLookFor)
     {
+        Console.WriteLine($"Looking for executables");
+        
         _executableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
-            commandLeftToLookFor);
+            SearchOption.AllDirectories, commandLeftToLookFor);
 
-        return resolvedExecutables;
-    }
-
-    private IReadOnlyDictionary<string, FileInfo[]> TrySearchSystem_LocateAllInstances(
-        string[] commandsLeftToLookFor)
-    {
-        Dictionary<string, FileInfo[]> output = new(capacity: commandsLeftToLookFor.Length);
-
-        foreach (string command in commandsLeftToLookFor)
+        foreach (KeyValuePair<string, FileInfo> pair in resolvedExecutables)
         {
-            Console.WriteLine($"Looking for {command}");
-            
-            FileInfo[] info = _executableFileInstancesResolver.LocateExecutableInstances(
-                command,
-                SearchOption.AllDirectories
-            );
-            
-            output.Add(command, info);
+            Console.WriteLine($"Found executable: {pair.Key} at {pair.Value.FullName}");
         }
-
-        return new ReadOnlyDictionary<string, FileInfo[]>(output);
+        
+        return resolvedExecutables;
     }
 }
