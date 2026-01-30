@@ -67,5 +67,14 @@ namespace WhatExecLib.Localizations {
                 return ResourceManager.GetString("Exception.FilesNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not locate the specified executable file {x}..
+        /// </summary>
+        internal static string Exceptions_FileNotFound {
+            get {
+                return ResourceManager.GetString("Exceptions.FileNotFound", resourceCulture);
+            }
+        }
     }
 }
