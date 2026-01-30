@@ -16,7 +16,7 @@ public class ExecutableFileResolverTests
     [Test]
     public async Task Resolve_VsCode_ExecutableFile()
     {
-        FileInfo? actual =  _executableFileResolver.LocateExecutable("code.exe", SearchOption.AllDirectories);
+        FileInfo? actual =  _executableFileResolver.LocateExecutable("Code.exe", SearchOption.AllDirectories);
         
         await Assert.That(actual)
             .IsNotNull()
