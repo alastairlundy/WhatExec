@@ -68,7 +68,4 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-  <!--  <ItemGroup>
-    <PackageReference Include="AlastairLundy.WhatExecLib.Abstractions" Version="1.0.0-preview.1" />
-  </ItemGroup>-->
 </Project>
