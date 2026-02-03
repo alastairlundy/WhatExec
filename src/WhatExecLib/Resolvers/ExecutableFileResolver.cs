@@ -7,9 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using DotPrimitives.IO.Directories;
-using WhatExecLib.Localizations;
-
 namespace WhatExecLib;
 
 public class ExecutableFileResolver : IExecutableFileResolver
@@ -169,7 +166,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         {
             Console.WriteLine($"Finding executables at root directory: {driveInfo.RootDirectory.Name}");
             
-            FileInfo? file = SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(driveInfo.RootDirectory,"*", directorySearchOption)
+            FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path.GetFileName(executableFileName), directorySearchOption)
                 .Where(f => executableFileName.Equals(f.Name, stringComparison))
                 .FirstOrDefault(f => f.Exists && _executableFileDetector.IsFileExecutable(f));
            
