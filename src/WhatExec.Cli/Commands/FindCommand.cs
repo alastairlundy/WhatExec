@@ -20,8 +20,7 @@ public class FindCommand
     private readonly IExecutableFileResolver _executableFileResolver;
 
     public FindCommand(
-        IExecutableFileResolver executableFileResolver
-    )
+        IExecutableFileResolver executableFileResolver)
     {
         _executableFileResolver = executableFileResolver;
     }
@@ -43,12 +42,18 @@ public class FindCommand
     [CliOption(Description = "Enable interactivity.", Alias = "-i", Name = "--interactive")]
     [DefaultValue(false)]
     public bool Interactive { get; set; }
+    
+    [CliOption(Description = "Report time taken to resolve executable files.", Name = "--report-time")]
+    [DefaultValue(false)]
+    public bool ReportTimeTaken { get; set; }
 
     private readonly Stopwatch _stopwatch = new();
     
     public int Run()
     {
-        _stopwatch.Start();
+        if(ReportTimeTaken)
+            _stopwatch.Start();
+        
         Dictionary<string, FileInfo> commandLocations = new();
         
         if (Limit < 1)
@@ -77,9 +82,13 @@ public class FindCommand
         }
 
         int res = ResultHelper.PrintResults(commandLocations, Commands);
-        _stopwatch.Stop();
         
-        Console.WriteLine(Resources.Commands_Results_ReportTime_Milliseconds, _stopwatch.ElapsedMilliseconds);
+        if (ReportTimeTaken)
+        {
+            _stopwatch.Stop();
+            Console.WriteLine(Resources.Commands_Results_ReportTime_Milliseconds, _stopwatch.ElapsedMilliseconds);
+        }
+        
         return res;
     }
 
