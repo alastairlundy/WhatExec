@@ -44,7 +44,7 @@ public class FindCommand
     [DefaultValue(false)]
     public bool Interactive { get; set; }
 
-    private Stopwatch _stopwatch = new Stopwatch();
+    private readonly Stopwatch _stopwatch = new();
     
     public int Run()
     {
@@ -79,22 +79,15 @@ public class FindCommand
         int res = ResultHelper.PrintResults(commandLocations, Commands);
         _stopwatch.Stop();
         
-        Console.WriteLine($"Took {_stopwatch.ElapsedMilliseconds}ms to get results");
+        Console.WriteLine(Resources.Commands_Results_ReportTime_Milliseconds, _stopwatch.ElapsedMilliseconds);
         return res;
     }
 
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
         string[] commandLeftToLookFor)
     {
-        Console.WriteLine($"Looking for executables");
-        
         _executableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
             SearchOption.AllDirectories, commandLeftToLookFor);
-
-        foreach (KeyValuePair<string, FileInfo> pair in resolvedExecutables)
-        {
-            Console.WriteLine($"Found executable: {pair.Key} at {pair.Value.FullName}");
-        }
         
         return resolvedExecutables;
     }
