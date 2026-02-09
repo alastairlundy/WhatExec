@@ -12,13 +12,10 @@ namespace WhatExec.Cli.Commands.Search;
 public class SearchDirectoryCommand
 {
     private readonly IExecutablesResolver _executablesResolver;
-    private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public SearchDirectoryCommand(IExecutablesResolver executablesResolver, 
-        IStorageDriveDetector storageDriveDetector)
+    public SearchDirectoryCommand(IExecutablesResolver executablesResolver)
     {
         _executablesResolver = executablesResolver;
-        _storageDriveDetector = storageDriveDetector;
     }
 
     [CliOption(
@@ -39,6 +36,7 @@ public class SearchDirectoryCommand
     
     [CliArgument(Order = 0, Name = "<directory>", Description = "The directory to be searched.")]
     public string? Directory { get; set; }
+    
     
     public int Run()
     {

@@ -16,7 +16,7 @@ internal static class UserInputHelper
     internal static string GetDirectoryInput(DriveInfo drive)
     {
         IEnumerable<string> directories = drive
-            .RootDirectory.GetDirectories()
+            .RootDirectory.SafelyGetDirectories()
             .Select(d => d.FullName);
 
         string directory = AnsiConsole.Prompt(
@@ -37,7 +37,7 @@ internal static class UserInputHelper
 
     internal static string GetDriveInput()
     {
-        string[] drives = Environment.GetLogicalDrives();
+        string[] drives = DriveInfo.SafelyEnumerateLogicalDrives().Select(d => d.Name).ToArray();
 
         string drive = AnsiConsole.Prompt(
             new SelectionPrompt<string>()

@@ -7,8 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using DotPrimitives.IO.Directories;
-
 namespace WhatExecLib;
 
 /// <summary>
@@ -18,7 +16,6 @@ namespace WhatExecLib;
 public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
-    private readonly IStorageDriveDetector _storageDriveDetector;
 
     /// <summary>
     /// Provides functionality for locating instances of executable files across drives, directories, and files.
@@ -26,14 +23,6 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     public ExecutableFileInstancesResolver(IExecutableFileDetector executableDetector)
     {
         _executableFileDetector = executableDetector;
-        _storageDriveDetector = StorageDrives.Shared;
-    }
-
-    public ExecutableFileInstancesResolver(IExecutableFileDetector executableFileDetector,
-        IStorageDriveDetector storageDriveDetector)
-    {
-        _executableFileDetector = executableFileDetector;
-        _storageDriveDetector = storageDriveDetector;
     }
     
     /// <summary>
@@ -52,7 +41,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
-        IEnumerable<DriveInfo> drives = _storageDriveDetector.EnumeratePhysicalDrives();
+        IEnumerable<DriveInfo> drives = DriveInfo.SafelyEnumerateLogicalDrives();
 
         IEnumerable<FileInfo> result = drives
             .SelectMany(drive =>
@@ -81,9 +70,9 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         ArgumentException.ThrowIfNullOrEmpty(executableName);
         
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
-            .SelectMany(sp => SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(driveInfo.RootDirectory, sp, directorySearchOption)
+            .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption)
                 .Where(f => f.Exists
-                            && _executableFileDetector.IsFileExecutable(f)
+                            && _executableFileDetector.IsFileExecutableAsync(f, CancellationToken.None).Result
                             && f.Name.Equals(executableName)
                 ));
 
@@ -109,7 +98,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         ArgumentException.ThrowIfNullOrEmpty(executableName);
         
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
-            .SelectMany(sp => SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(directory, sp, directorySearchOption)
+            .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption)
                 .Where(f => f.Exists)
                 .Where(file => _executableFileDetector.IsFileExecutable(file))
                 .Where(file => file.Name.Equals(executableName)));

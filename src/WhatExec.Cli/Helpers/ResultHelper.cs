@@ -42,8 +42,6 @@ public class ResultHelper
     {
         IEnumerable<string> allowedResults = results.Take(limit)
             .Select(f => f.FullName);
-
-        
         
         string joinedString = string.Join(Environment.NewLine, allowedResults);
 

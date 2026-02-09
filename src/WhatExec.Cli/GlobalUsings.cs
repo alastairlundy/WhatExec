@@ -6,6 +6,8 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.IO;
 global using System.Threading;
+global using DotExtensions.IO.Directories;
+global using DotExtensions.IO.Drives;
 global using DotMake.CommandLine;
 global using DotPrimitives.IO.Drives;
 global using Spectre.Console;

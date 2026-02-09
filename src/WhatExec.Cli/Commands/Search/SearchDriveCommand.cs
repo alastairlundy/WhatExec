@@ -17,13 +17,10 @@ namespace WhatExec.Cli.Commands.Search;
 public class SearchDriveCommand
 {
     private readonly IExecutablesResolver _executablesResolver;
-    private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public SearchDriveCommand(IExecutablesResolver executablesResolver, IStorageDriveDetector
-        storageDriveDetector)
+    public SearchDriveCommand(IExecutablesResolver executablesResolver)
     {
         _executablesResolver = executablesResolver;
-        _storageDriveDetector = storageDriveDetector;
     }
 
     [CliOption(
@@ -59,7 +56,7 @@ public class SearchDriveCommand
             Drive = UserInputHelper.GetDriveInput();
         }
         
-        DriveInfo? drive = _storageDriveDetector.EnumerateLogicalDrives().FirstOrDefault(d => d.Name == Drive);
+        DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d => d.Name == Drive);
         
         if(drive is null)
             return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),

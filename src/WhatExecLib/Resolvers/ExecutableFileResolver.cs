@@ -13,23 +13,12 @@ public class ExecutableFileResolver : IExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
-    private readonly IStorageDriveDetector _storageDriveDetector;
 
     public ExecutableFileResolver(IExecutableFileDetector executableFileDetector, 
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver)
     {
         _executableFileDetector = executableFileDetector;
         _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
-        _storageDriveDetector = StorageDrives.Shared;
-    }
-
-    public ExecutableFileResolver(IExecutableFileDetector executableFileDetector, 
-        IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
-        IStorageDriveDetector storageDriveDetector)
-    {
-        _executableFileDetector = executableFileDetector;
-        _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
-        _storageDriveDetector = storageDriveDetector;
     }
 
     /// <summary>
@@ -68,7 +57,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         
         StringComparison comparison = OperatingSystem.IsWindows() ?  StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
-        FileInfo? output = _storageDriveDetector.EnumerateLogicalDrives()
+        FileInfo? output = DriveInfo.SafelyEnumerateLogicalDrives()
             .SelectMany(d => LocateExecutablesInDrive(d, [executableFileName], directorySearchOption))
             .Select(f => f.Value)
             .FirstOrDefault(f => f.Name.Equals(executableFileName, comparison));
@@ -129,18 +118,12 @@ public class ExecutableFileResolver : IExecutableFileResolver
         {
             executablesToLookFor = executableFileNames;
         }
-
-        IEnumerable<string> logicalDrives = _storageDriveDetector.EnumeratePhysicalDrives()
-            .Select(d => d.Name);
         
-        Console.WriteLine($"Found drives: {string.Join(", ", logicalDrives)}");
-        
-        IEnumerable<KeyValuePair<string, FileInfo>> driveResults = _storageDriveDetector.EnumerateLogicalDrives()
+        IEnumerable<KeyValuePair<string, FileInfo>> driveResults = DriveInfo.SafelyEnumerateLogicalDrives()
             .SelectMany(d => LocateExecutablesInDrive(d, executablesToLookFor, directorySearchOption));
 
         foreach (KeyValuePair<string, FileInfo> result in driveResults)
         {
-            Console.WriteLine($"We found a result from disk: {result.Value.Name}");
             bool addSuccess = output.TryAdd(result.Key, result.Value);
             
             if (!addSuccess)
@@ -164,11 +147,9 @@ public class ExecutableFileResolver : IExecutableFileResolver
 
         foreach (string executableFileName in executableFileNames)
         {
-            Console.WriteLine($"Finding executables at root directory: {driveInfo.RootDirectory.Name}");
-            
             FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path.GetFileName(executableFileName), directorySearchOption)
                 .Where(f => executableFileName.Equals(f.Name, stringComparison))
-                .FirstOrDefault(f => f.Exists && _executableFileDetector.IsFileExecutable(f));
+                .FirstOrDefault(f => f.Exists && _executableFileDetector.IsFileExecutableAsync(f, CancellationToken.None).Result);
            
             if(file is not null)
                 output.Add(new KeyValuePair<string, FileInfo>(executableFileName, file));

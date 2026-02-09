@@ -7,8 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using DotPrimitives.IO.Directories;
-
 namespace WhatExecLib;
 
 /// <summary>
@@ -45,9 +43,9 @@ public class ExecutablesResolver : IExecutablesResolver
         if(!directory.Exists)
             throw new DirectoryNotFoundException("The specified directory does not exist");
         
-        return SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(directory, "*",
+        return directory.SafelyEnumerateFiles("*",
                 directorySearchOption)
-            .Where(file => file.Exists && _executableFileDetector.IsFileExecutable(file))
+            .Where(file => file.Exists && _executableFileDetector.IsFileExecutableAsync(file, CancellationToken.None).Result)
             .ToArray();
     }
 
@@ -69,9 +67,9 @@ public class ExecutablesResolver : IExecutablesResolver
         if(!driveInfo.IsReady)
             throw new ArgumentException("The specified drive is not ready");
 
-        return SafeDirectoryEnumeration.Shared.SafelyEnumerateFiles(driveInfo.RootDirectory, "*",
+        return driveInfo.RootDirectory.SafelyEnumerateFiles("*",
                 directorySearchOption)
-            .Where(file => file.Exists && _executableFileDetector.IsFileExecutable(file))
+            .Where(file => file.Exists && _executableFileDetector.IsFileExecutableAsync(file, CancellationToken.None).Result)
             .ToArray();
     }
 }
