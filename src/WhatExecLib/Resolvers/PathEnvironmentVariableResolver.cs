@@ -79,7 +79,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
     public KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath) =>
-        ResolveAllExecutableFilePaths([inputFilePath]).First(p => p.Key == inputFilePath);
+        ResolveAllExecutableFilePaths(inputFilePath).First(p => p.Key == inputFilePath);
 
     /// <summary>
     /// Resolves a collection of files from the system's PATH environment variable using the provided file name.
