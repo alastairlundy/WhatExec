@@ -47,6 +47,12 @@ public class FindAllCommand
             return -1;
         }
         
+        // Populate command Keys in Dictionary.
+        foreach (string command in Commands)
+        {
+            commandLocations.Add(command, new List<FileInfo>());
+        }
+        
         Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(Commands));
         task.Wait();
      
