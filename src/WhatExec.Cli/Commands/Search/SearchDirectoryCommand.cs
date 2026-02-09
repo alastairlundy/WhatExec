@@ -9,6 +9,12 @@
 
 namespace WhatExec.Cli.Commands.Search;
 
+[CliCommand(
+    Name = "directory",
+    Alias = "dir",
+    Description = "Locate all commands and/or executable files in a given directory.",
+    Parent = typeof(SearchCommand)
+)]
 public class SearchDirectoryCommand
 {
     private readonly IExecutablesResolver _executablesResolver;
