@@ -7,6 +7,9 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace WhatExecLib.Abstractions.Detectors;
 
 /// <summary>
@@ -18,6 +21,7 @@ public interface IExecutableFileDetector
     /// Determines if a given file is an executable.
     /// </summary>
     /// <param name="file">The file to be checked.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>True if the file can be executed, false otherwise.</returns>
-    bool IsFileExecutable(FileInfo file);
+    Task<bool> IsFileExecutableAsync(FileInfo file, CancellationToken cancellationToken);
 }

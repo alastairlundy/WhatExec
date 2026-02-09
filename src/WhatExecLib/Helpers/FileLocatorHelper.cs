@@ -2,7 +2,7 @@ namespace WhatExecLib.Helpers;
 
 internal class FileLocatorHelper
 {
-    internal static FileInfo? HandleRootedPath(IExecutableFileDetector executableFileDetector, string executableFileName)
+    internal static async Task<FileInfo?> HandleRootedPath(IExecutableFileDetector executableFileDetector, string executableFileName, CancellationToken cancellationToken)
     {
         try
         {
@@ -11,7 +11,7 @@ internal class FileLocatorHelper
 
             FileInfo file = new FileInfo(executableFileName);
 
-            return executableFileDetector.IsFileExecutable(file) ? file : null;
+            return await executableFileDetector.IsFileExecutableAsync(file, cancellationToken) ? file : null;
         }
         catch (FileNotFoundException)
         {

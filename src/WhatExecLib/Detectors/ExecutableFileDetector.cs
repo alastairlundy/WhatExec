@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using DotExtensions.Platforms;
+// ReSharper disable InconsistentNaming
 
 namespace WhatExecLib.Detectors;
 
@@ -16,11 +16,28 @@ namespace WhatExecLib.Detectors;
 /// </summary>
 public class ExecutableFileDetector : IExecutableFileDetector
 {
-    private bool IsUnix { get; init; }
+    #region Magic Number helper code
 
-    private bool IsMac { get; init; }
+    private static readonly byte[] PEMagicNumber = "MZPE\0\0"u8.ToArray();
 
-    private bool IsBsdBased { get; init; }
+    private static readonly byte[] MachO32BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCE];
+    private static readonly byte[] MachO64BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCF];
+
+    private static readonly byte[] ElfMagicNumber = [0x7F, 0x45, 0x4C, 0x46];
+    
+    private async Task<bool> ReadMagicNumberAsync(FileInfo file, byte[] magicNumberToCompare, CancellationToken cancellationToken)
+    {
+        using FileStream fileStream = new(file.FullName, FileMode.Open);
+
+        byte[] buffer = new byte[magicNumberToCompare.Length];
+        
+        await fileStream.ReadAsync(buffer, cancellationToken);
+
+        return buffer.SequenceEqual(magicNumberToCompare);
+    }
+    #endregion
+    
+    private bool IsMac { get; }
 
     /// <summary>
     ///
@@ -29,11 +46,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     public ExecutableFileDetector()
     {
         IsMac = OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst();
-
-        IsUnix = OperatingSystem.IsUnix();
-
-        IsBsdBased = IsMac || OperatingSystem.IsFreeBSD();
-
+        
         if (OperatingSystem.IsBrowser() || OperatingSystem.IsTvOS() || OperatingSystem.IsIOS())
             throw new PlatformNotSupportedException();
     }
@@ -42,48 +55,46 @@ public class ExecutableFileDetector : IExecutableFileDetector
     /// Determines whether the specified file can be executed on the current operating system.
     /// </summary>
     /// <param name="file">The file to be checked for executability.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>True if the file is executable, false otherwise.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified file does not exist.</exception>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    [SupportedOSPlatform("maccatalyst")]
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
-    public bool IsFileExecutable(FileInfo file)
+    public async Task<bool> IsFileExecutableAsync(FileInfo file, CancellationToken cancellationToken)
     {
-        /*
-        else if (OperatingSystem.IsLinux())
-        {
-#pragma warning disable CA1416
-            return DoesFileHaveExecutablePermissions(file)
-                &&
-                //   IsUnixElfFile(fullPath) ||
-#pragma warning restore CA1416
-        }
-        if (IsBsdBased)
-        {
-#pragma warning disable CA1416
-            return DoesFileHaveExecutablePermissions(file)
-                ||
-                //     IsUnixElfFile(file.FullName) ||
-                //    IsMachOFile(file.FullName) ||
-#pragma warning restore CA1416
-        }*/
+        if (!file.Exists)
+            throw new FileNotFoundException();
 
-        try
+        if (OperatingSystem.IsWindows())
         {
-            if (!file.Exists)
-                throw new FileNotFoundException();
+            bool hasExecutableExtension = file.Extension.ToLowerInvariant() switch
+            {
+                ".exe" or ".msi" or ".appx" or ".com" or ".sys" or ".drv" or ".mui" or ".ocx" or ".ax" or ".msstyles" or ".scr"
+                    or ".cpl" or ".acm" or ".efi" or ".dll" or ".tsp" => true,
+                _ => false
+            };
 
-            return file.HasExecutePermission();
+            if (file.Extension.ToLowerInvariant() == ".exe")
+            {
+                return file.HasExecutePermission() &&
+                       hasExecutableExtension &&
+                       await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken);
+            }
+
+            return file.HasExecutePermission() && hasExecutableExtension;
         }
-        catch (UnauthorizedAccessException)
+        if (IsMac)
         {
-            return false;
+            byte[] machOMagicNumber = Environment.Is64BitOperatingSystem ? MachO64BitMagicNumber : MachO32BitMagicNumber;
+
+            return file.HasExecutePermission() && await  ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken);
         }
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+        {
+            return file.HasExecutePermission() && await  ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken);
+        }
+
+        return file.HasExecutePermission();
     }
 }

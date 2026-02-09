@@ -100,8 +100,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
             .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption)
                 .Where(f => f.Exists)
-                .Where(file => _executableFileDetector.IsFileExecutable(file))
-                .Where(file => file.Name.Equals(executableName)));
+                .Where(file => _executableFileDetector.IsFileExecutableAsync(file, CancellationToken.None).Result
+                               && file.Name.Equals(executableName)));
 
         return results.ToArray();
     }
