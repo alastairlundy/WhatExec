@@ -47,7 +47,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     {
         IsMac = OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst();
         
-        if (OperatingSystem.IsBrowser() || OperatingSystem.IsTvOS() || OperatingSystem.IsIOS())
+        if (OperatingSystem.IsBrowser() || OperatingSystem.IsTvOS())
             throw new PlatformNotSupportedException();
     }
 
@@ -89,6 +89,10 @@ public class ExecutableFileDetector : IExecutableFileDetector
             byte[] machOMagicNumber = Environment.Is64BitOperatingSystem ? MachO64BitMagicNumber : MachO32BitMagicNumber;
 
             return file.HasExecutePermission() && await  ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken);
+        }
+        if (OperatingSystem.IsIOS())
+        {
+            return await ReadMagicNumberAsync(file, MachO64BitMagicNumber, cancellationToken);
         }
         if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
