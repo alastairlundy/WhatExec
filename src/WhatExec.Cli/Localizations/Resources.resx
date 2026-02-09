@@ -67,12 +67,15 @@
         <value>Looking for {0}</value>
     </data>
     <data name="Exceptions.DriveNotFound" xml:space="preserve">
-        <value />
+        <value>Could not locate the specified drive {0}.</value>
     </data>
     <data name="Errors.Results.CommandsNotFound" xml:space="preserve">
         <value>Error: Could not resolve the specified command(s) or executable(s): {x}</value>
     </data>
     <data name="Errors.Commands.NoCommandsSpecified" xml:space="preserve">
         <value>Error: No commands or executables were specified.</value>
+    </data>
+    <data name="Commands.Results.ReportTime.Milliseconds" xml:space="preserve">
+        <value>Took {0}ms to get results</value>
     </data>
 </root>

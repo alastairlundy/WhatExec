@@ -60,6 +60,15 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Took {0}ms to get results.
+        /// </summary>
+        internal static string Commands_Results_ReportTime_Milliseconds {
+            get {
+                return ResourceManager.GetString("Commands.Results.ReportTime.Milliseconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error: No commands or executables were specified..
         /// </summary>
         internal static string Errors_Commands_NoCommandsSpecified {
@@ -87,7 +96,7 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Could not locate the specified drive {0}..
         /// </summary>
         internal static string Exceptions_DriveNotFound {
             get {
