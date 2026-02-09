@@ -27,13 +27,24 @@ public class ExecutableFileDetector : IExecutableFileDetector
     
     private async Task<bool> ReadMagicNumberAsync(FileInfo file, byte[] magicNumberToCompare, CancellationToken cancellationToken)
     {
-        using FileStream fileStream = new(file.FullName, FileMode.Open);
+        try
+        {
+            using FileStream fileStream = new(file.FullName, FileMode.Open);
 
-        byte[] buffer = new byte[magicNumberToCompare.Length];
-        
-        await fileStream.ReadAsync(buffer, cancellationToken);
+            byte[] buffer = new byte[magicNumberToCompare.Length];
 
-        return buffer.SequenceEqual(magicNumberToCompare);
+            await fileStream.ReadAsync(buffer, cancellationToken);
+
+            return buffer.SequenceEqual(magicNumberToCompare);
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
     #endregion
     
