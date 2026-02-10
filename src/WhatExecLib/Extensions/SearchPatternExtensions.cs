@@ -2,18 +2,15 @@ namespace WhatExecLib.Extensions;
 
 internal static class SearchPatternExtensions
 {
-    extension(string executableFileName)
+    internal static IEnumerable<string> GetSearchPatterns(this string executableFileName)
     {
-        internal IEnumerable<string> GetSearchPatterns()
+        FileInfo fileInfo = new FileInfo(executableFileName);
+
+        if (Path.HasExtension(executableFileName))
         {
-            FileInfo fileInfo = new FileInfo(executableFileName);
-
-            if (Path.HasExtension(executableFileName))
-            {
-                yield return fileInfo.Extension;
-            }
-
-            yield return fileInfo.Name;
+            yield return fileInfo.Extension;
         }
+
+        yield return fileInfo.Name;
     }
 }

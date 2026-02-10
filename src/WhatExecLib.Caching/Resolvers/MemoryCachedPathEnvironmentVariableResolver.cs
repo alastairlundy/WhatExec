@@ -8,7 +8,6 @@
  */
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 
@@ -32,8 +31,10 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     /// </summary>
     /// <param name="cache"></param>
     /// <param name="pathEnvironmentVariableDetector"></param>
+    /// <param name="executableFileDetector"></param>
     public MemoryCachedPathEnvironmentVariableResolver(
-        IMemoryCache cache, IPathEnvironmentVariableDetector pathEnvironmentVariableDetector) : base(pathEnvironmentVariableDetector)
+        IMemoryCache cache, IPathEnvironmentVariableDetector pathEnvironmentVariableDetector, IExecutableFileDetector executableFileDetector) :
+        base(pathEnvironmentVariableDetector, executableFileDetector)
     {
         _cache = cache;
     }
@@ -42,7 +43,8 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
         IMemoryCache cache,
         TimeSpan defaultPathCacheLifespan,
         TimeSpan defaultPathExtensionsCacheLifespan,
-        IPathEnvironmentVariableDetector pathEnvironmentVariableDetector) : base(pathEnvironmentVariableDetector)
+        IPathEnvironmentVariableDetector pathEnvironmentVariableDetector,
+        IExecutableFileDetector executableFileDetector) : base(pathEnvironmentVariableDetector, executableFileDetector)
     {
         _cache = cache;
         DefaultPathCacheLifespan = defaultPathCacheLifespan;
@@ -89,29 +91,30 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     /// <param name="inputFilePath"></param>
     /// <param name="pathCacheLifetime"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public KeyValuePair<string, FileInfo> ResolveExecutableFile(string inputFilePath,
+    public async Task<KeyValuePair<string, FileInfo>> ResolveExecutableFileAsync(string inputFilePath,
         TimeSpan? pathCacheLifetime,
-        TimeSpan? pathExtensionsCacheLifetime)
+        TimeSpan? pathExtensionsCacheLifetime, CancellationToken cancellationToken)
     {
         pathCacheLifetime ??= DefaultPathCacheLifespan;
         pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
 
-        bool result = TryResolveExecutableFile(inputFilePath, pathCacheLifetime,
-            pathExtensionsCacheLifetime, out KeyValuePair<string, FileInfo>? fileInfo);
+        (bool success, KeyValuePair<string, FileInfo>? resolvedExecutable) result = await TryResolveExecutableFileAsync(inputFilePath, pathCacheLifetime,
+            pathExtensionsCacheLifetime, cancellationToken);
 
-        if (!result || fileInfo is null)
+        if (!result.success || result.resolvedExecutable is null)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
-        if (!fileInfo.Value.Value.Exists)
+        if (!result.resolvedExecutable.Value.Value.Exists)
             throw new FileNotFoundException($"Could not find file: {inputFilePath}");
 
-        return new KeyValuePair<string, FileInfo>(inputFilePath, fileInfo.Value.Value);
+        return new KeyValuePair<string, FileInfo>(inputFilePath, result.resolvedExecutable.Value.Value);
     }
 
     /// <summary>
@@ -120,29 +123,31 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     /// <param name="inputFilePath"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
-    /// <param name="resolvedExecutable"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveExecutableFile(string inputFilePath, TimeSpan? pathExtensionsCacheLifetime,
+    public async Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableFileAsync(string inputFilePath, TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
-        out KeyValuePair<string, FileInfo>? resolvedExecutable)
+        CancellationToken cancellationToken)
     {
-        bool success = TryResolveAllExecutableFiles(pathExtensionsCacheLifetime, pathCacheLifetime, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables, inputFilePath);
-        resolvedExecutable = resolvedExecutables.First(f => f.Key == inputFilePath);
+        (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results =
+            await TryResolveAllExecutableFilesAsync([inputFilePath], pathExtensionsCacheLifetime, pathCacheLifetime,
+                cancellationToken);
         
-        return success;
+        return (results.success,  results.resolvedExecutables.First(f => f.Key == inputFilePath));
     }
 
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="inputFilePaths"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
-    /// <param name="inputFilePaths"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     [SupportedOSPlatform("windows")]
@@ -150,8 +155,9 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
-        params string[] inputFilePaths)
+    public async Task<IReadOnlyDictionary<string, FileInfo>> ResolveAllExecutableFilesAsync(string[] inputFilePaths,
+        TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
+        CancellationToken cancellationToken)
     {
         pathCacheLifetime ??= DefaultPathCacheLifespan;
         pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
@@ -162,17 +168,17 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
         string[] pathContents = GetPathContents(pathCacheLifetime.Value)
                                 ?? throw new InvalidOperationException("PATH Variable could not be found.");
         
-        return InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions);
+        return await InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions, cancellationToken);
     }
 
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
-    /// <param name="resolvedExecutables"></param>
     /// <param name="inputFilePaths"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     [SupportedOSPlatform("windows")]
@@ -180,8 +186,9 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime, TimeSpan? pathCacheLifetime,
-        out IReadOnlyDictionary<string, FileInfo> resolvedExecutables, params string[] inputFilePaths)
+    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryResolveAllExecutableFilesAsync(string[] inputFilePaths, TimeSpan? pathExtensionsCacheLifetime,
+        TimeSpan? pathCacheLifetime,
+        CancellationToken cancellationToken)
     {
         pathCacheLifetime ??= DefaultPathCacheLifespan;
         pathExtensionsCacheLifetime ??= DefaultPathExtensionsCacheLifespan;
@@ -192,6 +199,6 @@ public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariab
         string[] pathContents = GetPathContents(pathCacheLifetime.Value)
                                 ?? throw new InvalidOperationException("PATH Variable could not be found.");
 
-        return InternalTryResolveFilePaths(inputFilePaths, out resolvedExecutables, pathContents, pathExtensions);
+        return await InternalTryResolveFilePathsAsync(inputFilePaths, pathContents, pathExtensions, cancellationToken);
     }
 }

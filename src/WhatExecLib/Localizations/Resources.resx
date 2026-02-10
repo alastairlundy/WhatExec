@@ -24,4 +24,7 @@
     <data name="Exceptions.FileNotFound" xml:space="preserve">
         <value>Could not locate the specified executable file {x}.</value>
     </data>
+    <data name="Errors.ExecutableDetection.MagicNumberIssue" xml:space="preserve">
+        <value>Found magic number buffer of '{0}' but expected '{1}'.</value>
+    </data>
 </root>

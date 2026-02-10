@@ -78,6 +78,15 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to locate executable {0}. An exception was thrown with the message &apos;{1}&apos;..
+        /// </summary>
+        internal static string Errors_Information_CommandNotLocated {
+            get {
+                return ResourceManager.GetString("Errors.Information.CommandNotLocated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error: Could not resolve the specified command(s) or executable(s): {x}.
         /// </summary>
         internal static string Errors_Results_CommandsNotFound {
@@ -114,11 +123,20 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Would yolu like to enter another command to search for?.
+        ///   Looks up a localized string similar to Would you like to enter another command to search for?.
         /// </summary>
         internal static string Prompts_CommandInput_AddAnother {
             get {
                 return ResourceManager.GetString("Prompts.CommandInput.AddAnother", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more executables could not be located. Do you want to continue resolving the remaining executables?.
+        /// </summary>
+        internal static string Prompts_Errors_ContinueAfterError {
+            get {
+                return ResourceManager.GetString("Prompts.Errors.ContinueAfterError", resourceCulture);
             }
         }
         

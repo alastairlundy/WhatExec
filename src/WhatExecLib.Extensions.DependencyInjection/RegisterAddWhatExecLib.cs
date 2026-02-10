@@ -20,54 +20,51 @@ namespace WhatExecLib.Extensions.DependencyInjection;
 /// </summary>
 public static class RegisterAddWhatExecLib
 {
+    /// <summary>
+    /// Adds the AddWhatExecLib extension methods to IServiceCollection.
+    /// </summary>
+    /// <param name="serviceLifetime">The service lifetime.</param>
     /// <param name="services"></param>
-    extension(IServiceCollection services)
+    /// <returns>The IServiceCollection with the added extensions.</returns>
+    public static IServiceCollection AddWhatExecLib(this IServiceCollection services, ServiceLifetime serviceLifetime)
     {
-        /// <summary>
-        /// Adds the AddWhatExecLib extension methods to IServiceCollection.
-        /// </summary>
-        /// <param name="serviceLifetime">The service lifetime.</param>
-        /// <returns>The IServiceCollection with the added extensions.</returns>
-        public IServiceCollection AddWhatExecLib(ServiceLifetime serviceLifetime)
+        switch (serviceLifetime)
         {
-            switch (serviceLifetime)
-            {
-                case ServiceLifetime.Scoped:
-                    services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddScoped<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
-                    services.AddScoped<
-                        IExecutableFileInstancesResolver,
-                        ExecutableFileInstancesResolver
-                    >();
-                    services.AddScoped<IExecutableFileResolver, ExecutableFileResolver>();
-                    services.AddScoped<IExecutablesResolver, ExecutablesResolver>();
-                    services.TryAddScoped<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
-                    break;
-                case ServiceLifetime.Singleton:
-                    services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddSingleton<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
-                    services.AddSingleton<
-                        IExecutableFileInstancesResolver,
-                        ExecutableFileInstancesResolver
-                    >();
-                    services.AddSingleton<IExecutableFileResolver, ExecutableFileResolver>();
-                    services.AddSingleton<IExecutablesResolver, ExecutablesResolver>();
-                    services.TryAddSingleton<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
-                    break;
-                case ServiceLifetime.Transient:
-                    services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddTransient<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
-                    services.AddTransient<
-                        IExecutableFileInstancesResolver,
-                        ExecutableFileInstancesResolver
-                    >();
-                    services.AddTransient<IExecutableFileResolver, ExecutableFileResolver>();
-                    services.AddTransient<IExecutablesResolver, ExecutablesResolver>();
-                    services.TryAddTransient<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
-                    break;
-            }
-
-            return services;
+            case ServiceLifetime.Scoped:
+                services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
+                services.AddScoped<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
+                services.AddScoped<
+                    IExecutableFileInstancesResolver,
+                    ExecutableFileInstancesResolver
+                >();
+                services.AddScoped<IExecutableFileResolver, ExecutableFileResolver>();
+                services.AddScoped<IExecutablesResolver, ExecutablesResolver>();
+                services.TryAddScoped<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
+                break;
+            case ServiceLifetime.Singleton:
+                services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
+                services.AddSingleton<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
+                services.AddSingleton<
+                    IExecutableFileInstancesResolver,
+                    ExecutableFileInstancesResolver
+                >();
+                services.AddSingleton<IExecutableFileResolver, ExecutableFileResolver>();
+                services.AddSingleton<IExecutablesResolver, ExecutablesResolver>();
+                services.TryAddSingleton<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
+                break;
+            case ServiceLifetime.Transient:
+                services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
+                services.AddTransient<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
+                services.AddTransient<
+                    IExecutableFileInstancesResolver,
+                    ExecutableFileInstancesResolver
+                >();
+                services.AddTransient<IExecutableFileResolver, ExecutableFileResolver>();
+                services.AddTransient<IExecutablesResolver, ExecutablesResolver>();
+                services.TryAddTransient<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
+                break;
         }
+
+        return services;
     }
 }

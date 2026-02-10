@@ -13,6 +13,14 @@ namespace WhatExec.Cli.Helpers;
 
 internal static class UserInputHelper
 {
+    internal static bool ContinueIfUnauthorizedAccessExceptionOccurs()
+    {
+        ConfirmationPrompt prompt = new ConfirmationPrompt(Resources.Prompts_Errors_ContinueAfterError)
+            .ShowChoices();
+        
+        return AnsiConsole.Prompt(prompt);
+    }
+    
     internal static string GetDirectoryInput(DriveInfo drive)
     {
         IEnumerable<string> directories = drive

@@ -18,32 +18,35 @@ public interface IPathEnvironmentVariableResolver
     /// Resolves the file path of a file name that is in the PATH Environment Variable.
     /// </summary>
     /// <param name="inputFilePath"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath);
-    
+    Task<KeyValuePair<string, FileInfo>> ResolveExecutableFilePathAsync(string inputFilePath,
+        CancellationToken cancellationToken);
+
     /// <summary>
     /// Resolves the file paths of multiple file names that are in the PATH Environment Variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of input file names to resolve against the PATH environment variable.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of resolved <see cref="FileInfo"/> objects containing the file paths of the input file names.</returns>
     /// <exception cref="FileNotFoundException">
     /// Thrown when one or more of the specified file names could not be found in the PATH environment variable.
     /// </exception>
-    IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFilePaths(params string[] inputFilePaths);
+    Task<IReadOnlyDictionary<string, FileInfo>> ResolveAllExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
 
     /// <summary>
     /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
     /// </summary>
     /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
-    /// <param name="resolvedExecutable">When this method returns, contains the resolved <see cref="FileInfo"/> object if the resolution is successful; otherwise, null.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
-    bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? resolvedExecutable);
+    Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableAsync(string inputFilePath, CancellationToken cancellationToken);
 
     /// <summary>
     /// Tries to resolve the file paths for a set of input file names that are in the PATH Environment Variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of file names to resolve.</param>
-    /// <param name="resolvedExecutables">When this method returns, contains an array of FileInfo objects for the resolved files if the operation is successful; otherwise, null.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>True if at least one file path was successfully resolved; otherwise, false.</returns>
-    bool TryResolveAllExecutableFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
+    Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryResolveAllExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
 }

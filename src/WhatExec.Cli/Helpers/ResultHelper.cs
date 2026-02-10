@@ -17,40 +17,47 @@ public class ResultHelper
         return exitCode;
     }
     
-    public static async Task<int> PrintResults(IAsyncEnumerable<FileInfo> results, int limit)
+    public static async Task<int> PrintFileSearchResultsAsync(IAsyncEnumerable<FileInfo> results, int limit)
     {
-        int current = 0;
+        int total = 0;
         
         await foreach (FileInfo result in results)
         {
-            if (current < limit)
+            if (total < limit)
             {
                 Console.WriteLine(result.FullName.TrimEnd(" ").TrimEnd(Environment.NewLine));
-                Interlocked.Increment(ref current);
+                Interlocked.Increment(ref total);
             }
 
-            if (current == limit)
+            if (total == limit)
             {
                 break;
             }
         }
 
-        return 0;
+        return total > 0 ? 0 : -1;
     }
     
-    public static int PrintResults(IEnumerable<FileInfo> results, int limit)
+    public static int PrintFileSearchResults(IEnumerable<FileInfo> results, int limit)
     {
-        IEnumerable<string> allowedResults = results.Take(limit)
-            .Select(f => f.FullName);
+        string[] allowedResults = results.Take(limit)
+            .Select(f => f.FullName)
+            .ToArray();
         
         string joinedString = string.Join(Environment.NewLine, allowedResults);
 
-        AnsiConsole.WriteLine(joinedString);
+        Console.WriteLine(joinedString);
 
-        return 0;
+        return allowedResults.Length > 0 ? 0 : -1;
+    }
+
+    private static int HandleIncompleteResults(IEnumerable<string> missedCommands, int resultsCount)
+    {
+        Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", missedCommands)).TrimEnd(", "));
+        return resultsCount > 0 ? 1 : -1;
     }
     
-    public static int PrintResults(Dictionary<string, List<FileInfo>> results, int limit)
+    public static int PrintResults(Dictionary<string, List<FileInfo>> results, string[] commands, int limit)
     {
         foreach (KeyValuePair<string, List<FileInfo>> result in results)
         {
@@ -59,10 +66,17 @@ public class ResultHelper
 
             string joinedString = string.Join(Environment.NewLine, allowedResults);
 
-            AnsiConsole.WriteLine(joinedString);
+            Console.WriteLine(joinedString);
+        }
+        
+        if (results.Keys.Count == commands.Length)
+        {
+            return 0;
         }
 
-        return 0;
+        IEnumerable<string> missedCommands = commands.Where(c => !results.ContainsKey(c));
+
+        return HandleIncompleteResults(missedCommands, results.Count);
     }
     
     public static int PrintResults(Dictionary<string, FileInfo> results, string[] commands)
@@ -75,13 +89,17 @@ public class ResultHelper
             {
                 stringBuilder.AppendLine(result.Value.FullName);
             }
-
+            
             Console.Write(stringBuilder.ToString());
+        }
 
+        if (results.Keys.Count == commands.Length)
+        {
             return 0;
         }
 
-        Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", commands)).TrimEnd(", "));
-        return 1;
+        IEnumerable<string> missedCommands = commands.Where(c => !results.ContainsKey(c));
+        
+        return HandleIncompleteResults(missedCommands, results.Count);
     }
 }

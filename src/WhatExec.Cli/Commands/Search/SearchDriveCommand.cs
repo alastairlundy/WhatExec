@@ -42,7 +42,7 @@ public class SearchDriveCommand
     [DefaultValue(false)]
     public bool Verbose { get; set; }
     
-    public int Run()
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -68,8 +68,8 @@ public class SearchDriveCommand
             return -1;
         }
 
-        FileInfo[] files = _executablesResolver.LocateAllExecutablesWithinDrive(drive, SearchOption.AllDirectories);
+        FileInfo[] files = await _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories, cancellationToken);
 
-        return ResultHelper.PrintResults(files, Limit);
+        return ResultHelper.PrintFileSearchResults(files, Limit);
     }
 }

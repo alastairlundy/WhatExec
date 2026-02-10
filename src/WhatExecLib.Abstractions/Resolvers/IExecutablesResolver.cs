@@ -20,11 +20,13 @@ public interface IExecutablesResolver
     /// </summary>
     /// <param name="directory">The directory in which to search for executable files.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
-    FileInfo[] LocateAllExecutablesWithinDirectory(
+    Task<FileInfo[]> LocateAllExecutablesWithinDirectoryAsync(
         DirectoryInfo directory,
-        SearchOption directorySearchOption
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken
     );
 
     /// <summary>
@@ -33,8 +35,9 @@ public interface IExecutablesResolver
     /// </summary>
     /// <param name="driveInfo">The drive in which to search for executable files.</param>
     /// <param name="searchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
-    FileInfo[] LocateAllExecutablesWithinDrive(DriveInfo driveInfo,
-        SearchOption searchOption);
+    Task<FileInfo[]> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
+        SearchOption searchOption, CancellationToken cancellationToken);
 }

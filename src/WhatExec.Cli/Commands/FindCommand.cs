@@ -46,10 +46,14 @@ public class FindCommand
     [CliOption(Description = "Report time taken to resolve executable files.", Name = "--report-time")]
     [DefaultValue(false)]
     public bool ReportTimeTaken { get; set; }
+    
+    [CliOption(Name = "--verbose", Description = "Enable verbose output and enhanced error message(s).")]
+    [DefaultValue(false)]
+    public bool Verbose { get; set; }
 
     private readonly Stopwatch _stopwatch = new();
     
-    public int Run()
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         if(ReportTimeTaken)
             _stopwatch.Start();
@@ -70,13 +74,10 @@ public class FindCommand
             return -1;
         }
 
-        Task<IReadOnlyDictionary<string, FileInfo>> task = Task.Run(() => TrySearchSystem_DoNotLocateAll(
-            Commands));
-        task.Wait();
-
-        IReadOnlyDictionary<string, FileInfo> nonLocateAllResults = task.Result;
-
-        foreach (KeyValuePair<string, FileInfo> pair in nonLocateAllResults)
+        IReadOnlyDictionary<string, FileInfo> result = await TrySearchSystem_DoNotLocateAll(
+            Commands, cancellationToken);
+        
+        foreach (KeyValuePair<string, FileInfo> pair in result)
         {
             commandLocations[pair.Key] = pair.Value;
         }
@@ -92,12 +93,50 @@ public class FindCommand
         return res;
     }
 
-    private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
-        string[] commandLeftToLookFor)
+    private async Task<IReadOnlyDictionary<string, FileInfo>> TrySearchSystem_DoNotLocateAll(
+        string[] commandLeftToLookFor, CancellationToken cancellationToken)
     {
-        _executableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
-            SearchOption.AllDirectories, commandLeftToLookFor);
-        
-        return resolvedExecutables;
+        try
+        {
+            return await _executableFileResolver.LocateExecutableFiles(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+        }
+        catch(AggregateException unauthorizedAccessException)
+        {
+            string? probematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.InnerExceptions.First()
+                .Message.Contains(command));
+
+            (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results;
+            
+            if (probematicCommand is null)
+            {
+                results = await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor,
+                    SearchOption.AllDirectories, cancellationToken);
+                
+                return results.resolvedExecutables;
+            }
+
+            if (Verbose)
+            {
+                Console.WriteLine(Resources.Errors_Information_CommandNotLocated
+                    .Replace("{0}", probematicCommand)       
+                    .Replace("{1}", unauthorizedAccessException.InnerExceptions.First().Message));
+                Console.WriteLine();
+            }
+            
+            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => c == probematicCommand).ToArray();
+            
+            bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
+            
+            if(continueInteractive)
+            {
+                results = await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+            }
+            else
+            {
+                results = (false, new Dictionary<string, FileInfo>());
+            }
+
+            return results.resolvedExecutables;
+        }
     }
 }

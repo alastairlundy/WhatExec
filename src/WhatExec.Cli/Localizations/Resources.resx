@@ -58,7 +58,7 @@
         <value />
     </data>
     <data name="Prompts.CommandInput.AddAnother" xml:space="preserve">
-        <value>Would yolu like to enter another command to search for?</value>
+        <value>Would you like to enter another command to search for?</value>
     </data>
     <data name="Exceptions.Commands.Find.Limit.MustBeGreaterThanZero" xml:space="preserve">
         <value>Limit must be greater than or equal to 1.</value>
@@ -77,5 +77,11 @@
     </data>
     <data name="Commands.Results.ReportTime.Milliseconds" xml:space="preserve">
         <value>Took {0}ms to get results</value>
+    </data>
+    <data name="Prompts.Errors.ContinueAfterError" xml:space="preserve">
+        <value>One or more executables could not be located. Do you want to continue resolving the remaining executables?</value>
+    </data>
+    <data name="Errors.Information.CommandNotLocated" xml:space="preserve">
+        <value>Failed to locate executable {0}. An exception was thrown with the message '{1}'.</value>
     </data>
 </root>

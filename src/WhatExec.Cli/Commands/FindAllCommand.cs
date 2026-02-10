@@ -35,7 +35,7 @@ public class FindAllCommand
     [Range(1, int.MaxValue)]
     public int Limit { get; set; } = 1;
     
-    public int Run()
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         Dictionary<string, List<FileInfo>> commandLocations = new();
 
@@ -53,33 +53,37 @@ public class FindAllCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
         
-        Task<IReadOnlyDictionary<string, FileInfo[]>> task = Task.Run(() => TrySearchSystem_LocateAllInstances(Commands));
-        task.Wait();
+        IReadOnlyDictionary<string, FileInfo[]> result = await TrySearchSystem_LocateAllInstances(Commands, cancellationToken);
      
-        foreach (KeyValuePair<string, FileInfo[]> pair in task.Result)
+        foreach (KeyValuePair<string, FileInfo[]> pair in result)
         {
             commandLocations[pair.Key].AddRange(pair.Value);
         }
 
-        return ResultHelper.PrintResults(commandLocations, Limit);
+        return ResultHelper.PrintResults(commandLocations, Commands, Limit);
     }
     
-    private IReadOnlyDictionary<string, FileInfo[]> TrySearchSystem_LocateAllInstances(
-        string[] commandsLeftToLookFor)
+    private async Task<IReadOnlyDictionary<string, FileInfo[]>> TrySearchSystem_LocateAllInstances(
+        string[] commandsLeftToLookFor, CancellationToken cancellationToken)
     {
         Dictionary<string, FileInfo[]> output = new(capacity: commandsLeftToLookFor.Length);
 
         foreach (string command in commandsLeftToLookFor)
         {
-#if DEBUG
-            Console.WriteLine(Resources.LocateExecutable_Status_LookingForCommand, command);
-#endif
-            FileInfo[] info = _executableFileInstancesResolver.LocateExecutableInstances(
-                command,
-                SearchOption.AllDirectories
-            );
+            try
+            {
+                FileInfo[] info = await _executableFileInstancesResolver.LocateExecutableInstancesAsync(
+                    command,
+                    SearchOption.AllDirectories,
+                    cancellationToken
+                );
             
-            output.Add(command, info);
+                output.Add(command, info);
+            }
+            catch (AggregateException)
+            {
+                // Skip and move to the next executable.
+            }
         }
 
         return new ReadOnlyDictionary<string, FileInfo[]>(output);

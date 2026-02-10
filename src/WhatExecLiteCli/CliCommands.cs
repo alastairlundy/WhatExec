@@ -16,32 +16,32 @@ namespace WhatExecLite;
 public class CliCommands
 {
     [Command("")]
-    public int Run(
+    public async Task<int> RunAsync(
         [FromServices] IPathEnvironmentVariableResolver pathEnvironmentVariableResolver,
         bool verbose = false,
-        [Argument] params string[] commands
-    )
+        CancellationToken cancellationToken = default,
+        [Argument] params string[] commands)
     {
         try
         {
-            bool success = pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(commands,
-                out IReadOnlyDictionary<string, FileInfo> resolvedExecutables);
+            (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results = await pathEnvironmentVariableResolver.TryResolveAllExecutableFilePathsAsync(commands,
+                cancellationToken);
             
-            foreach (FileInfo resolvedCommand in resolvedExecutables.Values)
+            foreach (FileInfo resolvedCommand in results.resolvedExecutables.Values)
             {
-                Console.Out.WriteLine(resolvedCommand.FullName);
+                await Console.Out.WriteLineAsync(resolvedCommand.FullName);
             }
 
-            return success ? 0 : 1;
+            return results.success ? 0 : 1;
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(Resources.Exceptions_Details);
-            Console.Error.WriteLine(e.Message);
+            await Console.Error.WriteLineAsync(Resources.Exceptions_Details);
+            await Console.Error.WriteLineAsync(e.Message);
 
             if (verbose)
             {
-                Console.Error.Write(e.StackTrace);
+                await Console.Error.WriteAsync(e.StackTrace);
             }
 
             return 1;
