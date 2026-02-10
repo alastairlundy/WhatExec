@@ -123,6 +123,15 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One or more executables could not be located. Do you want to continue resolving the remaining executables?.
+        /// </summary>
+        internal static string Prompts_Errors_ContinueAfterError {
+            get {
+                return ResourceManager.GetString("Prompts.Errors.ContinueAfterError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Directory.
         /// </summary>
         internal static string Prompts_Highlights_Directory {

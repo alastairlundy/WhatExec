@@ -35,7 +35,7 @@ public class ResultHelper
             }
         }
 
-        return 0;
+        return current > 0 ? 0 : -1;
     }
     
     public static int PrintResults(IEnumerable<FileInfo> results, int limit)
@@ -47,7 +47,7 @@ public class ResultHelper
 
         AnsiConsole.WriteLine(joinedString);
 
-        return 0;
+        return joinedString.Length > 1 ? 0 : -1;
     }
     
     public static int PrintResults(Dictionary<string, List<FileInfo>> results, int limit)
@@ -62,7 +62,7 @@ public class ResultHelper
             AnsiConsole.WriteLine(joinedString);
         }
 
-        return 0;
+        return results.Count > 0 ? 0 : 1;
     }
     
     public static int PrintResults(Dictionary<string, FileInfo> results, string[] commands)
@@ -75,13 +75,15 @@ public class ResultHelper
             {
                 stringBuilder.AppendLine(result.Value.FullName);
             }
-
-            Console.Write(stringBuilder.ToString());
-
-            return 0;
         }
 
+        if (results.Count == commands.Length)
+        {
+            Console.Write(stringBuilder.ToString());
+            return 0;
+        }
+        
         Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", commands)).TrimEnd(", "));
-        return 1;
+        return results.Count > 0 ? 1 : -1;
     }
 }

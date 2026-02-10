@@ -95,9 +95,40 @@ public class FindCommand
     private IReadOnlyDictionary<string, FileInfo> TrySearchSystem_DoNotLocateAll(
         string[] commandLeftToLookFor)
     {
-        _executableFileResolver.TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
-            SearchOption.AllDirectories, commandLeftToLookFor);
-        
-        return resolvedExecutables;
+        try
+        {
+            return _executableFileResolver.LocateExecutableFiles(SearchOption.AllDirectories, commandLeftToLookFor);
+        }
+        catch(AggregateException unauthorizedAccessException)
+        {
+            string? probematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.InnerExceptions.First()
+                .Message.Contains(command));
+
+            IReadOnlyDictionary<string, FileInfo> results;
+            
+            if (probematicCommand is null)
+            {
+                _executableFileResolver.TryLocateExecutableFiles(out results,
+                    SearchOption.AllDirectories, commandLeftToLookFor);
+                return results;
+            }
+
+            bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
+            
+            if(continueInteractive)
+            {
+                if (commandLeftToLookFor.Length == 1)
+                    return new Dictionary<string, FileInfo>();
+                
+                results =  _executableFileResolver.LocateExecutableFiles(SearchOption.AllDirectories,
+                    commandLeftToLookFor.SkipWhile(c => c == probematicCommand).ToArray());
+            }
+            else
+            {
+                results = new Dictionary<string, FileInfo>();
+            }
+
+            return results;
+        }
     }
 }

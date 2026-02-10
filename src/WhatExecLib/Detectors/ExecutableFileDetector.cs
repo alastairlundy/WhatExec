@@ -8,7 +8,7 @@
  */
 
 // ReSharper disable InconsistentNaming
-
+// ReSharper disable UseUtf8StringLiteral
 namespace WhatExecLib.Detectors;
 
 /// <summary>
@@ -20,6 +20,8 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
     private static readonly byte[] PEMagicNumber = "MZPE\0\0"u8.ToArray();
 
+    private static readonly byte[] MzMagicNumber = [0x4D, 0x5A];
+
     private static readonly byte[] MachO32BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCE];
     private static readonly byte[] MachO64BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCF];
 
@@ -27,24 +29,21 @@ public class ExecutableFileDetector : IExecutableFileDetector
     
     private async Task<bool> ReadMagicNumberAsync(FileInfo file, byte[] magicNumberToCompare, CancellationToken cancellationToken)
     {
-        try
-        {
-            using FileStream fileStream = new(file.FullName, FileMode.Open);
+#if NET8_0_OR_GREATER
+        await
+#endif
+        using FileStream fileStream = new(file.FullName, FileMode.Open);
 
-            byte[] buffer = new byte[magicNumberToCompare.Length];
+        byte[] buffer = new byte[magicNumberToCompare.Length];
 
-            await fileStream.ReadAsync(buffer, cancellationToken);
+        int bytesRead = await fileStream.ReadAsync(buffer, 0, magicNumberToCompare.Length, cancellationToken);
 
-            return buffer.SequenceEqual(magicNumberToCompare);
-        }
-        catch (IOException)
-        {
-            return false;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return false;
-        }
+#if DEBUG
+        Console.WriteLine(
+            $"Found buffer of '{string.Join("", buffer)}' but expected '{string.Join("", magicNumberToCompare)}'");
+#endif
+
+        return buffer.SequenceEqual(magicNumberToCompare) && bytesRead == magicNumberToCompare.Length;
     }
     #endregion
     
@@ -88,9 +87,12 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
             if (file.Extension.ToLowerInvariant() == ".exe")
             {
+                bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken) ||
+                                        await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken);
+
                 return file.HasExecutePermission() &&
-                       hasExecutableExtension &&
-                       await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken);
+                       hasExecutableExtension
+                       && magicNumberMatch;
             }
 
             return file.HasExecutePermission() && hasExecutableExtension;

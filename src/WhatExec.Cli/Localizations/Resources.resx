@@ -78,4 +78,7 @@
     <data name="Commands.Results.ReportTime.Milliseconds" xml:space="preserve">
         <value>Took {0}ms to get results</value>
     </data>
+    <data name="Prompts.Errors.ContinueAfterError" xml:space="preserve">
+        <value>One or more executables could not be located. Do you want to continue resolving the remaining executables?</value>
+    </data>
 </root>
