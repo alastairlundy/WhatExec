@@ -22,13 +22,14 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <summary>
-    /// 
+    /// Asynchronously locates the specified executable file within a directory or its subdirectories.
     /// </summary>
-    /// <param name="executableFileName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption, CancellationToken cancellationToken)
+    /// <param name="executableFileName">The name of the executable file to locate.</param>
+    /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A task that returns a <see cref="FileInfo"/> indicating the location of the executable if found, otherwise null.</returns>
+    public async Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
     {
         (bool success, FileInfo? file) result = await TryLocateExecutable(executableFileName, directorySearchOption, cancellationToken);
         
@@ -39,13 +40,14 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <summary>
-    /// 
+    /// Resolves the location of an executable file.
     /// </summary>
-    /// <param name="executableFileName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async Task<(bool, FileInfo?)> TryLocateExecutable(string executableFileName, SearchOption directorySearchOption,
+    /// <param name="executableFileName">The name of the executable file to locate.</param>
+    /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A task that returns a tuple indicating whether the executable was found and its location if successful, otherwise null.</returns>
+    public async Task<(bool, FileInfo?)> TryLocateExecutable(string executableFileName,
+        SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
         (bool foundInPath, KeyValuePair<string, FileInfo>? executable) result = await _pathEnvironmentVariableResolver.TryResolveExecutableAsync(executableFileName, cancellationToken);
@@ -72,13 +74,13 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <summary>
-    /// 
+    /// Asynchronously locates multiple executable files within a directory or its subdirectories.
     /// </summary>
-    /// <param name="executableFileNames"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="FileNotFoundException"></exception>
+    /// <param name="executableFileNames">The names of the executable files to locate.</param>
+    /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A dictionary containing the located executable files, where the keys are the original file names and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
+    /// <exception cref="FileNotFoundException">Thrown if any of the specified executable files are not found.</exception>
     public async Task<IReadOnlyDictionary<string, FileInfo>> LocateExecutableFiles(string[] executableFileNames,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
