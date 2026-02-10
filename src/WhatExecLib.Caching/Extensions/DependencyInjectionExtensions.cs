@@ -25,8 +25,8 @@ public static class DependencyInjectionExtensions
         /// The type of caching services added is determined by the specified service lifetime.
         /// </summary>
         /// <param name="serviceLifetime">The <see cref="ServiceLifetime"/> specifying the lifecycle of the caching services.</param>
-        /// <param name="pathCacheLifespan">An optional <see cref="TimeSpan"/> specifying the lifespan of path cache entries. If null, the default behavior is applied.</param>
-        /// <param name="pathExtensionsCacheLifespan">An optional <see cref="TimeSpan"/> specifying the lifespan of path extension cache entries. If null, the default behavior is applied.</param>
+        /// <param name="pathCacheLifespan">An optional <see cref="TimeSpan"/> specifying the lifespan of path cache entries. If null, the default behaviour is applied.</param>
+        /// <param name="pathExtensionsCacheLifespan">An optional <see cref="TimeSpan"/> specifying the lifespan of path extension cache entries. If null, the default behaviour is applied.</param>
         /// <returns>The modified <see cref="IServiceCollection"/> with caching services configured.</returns>
         public IServiceCollection AddWhatExecLibCaching(
             ServiceLifetime serviceLifetime,
@@ -70,7 +70,8 @@ public static class DependencyInjectionExtensions
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan,
-                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>(),
+                                sp.GetRequiredService<IExecutableFileDetector>()
                             )
                         );
                         break;
@@ -80,10 +81,10 @@ public static class DependencyInjectionExtensions
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan,
-                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>(),
+                                sp.GetRequiredService<IExecutableFileDetector>()
                             )
                         );
-                        ;
                         break;
                     case ServiceLifetime.Transient:
                         services.AddTransient<ICachedPathEnvironmentVariableResolver>(
@@ -91,10 +92,10 @@ public static class DependencyInjectionExtensions
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan,
-                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>(),
+                                sp.GetRequiredService<IExecutableFileDetector>()
                             )
                         );
-                        ;
                         break;
                 }
             }
@@ -150,7 +151,8 @@ public static class DependencyInjectionExtensions
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan,
-                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>(),
+                                sp.GetRequiredService<IExecutableFileDetector>()
                             )
                         );
                         break;
@@ -160,10 +162,10 @@ public static class DependencyInjectionExtensions
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan,
-                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>(),
+                                sp.GetRequiredService<IExecutableFileDetector>()
                             )
                         );
-                        ;
                         break;
                     case ServiceLifetime.Transient:
                         services.TryAddTransient<IPathEnvironmentVariableResolver>(
@@ -171,10 +173,10 @@ public static class DependencyInjectionExtensions
                                 sp.GetRequiredService<IMemoryCache>(),
                                 (TimeSpan)pathCacheLifespan,
                                 (TimeSpan)pathExtensionsCacheLifespan,
-                                sp.GetRequiredService<IPathEnvironmentVariableDetector>()
+                                sp.GetRequiredService<IPathEnvironmentVariableDetector>(),
+                                sp.GetRequiredService<IExecutableFileDetector>()
                             )
                         );
-                        ;
                         break;
                 }
             }

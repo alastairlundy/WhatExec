@@ -19,10 +19,12 @@ public interface IExecutableFileInstancesResolver
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing the located executable file instances.</returns>
-    FileInfo[] LocateExecutableInstances(
+    Task<FileInfo[]> LocateExecutableInstancesAsync(
         string executableName,
-        SearchOption directorySearchOption
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken
     );
 
     /// <summary>
@@ -31,11 +33,13 @@ public interface IExecutableFileInstancesResolver
     /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing the located executable file instances within the specified drive.</returns>
-    FileInfo[] LocateExecutableInstancesInDrive(
+    Task<FileInfo[]> LocateExecutableInstancesInDriveAsync(
         DriveInfo driveInfo,
         string executableName,
-        SearchOption directorySearchOption
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken
     );
 
     /// <summary>
@@ -44,10 +48,12 @@ public interface IExecutableFileInstancesResolver
     /// <param name="directory">The directory where the search will be conducted.</param>
     /// <param name="executableName">The name of the executable file to search for.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing the located executable files within the directory.</returns>
-    FileInfo[] LocateExecutableInstancesInDirectory(
+    Task<FileInfo[]> LocateExecutableInstancesInDirectoryAsync(
         DirectoryInfo directory,
         string executableName,
-        SearchOption directorySearchOption
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken
     );
 }

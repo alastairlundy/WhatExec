@@ -17,14 +17,17 @@ namespace WhatExecLib;
 public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 {
     private readonly IPathEnvironmentVariableDetector _pathVariableDetector;
+    private readonly IExecutableFileDetector _executableFileDetector;
 
     /// <summary>
     /// Represents a class that resolves file paths based on the system's PATH environment variable.
     /// </summary>
     /// <param name="pathVariableDetector">The path environment variable detector to use.</param>
-    public PathEnvironmentVariableResolver(IPathEnvironmentVariableDetector pathVariableDetector)
+    /// <param name="executableFileDetector"></param>
+    public PathEnvironmentVariableResolver(IPathEnvironmentVariableDetector pathVariableDetector, IExecutableFileDetector executableFileDetector)
     {
         _pathVariableDetector = pathVariableDetector;
+        _executableFileDetector = executableFileDetector;
     }
 
     #region Helper Methods
@@ -33,29 +36,26 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected virtual bool CheckFileExistsAndIsExecutable(
+    protected virtual async Task<(bool success, FileInfo? file)> CheckFileExistsAndIsExecutable(
         string filePath,
-        out FileInfo? fileInfo)
+        CancellationToken cancellationToken)
     {
         if (!Path.IsPathRooted(filePath))
         {
-            fileInfo = null;
-            return false;
+            return (false, null);
         }
             
         if (File.Exists(filePath))
         {
             FileInfo file = new(filePath);
 
-            if (file.Exists && file.HasExecutePermission())
+            if (file.Exists && await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken))
             {
-                fileInfo = file;
-                return true;
+                return (true, file);
             }
         }
 
-        fileInfo = null;
-        return false;
+        return (false, null);
     }
 
     protected virtual string[] GetPathExtensions()
@@ -69,6 +69,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// Resolves a file from the system's PATH environment variable using the provided file name.
     /// </summary>
     /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="FileInfo"/> object representing the resolved file.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the file could not be found.</exception>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
@@ -78,13 +79,20 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public KeyValuePair<string, FileInfo> ResolveExecutableFilePath(string inputFilePath) =>
-        ResolveAllExecutableFilePaths(inputFilePath).First(p => p.Key == inputFilePath);
+    public async Task<KeyValuePair<string, FileInfo>> ResolveExecutableFilePathAsync(string inputFilePath,
+        CancellationToken cancellationToken)
+    {
+        IReadOnlyDictionary<string, FileInfo> result = await ResolveAllExecutableFilePathsAsync([inputFilePath], cancellationToken);
+        
+        return result.First(p => p.Key == inputFilePath);
+    }
 
     /// <summary>
     /// Resolves a collection of files from the system's PATH environment variable using the provided file name.
     /// </summary>
     /// <param name="inputFilePaths">A collection of file names to resolve, including optional relative or absolute paths.</param>
+    /// <param name="cancellationToken">
+    /// </param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the resolved files.</returns>
     /// <exception cref="FileNotFoundException">Thrown if one or more files could not be found in the specified locations.</exception>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
@@ -94,7 +102,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFilePaths(params string[] inputFilePaths)
+    public async Task<IReadOnlyDictionary<string, FileInfo>> ResolveAllExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
@@ -102,15 +110,14 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         string[] pathContents = GetPathContents()
                                 ?? throw new InvalidOperationException("PATH Variable could not be found.");
 
-        return InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions);
+        return await InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions, cancellationToken);
     }
 
     /// <summary>
     /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
     /// </summary>
     /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
-    /// <param name="resolvedExecutable">When this method returns, contains the resolved <see cref="FileInfo"/>
-    /// object if the resolution is successful; otherwise, null.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
     [SupportedOSPlatform("windows")]
@@ -118,22 +125,20 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveExecutable(string inputFilePath, out KeyValuePair<string, FileInfo>? resolvedExecutable)
+    public async Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableAsync(string inputFilePath, CancellationToken cancellationToken)
     {
-        bool success = TryResolveAllExecutableFilePaths([inputFilePath], out IReadOnlyDictionary<string, FileInfo> fileInfos);
+        (bool success, IReadOnlyDictionary<string, FileInfo> files) result = await TryResolveAllExecutableFilePathsAsync([inputFilePath], cancellationToken);
+        
+        KeyValuePair<string, FileInfo>? resolvedExecutable = result.files.FirstOrDefault(f => f.Key == inputFilePath);
 
-        resolvedExecutable = fileInfos.FirstOrDefault(f => f.Key == inputFilePath);
-       
-        return success;
+        return (result.success, resolvedExecutable);
     }
 
     /// <summary>
     /// Attempts to resolve a set of file paths into executable files based on the system's PATH environment variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of file names or paths to resolve. These can include relative or absolute paths.</param>
-    /// <param name="resolvedExecutables">When the method completes, contains an array of <see cref="FileInfo"/> objects representing the resolved files,
-    /// if any files are successfully resolved. Null if no files are resolved.
-    /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A boolean value indicating whether any of the specified files were successfully resolved.</returns>
     /// <exception cref="InvalidOperationException">
     /// Thrown if resolving the PATH environment variable fails, or an invalid operation occurs during the resolution process.
@@ -143,7 +148,8 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public bool TryResolveAllExecutableFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables)
+    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryResolveAllExecutableFilePathsAsync(string[] inputFilePaths,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
@@ -157,11 +163,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         }
         catch (InvalidOperationException)
         {
-            resolvedExecutables = new ReadOnlyDictionary<string, FileInfo>(new Dictionary<string, FileInfo>());
-            return false;
+            return (false, new ReadOnlyDictionary<string, FileInfo>(new Dictionary<string, FileInfo>()));
         }
 
-        return InternalTryResolveFilePaths(inputFilePaths, out resolvedExecutables, pathContents, pathExtensions);
+        return await InternalTryResolveFilePathsAsync(inputFilePaths, pathContents, pathExtensions, cancellationToken);
     }
 
     #region File Resolving Code
@@ -170,7 +175,8 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected virtual IReadOnlyDictionary<string, FileInfo> InternalResolveFilePaths(string[] inputFilePaths, string[] pathContents, string[] pathExtensions)
+    protected virtual async Task<IReadOnlyDictionary<string, FileInfo>> InternalResolveFilePaths(string[] inputFilePaths, string[] pathContents, string[] pathExtensions,
+        CancellationToken cancellationToken)
     {
         Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
 
@@ -180,9 +186,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 || inputFilePath.Contains(Path.DirectorySeparatorChar)
                 || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
             {
-                if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? fileInfo) && fileInfo is not null)
+                (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken);
+                if (checkResults.success && checkResults.file is not null)
                 {
-                    output.TryAdd(inputFilePath, fileInfo);
+                    output.TryAdd(inputFilePath, checkResults.file);
                     continue;
                 }
             }
@@ -198,14 +205,13 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                         string filePath = Path.Combine(pathEntry,
                             $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}");
                         
-                        bool result = CheckFileExistsAndIsExecutable(
+                        (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(
                             filePath,
-                            out FileInfo? fileInfo
-                        );
+                            cancellationToken);
 
-                        if (result && fileInfo is not null)
+                        if (result.success && result.file is not null)
                         {
-                            output.TryAdd(inputFilePath, fileInfo);
+                            output.TryAdd(inputFilePath, result.file);
                         }
                     }
                 }
@@ -213,14 +219,14 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 {
                     string filePath = Path.Combine(pathEntry, Path.GetFileName(inputFilePath));
                     
-                    bool result = CheckFileExistsAndIsExecutable(
+                    (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(
                         filePath,
-                        out FileInfo? fileInfo
+                        cancellationToken
                     );
 
-                    if (result && fileInfo is not null)
+                    if (result.success && result.file is not null)
                     {
-                        output.TryAdd(inputFilePath, fileInfo);
+                        output.TryAdd(inputFilePath, result.file);
                     }
                 }
             }
@@ -239,8 +245,8 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    protected virtual bool InternalTryResolveFilePaths(string[] inputFilePaths, out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
-        string[] pathContents, string[] pathExtensions)
+    protected virtual async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> InternalTryResolveFilePathsAsync(string[] inputFilePaths,
+        string[] pathContents, string[] pathExtensions, CancellationToken cancellationToken)
     {
         Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
 
@@ -250,9 +256,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 || inputFilePath.Contains(Path.DirectorySeparatorChar)
                 || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
             {
-                if (CheckFileExistsAndIsExecutable(inputFilePath, out FileInfo? fileInfo) && fileInfo is not null)
+                (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken);
+                if (checkResults.success && checkResults.file is not null)
                 {
-                    output.TryAdd(inputFilePath, fileInfo);
+                    output.TryAdd(inputFilePath, checkResults.file);
                     continue;
                 }
             }
@@ -268,11 +275,11 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                         string filePath = Path.Combine(pathEntry,
                             $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}");
                         
-                        bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
+                        (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(filePath, cancellationToken);
 
-                        if (result && fileInfo is not null)
+                        if (result.success && result.file is not null)
                         {
-                            output.TryAdd(inputFilePath, fileInfo);
+                            output.TryAdd(inputFilePath, result.file);
                         }
                     }
                 }
@@ -280,18 +287,17 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 {
                     string filePath = Path.Combine(pathEntry, Path.GetFileName(inputFilePath));
                     
-                    bool result = CheckFileExistsAndIsExecutable(filePath, out FileInfo? fileInfo);
+                    (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(filePath, cancellationToken);
 
-                    if (result && fileInfo is not null)
+                    if (result.success && result.file is not null)
                     {
-                        output.TryAdd(inputFilePath, fileInfo);
+                        output.TryAdd(inputFilePath, result.file);
                     }
                 }
             }
         }
         
-        resolvedExecutables = new ReadOnlyDictionary<string, FileInfo>(output);
-        return output.Count != 0;
+        return (output.Count != 0, new ReadOnlyDictionary<string, FileInfo>(output));
     }
     #endregion
 }

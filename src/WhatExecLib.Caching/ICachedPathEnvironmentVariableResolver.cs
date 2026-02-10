@@ -9,6 +9,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WhatExecLib.Caching;
 
@@ -23,12 +25,12 @@ public interface ICachedPathEnvironmentVariableResolver : IPathEnvironmentVariab
     /// <param name="inputFilePath"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    KeyValuePair<string, FileInfo> ResolveExecutableFile(
-        string inputFilePath,
+    Task<KeyValuePair<string, FileInfo>> ResolveExecutableFileAsync(string inputFilePath,
         TimeSpan? pathExtensionsCacheLifetime,
-        TimeSpan? pathCacheLifetime
-    );
+        TimeSpan? pathCacheLifetime,
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// 
@@ -36,14 +38,25 @@ public interface ICachedPathEnvironmentVariableResolver : IPathEnvironmentVariab
     /// <param name="inputFilePath"></param>
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
-    /// <param name="resolvedExecutable"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    bool TryResolveExecutableFile(
-        string inputFilePath,
+    Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableFileAsync(string inputFilePath,
         TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
-        out KeyValuePair<string, FileInfo>? resolvedExecutable
-    );
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="inputFilePaths"></param>
+    /// <param name="pathExtensionsCacheLifetime"></param>
+    /// <param name="pathCacheLifetime"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<IReadOnlyDictionary<string, FileInfo>> ResolveAllExecutableFilesAsync(string[] inputFilePaths,
+        TimeSpan? pathExtensionsCacheLifetime,
+        TimeSpan? pathCacheLifetime,
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// 
@@ -51,23 +64,10 @@ public interface ICachedPathEnvironmentVariableResolver : IPathEnvironmentVariab
     /// <param name="pathExtensionsCacheLifetime"></param>
     /// <param name="pathCacheLifetime"></param>
     /// <param name="inputFilePaths"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    IReadOnlyDictionary<string, FileInfo> ResolveAllExecutableFiles(
+    Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryResolveAllExecutableFilesAsync(string[] inputFilePaths, 
         TimeSpan? pathExtensionsCacheLifetime,
         TimeSpan? pathCacheLifetime,
-        params string[] inputFilePaths
-    );
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="pathExtensionsCacheLifetime"></param>
-    /// <param name="pathCacheLifetime"></param>
-    /// <param name="resolvedExecutables"></param>
-    /// <param name="inputFilePaths"></param>
-    /// <returns></returns>
-    bool TryResolveAllExecutableFiles(TimeSpan? pathExtensionsCacheLifetime,
-        TimeSpan? pathCacheLifetime,
-        out IReadOnlyDictionary<string, FileInfo> resolvedExecutables,
-        params string[] inputFilePaths); 
+        CancellationToken cancellationToken); 
 }

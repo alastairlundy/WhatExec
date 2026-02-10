@@ -19,29 +19,38 @@ public interface IExecutableFileResolver
     /// </summary>
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="FileInfo"/> representing the located executable file if found.</returns>
-    FileInfo LocateExecutable(string executableFileName, SearchOption directorySearchOption);
+    Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption, CancellationToken cancellationToken);
     
-    bool TryLocateExecutable(string executableFileName, SearchOption directorySearchOption, out FileInfo? fileInfo);
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="executableFileName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<(bool, FileInfo?)> TryLocateExecutable(string executableFileName, SearchOption directorySearchOption, CancellationToken cancellationToken);
+
     /// <summary>
     /// Locates the specified executable files and returns a dictionary containing their names and corresponding file information.
     /// </summary>
     /// <param name="executableFileNames">An array of strings representing the names of the executable files to locate.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A read-only dictionary where the keys are the names of the executable files and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if one or more of the specified executable files was not found.</exception>
-    IReadOnlyDictionary<string, FileInfo> LocateExecutableFiles( SearchOption directorySearchOption, params string[] executableFileNames);
+    Task<IReadOnlyDictionary<string, FileInfo>> LocateExecutableFiles(string[] executableFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken);
 
     /// <summary>
     /// Attempts to locate the specified executable files and returns a boolean indicating the success of the operation.
     /// </summary>
-    /// <param name="executableFiles">An output parameter that, on success, contains a read-only dictionary mapping the names of the executable files to their corresponding <see cref="FileInfo"/> objects.</param>
-    /// <param name="directorySearchOption"></param>
     /// <param name="executableFileNames">An array of strings representing the names of the executable files to locate.</param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     /// A boolean value indicating whether at least one of the specified executable files was successfully located.
     /// </returns>
-    bool TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, SearchOption directorySearchOption,
-        params string[] executableFileNames);
+    Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryLocateExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption,
+        CancellationToken cancellationToken);
 }

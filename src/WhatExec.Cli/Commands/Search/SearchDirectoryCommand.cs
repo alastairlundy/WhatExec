@@ -44,7 +44,7 @@ public class SearchDirectoryCommand
     public string? Directory { get; set; }
     
     
-    public int Run()
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -70,9 +70,9 @@ public class SearchDirectoryCommand
             return -1;
         }
 
-        FileInfo[] files = _executablesResolver.LocateAllExecutablesWithinDirectory(directoryInfo,
-            SearchOption.AllDirectories);
+        FileInfo[] files = await _executablesResolver.LocateAllExecutablesWithinDirectoryAsync(directoryInfo,
+            SearchOption.AllDirectories, cancellationToken);
 
-        return ResultHelper.PrintResults(files, Limit);
+        return ResultHelper.PrintFileSearchResults(files, Limit);
     }
 }

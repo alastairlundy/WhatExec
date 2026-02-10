@@ -24,31 +24,36 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     {
         _executableFileDetector = executableDetector;
     }
-    
+
     /// <summary>
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances.</returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo[] LocateExecutableInstances(string executableName,
-        SearchOption directorySearchOption)
+    public async Task<FileInfo[]> LocateExecutableInstancesAsync(string executableName,
+        SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
         IEnumerable<DriveInfo> drives = DriveInfo.SafelyEnumerateLogicalDrives();
 
-        IEnumerable<FileInfo> result = drives
-            .SelectMany(drive =>
-                LocateExecutableInstancesInDrive(drive, executableName, directorySearchOption))
-            .AsParallel();
+        List<FileInfo> output = new();
+        
+        foreach (DriveInfo drive in drives)
+        {
+            FileInfo[] driveResults = await LocateExecutableInstancesInDriveAsync(drive, executableName, directorySearchOption, cancellationToken);
+           
+            output.AddRange(driveResults);
+        }
 
-        return result.ToArray();
+        return output.ToArray();
     }
 
     /// <summary>
@@ -57,26 +62,41 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo[] LocateExecutableInstancesInDrive(DriveInfo driveInfo,
+    public async Task<FileInfo[]> LocateExecutableInstancesInDriveAsync(DriveInfo driveInfo,
         string executableName,
-        SearchOption directorySearchOption)
+        SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
-        
-        IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
-            .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption)
-                .Where(f => f.Exists
-                            && _executableFileDetector.IsFileExecutableAsync(f, CancellationToken.None).Result
-                            && f.Name.Equals(executableName)
-                ));
 
-        return results.ToArray();
+        List<FileInfo> output = new();
+
+        IEnumerable<FileInfo> files = executableName.GetSearchPatterns()
+            .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
+            .Where(f => f.Exists && f.Name.Equals(executableName));
+
+        foreach (FileInfo file in files)
+        {
+            try
+            {
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+
+                if (isExecutable)
+                    output.Add(file);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Skip if not authorized.
+            }
+        }
+        
+        return output.ToArray();
     }
 
     /// <summary>
@@ -85,24 +105,40 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// <param name="directory">The directory where the search will be conducted.</param>
     /// <param name="executableName">The name of the executable file to search for.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable files within the directory.</returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo[] LocateExecutableInstancesInDirectory(DirectoryInfo directory,
+    public async Task<FileInfo[]> LocateExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
         string executableName,
-        SearchOption directorySearchOption)
+        SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
-        
-        IEnumerable<FileInfo> results = executableName.GetSearchPatterns()
-            .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption)
-                .Where(f => f.Exists)
-                .Where(file => _executableFileDetector.IsFileExecutableAsync(file, CancellationToken.None).Result
-                               && file.Name.Equals(executableName)));
 
-        return results.ToArray();
+        List<FileInfo> output = new();
+        
+        IEnumerable<FileInfo> files = executableName.GetSearchPatterns()
+            .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
+            .Where(f => f.Exists && f.Name.Equals(executableName));
+
+        foreach (FileInfo file in files)
+        {
+            try
+            {
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+
+                if (isExecutable)
+                    output.Add(file);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Skip if not authorized.
+            }
+        }
+
+        return output.ToArray();
     }
 }

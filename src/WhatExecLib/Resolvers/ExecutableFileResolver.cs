@@ -26,13 +26,14 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// </summary>
     /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public FileInfo LocateExecutable(string executableFileName, SearchOption directorySearchOption)
+    public async Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
-        bool success = TryLocateExecutable(executableFileName, directorySearchOption, out FileInfo? fileInfo);
+        (bool success, FileInfo? file) result = await TryLocateExecutable(executableFileName, directorySearchOption, cancellationToken);
         
-        if(success && fileInfo is not null)
-            return fileInfo;
+        if(result is { success: true, file: not null })
+            return result.file;
         
         throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{x}", executableFileName));
     }
@@ -42,100 +43,105 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// </summary>
     /// <param name="executableFileName"></param>
     /// <param name="directorySearchOption"></param>
-    /// <param name="resolvedFilePath"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public bool TryLocateExecutable(string executableFileName, SearchOption directorySearchOption, out FileInfo? resolvedFilePath)
+    public async Task<(bool, FileInfo?)> TryLocateExecutable(string executableFileName, SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
     {
-        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveExecutable(executableFileName,
-            out KeyValuePair<string, FileInfo>? pair);
+        (bool foundInPath, KeyValuePair<string, FileInfo>? executable) result = await _pathEnvironmentVariableResolver.TryResolveExecutableAsync(executableFileName, cancellationToken);
 
-        if (foundInPath && pair is not null)
+        if (result.foundInPath && result.executable is not null)
         {
-            resolvedFilePath = pair.Value.Value;
-            return true;
+            return (true, result.executable.Value.Value);
         }
         
         StringComparison comparison = OperatingSystem.IsWindows() ?  StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
-        FileInfo? output = DriveInfo.SafelyEnumerateLogicalDrives()
-            .SelectMany(d => LocateExecutablesInDrive(d, [executableFileName], directorySearchOption))
-            .Select(f => f.Value)
-            .FirstOrDefault(f => f.Name.Equals(executableFileName, comparison));
+        foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
+        {
+            KeyValuePair<string, FileInfo>[] driveResults = await LocateExecutablesInDriveAsync(drive, [executableFileName], directorySearchOption, cancellationToken);
+
+            foreach (KeyValuePair<string, FileInfo> fileKvp in driveResults)
+            {
+                if(fileKvp.Value.Name.Equals(executableFileName, comparison))
+                    return (true, fileKvp.Value);
+            }
+        }
         
-        resolvedFilePath = output;
-        
-        return output is not null;
+        return (false, null);
     }
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="directorySearchOption"></param>
     /// <param name="executableFileNames"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public IReadOnlyDictionary<string, FileInfo> LocateExecutableFiles(SearchOption directorySearchOption, params string[] executableFileNames)
+    public async Task<IReadOnlyDictionary<string, FileInfo>> LocateExecutableFiles(string[] executableFileNames,
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
     {
-        bool success = TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> output, directorySearchOption,
-            executableFileNames);
+        (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryLocateExecutableFilesAsync(executableFileNames,
+            directorySearchOption, cancellationToken);
         
-        if (!success && output.Count < executableFileNames.Length)
+        if (!result.success && result.executables.Count < executableFileNames.Length)
         {
-            string filesNotFound = string.Join(", ", executableFileNames.Except(output.Keys));
+            string filesNotFound = string.Join(", ", executableFileNames.Except(result.executables.Keys));
             
             throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{x}", filesNotFound));
         }
         
-        return output;
+        return result.executables;
     }
 
     /// <inheritdoc/>
-    public bool TryLocateExecutableFiles(out IReadOnlyDictionary<string, FileInfo> executableFiles, 
+    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryLocateExecutableFilesAsync(string[] executableFileNames,
         SearchOption directorySearchOption,
-        params string[] executableFileNames)
+        CancellationToken cancellationToken)
     {
         string[] executablesToLookFor;
         Dictionary<string, FileInfo> output = new(capacity: executableFileNames.Length);
         
-        bool foundInPath = _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePaths(executableFileNames, 
-            out IReadOnlyDictionary<string, FileInfo> pathExecutables);
+        (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePathsAsync(executableFileNames, cancellationToken);
 
-        if (foundInPath && pathExecutables.Count == executableFileNames.Length)
+        if (result.foundInPath && result.pathExecutables.Count == executableFileNames.Length)
         {
-            executableFiles = pathExecutables;
-            return true;
+            return (true, result.pathExecutables);
         }
-        if(pathExecutables.Count > 0)
+        if(result.pathExecutables.Count > 0)
         {
-            foreach (KeyValuePair<string, FileInfo> result in pathExecutables)
+            foreach (KeyValuePair<string, FileInfo> executable in result.pathExecutables)
             {
-                output.Add(result.Key, result.Value);
+                output.Add(executable.Key, executable.Value);
             }
             
-            executablesToLookFor = executableFileNames.Where(f => !pathExecutables.ContainsKey(f)).ToArray();
+            executablesToLookFor = executableFileNames.Where(f => !result.pathExecutables.ContainsKey(f)).ToArray();
         }
         else
         {
             executablesToLookFor = executableFileNames;
         }
-        
-        IEnumerable<KeyValuePair<string, FileInfo>> driveResults = DriveInfo.SafelyEnumerateLogicalDrives()
-            .SelectMany(d => LocateExecutablesInDrive(d, executablesToLookFor, directorySearchOption));
 
-        foreach (KeyValuePair<string, FileInfo> result in driveResults)
+        foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
-            bool addSuccess = output.TryAdd(result.Key, result.Value);
+            var driveResults = await LocateExecutablesInDriveAsync(drive, executablesToLookFor, directorySearchOption, cancellationToken);
             
-            if (!addSuccess)
-                output[result.Key] = result.Value;
+            foreach (KeyValuePair<string, FileInfo> driveResult in driveResults)
+            {
+                bool addSuccess = output.TryAdd(driveResult.Key, driveResult.Value);
+            
+                if (!addSuccess)
+                    output[driveResult.Key] = driveResult.Value;
+            }
         }
         
-        executableFiles = new Dictionary<string, FileInfo>(output);
-        return output.Count == executableFileNames.Length;
+        return (output.Count == executableFileNames.Length, new Dictionary<string, FileInfo>(output));
     }
     
-    private KeyValuePair<string, FileInfo>[] LocateExecutablesInDrive(DriveInfo driveInfo,
-        string[] executableFileNames, SearchOption directorySearchOption)
+    private async Task<KeyValuePair<string, FileInfo>[]> LocateExecutablesInDriveAsync(DriveInfo driveInfo,
+        string[] executableFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(executableFileNames);
 
@@ -149,10 +155,15 @@ public class ExecutableFileResolver : IExecutableFileResolver
         {
             FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path.GetFileName(executableFileName), directorySearchOption)
                 .Where(f => executableFileName.Equals(f.Name, stringComparison))
-                .FirstOrDefault(f => f.Exists && _executableFileDetector.IsFileExecutableAsync(f, CancellationToken.None).Result);
-           
-            if(file is not null)
-                output.Add(new KeyValuePair<string, FileInfo>(executableFileName, file));
+                .FirstOrDefault(f => f.Exists);
+            
+            if (file is not null)
+            {
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+             
+                if(isExecutable)
+                    output.Add(new KeyValuePair<string, FileInfo>(executableFileName, file));
+            }
         }
         
         return output.ToArray();

@@ -30,6 +30,7 @@ public class ExecutablesResolver : IExecutablesResolver
     /// </summary>
     /// <param name="directory">The directory to search for executables.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the executable files found.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
     [SupportedOSPlatform("windows")]
@@ -37,16 +38,34 @@ public class ExecutablesResolver : IExecutablesResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo[] LocateAllExecutablesWithinDirectory(DirectoryInfo directory,
-        SearchOption directorySearchOption)
+    public async Task<FileInfo[]> LocateAllExecutablesWithinDirectoryAsync(DirectoryInfo directory,
+        SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         if(!directory.Exists)
             throw new DirectoryNotFoundException("The specified directory does not exist");
+
+        List<FileInfo> output = new();
         
-        return directory.SafelyEnumerateFiles("*",
+        IEnumerable<FileInfo> files = directory.SafelyEnumerateFiles("*",
                 directorySearchOption)
-            .Where(file => file.Exists && _executableFileDetector.IsFileExecutableAsync(file, CancellationToken.None).Result)
-            .ToArray();
+            .Where(file => file.Exists);
+
+        foreach (FileInfo file in files)
+        {
+            try
+            {
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+
+                if (isExecutable)
+                    output.Add(file);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Skip if not authorized
+            }
+        }
+        
+        return output.ToArray();
     }
 
     /// <summary>
@@ -54,22 +73,42 @@ public class ExecutablesResolver : IExecutablesResolver
     /// </summary>
     /// <param name="driveInfo">The drive to search within for executable files.</param>
     /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing executable files found within the drive.</returns>
     [SupportedOSPlatform("windows")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public FileInfo[] LocateAllExecutablesWithinDrive(
-        DriveInfo driveInfo,
-        SearchOption directorySearchOption)
+    public async Task<FileInfo[]> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
+        SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         if(!driveInfo.IsReady)
             throw new ArgumentException("The specified drive is not ready");
 
-        return driveInfo.RootDirectory.SafelyEnumerateFiles("*",
+        List<FileInfo> output = new();
+        
+        IEnumerable<FileInfo> files = driveInfo.RootDirectory.SafelyEnumerateFiles("*",
                 directorySearchOption)
-            .Where(file => file.Exists && _executableFileDetector.IsFileExecutableAsync(file, CancellationToken.None).Result)
-            .ToArray();
+            .Where(file => file.Exists);
+
+        foreach (FileInfo file in files)
+        {
+            try
+            {
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+
+                if (isExecutable)
+                {
+                    output.Add(file);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Skip if not authorized.
+            }
+        }
+
+        return output.ToArray();
     }
 }

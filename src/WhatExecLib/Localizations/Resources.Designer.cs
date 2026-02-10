@@ -60,6 +60,15 @@ namespace WhatExecLib.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Found magic number buffer of &apos;{0}&apos; but expected &apos;{1}&apos;..
+        /// </summary>
+        internal static string Errors_ExecutableDetection_MagicNumberIssue {
+            get {
+                return ResourceManager.GetString("Errors.ExecutableDetection.MagicNumberIssue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate the specified executable files {x}..
         /// </summary>
         internal static string Exception_FilesNotFound {

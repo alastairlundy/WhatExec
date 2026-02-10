@@ -123,7 +123,7 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Would yolu like to enter another command to search for?.
+        ///   Looks up a localized string similar to Would you like to enter another command to search for?.
         /// </summary>
         internal static string Prompts_CommandInput_AddAnother {
             get {

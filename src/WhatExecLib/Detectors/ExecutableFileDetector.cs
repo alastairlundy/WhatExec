@@ -32,15 +32,14 @@ public class ExecutableFileDetector : IExecutableFileDetector
 #if NET8_0_OR_GREATER
         await
 #endif
-        using FileStream fileStream = new(file.FullName, FileMode.Open);
+            using FileStream fileStream = new(file.FullName, FileMode.Open);
 
         byte[] buffer = new byte[magicNumberToCompare.Length];
 
         int bytesRead = await fileStream.ReadAsync(buffer, 0, magicNumberToCompare.Length, cancellationToken);
 
 #if DEBUG
-        Console.WriteLine(
-            $"Found buffer of '{string.Join("", buffer)}' but expected '{string.Join("", magicNumberToCompare)}'");
+        Console.WriteLine(Resources.Errors_ExecutableDetection_MagicNumberIssue, string.Join("", buffer), string.Join("", magicNumberToCompare));
 #endif
 
         return buffer.SequenceEqual(magicNumberToCompare) && bytesRead == magicNumberToCompare.Length;
