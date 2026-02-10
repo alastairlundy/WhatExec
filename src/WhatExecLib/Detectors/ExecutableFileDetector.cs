@@ -67,7 +67,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
     /// <param name="cancellationToken"></param>
     /// <returns>True if the file is executable, false otherwise.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified file does not exist.</exception>
-    [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
     public async Task<bool> IsFileExecutableAsync(FileInfo file, CancellationToken cancellationToken)
