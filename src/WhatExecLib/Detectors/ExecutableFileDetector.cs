@@ -32,7 +32,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
 #if NET8_0_OR_GREATER
         await
 #endif
-            using FileStream fileStream = new(file.FullName, FileMode.Open);
+        using FileStream fileStream = new(file.FullName, FileMode.Open);
 
         byte[] buffer = new byte[magicNumberToCompare.Length];
 
