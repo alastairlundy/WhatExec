@@ -46,6 +46,10 @@ public class FindCommand
     [CliOption(Description = "Report time taken to resolve executable files.", Name = "--report-time")]
     [DefaultValue(false)]
     public bool ReportTimeTaken { get; set; }
+    
+    [CliOption(Name = "--verbose", Description = "Enable verbose output and enhanced error message(s).")]
+    [DefaultValue(false)]
+    public bool Verbose { get; set; }
 
     private readonly Stopwatch _stopwatch = new();
     
@@ -113,15 +117,22 @@ public class FindCommand
                 return results;
             }
 
+            if (Verbose)
+            {
+                Console.WriteLine(Resources.Errors_Information_CommandNotLocated
+                    .Replace("{0}", probematicCommand)       
+                    .Replace("{1}", unauthorizedAccessException.InnerExceptions.First().Message));
+                Console.WriteLine();
+            }
+            
+            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => c == probematicCommand).ToArray();
+            
             bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
             
             if(continueInteractive)
             {
-                if (commandLeftToLookFor.Length == 1)
-                    return new Dictionary<string, FileInfo>();
-                
-                results =  _executableFileResolver.LocateExecutableFiles(SearchOption.AllDirectories,
-                    commandLeftToLookFor.SkipWhile(c => c == probematicCommand).ToArray());
+                _executableFileResolver.TryLocateExecutableFiles(out results, SearchOption.AllDirectories,
+                    commandLeftToLookFor);
             }
             else
             {

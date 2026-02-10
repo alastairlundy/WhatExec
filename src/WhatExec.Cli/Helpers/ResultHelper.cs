@@ -75,15 +75,18 @@ public class ResultHelper
             {
                 stringBuilder.AppendLine(result.Value.FullName);
             }
+            
+            Console.Write(stringBuilder.ToString());
         }
 
-        if (results.Count == commands.Length)
+        if (results.Keys.Count == commands.Length)
         {
-            Console.Write(stringBuilder.ToString());
             return 0;
         }
+
+        IEnumerable<string> missedCommands = commands.Where(c => !results.ContainsKey(c));
         
-        Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", commands)).TrimEnd(", "));
+        Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", missedCommands)).TrimEnd(", "));
         return results.Count > 0 ? 1 : -1;
     }
 }

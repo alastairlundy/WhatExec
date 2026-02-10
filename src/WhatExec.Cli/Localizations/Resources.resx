@@ -81,4 +81,7 @@
     <data name="Prompts.Errors.ContinueAfterError" xml:space="preserve">
         <value>One or more executables could not be located. Do you want to continue resolving the remaining executables?</value>
     </data>
+    <data name="Errors.Information.CommandNotLocated" xml:space="preserve">
+        <value>Failed to locate executable {0}. An exception was thrown with the message '{1}'.</value>
+    </data>
 </root>
