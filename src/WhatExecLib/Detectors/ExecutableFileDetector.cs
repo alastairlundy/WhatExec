@@ -87,12 +87,19 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
             if (file.Extension.ToLowerInvariant() == ".exe")
             {
-                bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken) ||
-                                        await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken);
+                try
+                {
+                    bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken) ||
+                                            await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken);
 
-                return file.HasExecutePermission() &&
-                       hasExecutableExtension
-                       && magicNumberMatch;
+                    return file.HasExecutePermission() &&
+                           hasExecutableExtension
+                           && magicNumberMatch;
+                }
+                catch
+                {
+                    return file.HasExecutePermission() && hasExecutableExtension;
+                }
             }
 
             return file.HasExecutePermission() && hasExecutableExtension;
@@ -101,7 +108,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
         {
             byte[] machOMagicNumber = Environment.Is64BitOperatingSystem ? MachO64BitMagicNumber : MachO32BitMagicNumber;
 
-            return file.HasExecutePermission() && await  ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken);
+            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken);
         }
         if (OperatingSystem.IsIOS())
         {
@@ -109,7 +116,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
         }
         if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
-            return file.HasExecutePermission() && await  ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken);
+            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken);
         }
 
         return file.HasExecutePermission();
