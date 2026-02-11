@@ -74,14 +74,18 @@ public class FindCommand
             Console.WriteLine(Resources.Errors_Commands_NoCommandsSpecified);
             return -1;
         }
-
+        
         IReadOnlyDictionary<string, FileInfo> result = await TrySearchSystem_DoNotLocateAll(
             Commands, cliContext.CancellationToken);
-        
-        foreach (KeyValuePair<string, FileInfo> pair in result)
-        {
-            commandLocations[pair.Key] = pair.Value;
-        }
+
+        AnsiConsole.Status()
+            .Start("Preparing to display results...", context =>
+            {
+                foreach (KeyValuePair<string, FileInfo> pair in result)
+                {
+                    commandLocations.Add(pair.Key, pair.Value);
+                }
+            });
 
         int res = ResultHelper.PrintResults(commandLocations, Commands);
         
@@ -99,8 +103,8 @@ public class FindCommand
     {
         try
         {
-            (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results =  await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor,
-                SearchOption.AllDirectories, cancellationToken);
+            (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results =  await _executableFileResolver.
+                TryLocateExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
 
             return results.executableFiles;
         }
