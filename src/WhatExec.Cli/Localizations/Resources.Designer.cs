@@ -78,15 +78,6 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to locate executable {0}. An exception was thrown with the message &apos;{1}&apos;..
-        /// </summary>
-        internal static string Errors_Information_CommandNotLocated {
-            get {
-                return ResourceManager.GetString("Errors.Information.CommandNotLocated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error: Could not resolve the specified command(s) or executable(s): {x}.
         /// </summary>
         internal static string Errors_Results_CommandsNotFound {
@@ -114,11 +105,11 @@ namespace WhatExec.Cli.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Looking for {0}.
+        ///   Looks up a localized string similar to Information: Couldn&apos;t find command(s) or executable(s): {0}.
         /// </summary>
-        internal static string LocateExecutable_Status_LookingForCommand {
+        internal static string Information_Results_CommandsNotFound {
             get {
-                return ResourceManager.GetString("LocateExecutable.Status.LookingForCommand", resourceCulture);
+                return ResourceManager.GetString("Information.Results.CommandsNotFound", resourceCulture);
             }
         }
         

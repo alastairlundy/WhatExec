@@ -63,9 +63,6 @@
     <data name="Exceptions.Commands.Find.Limit.MustBeGreaterThanZero" xml:space="preserve">
         <value>Limit must be greater than or equal to 1.</value>
     </data>
-    <data name="LocateExecutable.Status.LookingForCommand" xml:space="preserve">
-        <value>Looking for {0}</value>
-    </data>
     <data name="Exceptions.DriveNotFound" xml:space="preserve">
         <value>Could not locate the specified drive {0}.</value>
     </data>
@@ -81,7 +78,7 @@
     <data name="Prompts.Errors.ContinueAfterError" xml:space="preserve">
         <value>One or more executables could not be located. Do you want to continue resolving the remaining executables?</value>
     </data>
-    <data name="Errors.Information.CommandNotLocated" xml:space="preserve">
-        <value>Failed to locate executable {0}. An exception was thrown with the message '{1}'.</value>
+    <data name="Information.Results.CommandsNotFound" xml:space="preserve">
+        <value>Information: Couldn't find command(s) or executable(s): {0}</value>
     </data>
 </root>

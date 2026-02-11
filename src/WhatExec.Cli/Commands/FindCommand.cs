@@ -13,6 +13,7 @@ namespace WhatExec.Cli.Commands;
 
 [CliCommand(
     Name = "",
+    ShortFormAutoGenerate = CliNameAutoGenerate.None,
     Description = "Locate commands and/or executable files."
 )]
 public class FindCommand
@@ -47,7 +48,7 @@ public class FindCommand
     [DefaultValue(false)]
     public bool ReportTimeTaken { get; set; }
     
-    [CliOption(Name = "--verbose", Description = "Enable verbose output and enhanced error message(s).")]
+    [CliOption(Name = "--verbose", Alias = "-vb", Description = "Enable verbose output and enhanced error message(s).")]
     [DefaultValue(false)]
     public bool Verbose { get; set; }
 
@@ -98,16 +99,29 @@ public class FindCommand
     {
         try
         {
-            return await _executableFileResolver.LocateExecutableFiles(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+            return await _executableFileResolver.LocateExecutableFiles(commandLeftToLookFor,
+                SearchOption.AllDirectories, cancellationToken);
+        }
+        catch (FileNotFoundException fileNotFoundException)
+        {
+            if (Verbose)
+            {
+                Console.WriteLine(Resources.Information_Results_CommandsNotFound.Replace("{0}", fileNotFoundException.FileName));
+            }
+            
+            (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results = await _executableFileResolver.
+                TryLocateExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+            
+            return results.executableFiles;
         }
         catch(AggregateException unauthorizedAccessException)
         {
-            string? probematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.InnerExceptions.First()
+            string? problematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.InnerExceptions.First()
                 .Message.Contains(command));
 
             (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results;
             
-            if (probematicCommand is null)
+            if (problematicCommand is null)
             {
                 results = await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor,
                     SearchOption.AllDirectories, cancellationToken);
@@ -117,13 +131,13 @@ public class FindCommand
 
             if (Verbose)
             {
-                Console.WriteLine(Resources.Errors_Information_CommandNotLocated
-                    .Replace("{0}", probematicCommand)       
+                Console.WriteLine(Resources.Error
+                    .Replace("{0}", problematicCommand)       
                     .Replace("{1}", unauthorizedAccessException.InnerExceptions.First().Message));
                 Console.WriteLine();
             }
             
-            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => c == probematicCommand).ToArray();
+            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => c == problematicCommand).ToArray();
             
             bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
             

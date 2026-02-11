@@ -68,8 +68,9 @@ public class SearchDriveCommand
             return -1;
         }
 
-        FileInfo[] files = await _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories, cancellationToken);
-
-        return ResultHelper.PrintFileSearchResults(files, Limit);
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
+            cliContext.CancellationToken);
+        
+        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);
     }
 }

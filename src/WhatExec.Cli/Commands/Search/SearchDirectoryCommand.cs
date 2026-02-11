@@ -70,9 +70,9 @@ public class SearchDirectoryCommand
             return -1;
         }
 
-        FileInfo[] files = await _executablesResolver.LocateAllExecutablesWithinDirectoryAsync(directoryInfo,
-            SearchOption.AllDirectories, cancellationToken);
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.LocateAllExecutablesWithinDirectoryAsync(directoryInfo,
+            SearchOption.AllDirectories, cliContext.CancellationToken);
 
-        return ResultHelper.PrintFileSearchResults(files, Limit);
+        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);
     }
 }

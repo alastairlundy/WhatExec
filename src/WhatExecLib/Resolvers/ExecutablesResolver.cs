@@ -7,6 +7,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Runtime.CompilerServices;
+
 namespace WhatExecLib;
 
 /// <summary>
@@ -38,13 +40,11 @@ public class ExecutablesResolver : IExecutablesResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public async Task<FileInfo[]> LocateAllExecutablesWithinDirectoryAsync(DirectoryInfo directory,
-        SearchOption directorySearchOption, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDirectoryAsync(DirectoryInfo directory,
+        SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if(!directory.Exists)
             throw new DirectoryNotFoundException("The specified directory does not exist");
-
-        List<FileInfo> output = new();
         
         IEnumerable<FileInfo> files = directory.SafelyEnumerateFiles("*",
                 directorySearchOption)
@@ -52,20 +52,20 @@ public class ExecutablesResolver : IExecutablesResolver
 
         foreach (FileInfo file in files)
         {
+            bool isExecutable;
+            
             try
             {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
-
-                if (isExecutable)
-                    output.Add(file);
+                isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
             }
             catch (UnauthorizedAccessException)
             {
-                // Skip if not authorized
+                isExecutable = file.HasExecutePermission();
             }
+
+            if (isExecutable)
+                yield return file;
         }
-        
-        return output.ToArray();
     }
 
     /// <summary>
@@ -80,13 +80,11 @@ public class ExecutablesResolver : IExecutablesResolver
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("freebsd")]
     [SupportedOSPlatform("android")]
-    public async Task<FileInfo[]> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
-        SearchOption directorySearchOption, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
+        SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if(!driveInfo.IsReady)
             throw new ArgumentException("The specified drive is not ready");
-
-        List<FileInfo> output = new();
         
         IEnumerable<FileInfo> files = driveInfo.RootDirectory.SafelyEnumerateFiles("*",
                 directorySearchOption)
@@ -94,21 +92,19 @@ public class ExecutablesResolver : IExecutablesResolver
 
         foreach (FileInfo file in files)
         {
+            bool isExecutable;
+            
             try
             {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
-
-                if (isExecutable)
-                {
-                    output.Add(file);
-                }
+                isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
             }
             catch (UnauthorizedAccessException)
             {
-                // Skip if not authorized.
+                isExecutable =  file.HasExecutePermission();
             }
+            
+            if(isExecutable)
+                yield return file;
         }
-
-        return output.ToArray();
     }
 }

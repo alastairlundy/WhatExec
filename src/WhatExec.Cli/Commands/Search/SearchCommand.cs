@@ -14,6 +14,7 @@ namespace WhatExec.Cli.Commands.Search;
 [CliCommand(
     Name = "search",
     Description = "Locate all commands and/or executable files on a system.",
+    ShortFormAutoGenerate = CliNameAutoGenerate.None,
     Parent = typeof(FindCommand)
 )]
 public class SearchCommand
@@ -43,7 +44,7 @@ public class SearchCommand
             return -1;
         }
         
-        IAsyncEnumerable<FileInfo> files = LocateExecutables(cancellationToken);
+        IAsyncEnumerable<FileInfo> files = LocateExecutables(cliContext.CancellationToken);
 
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);
     }
@@ -52,22 +53,14 @@ public class SearchCommand
     {
         DriveInfo[] drives = _storageDriveDetector.GetLogicalDrives();
 
-        Task<FileInfo[]>[] tasks = new Task<FileInfo[]>[drives.Length];
-
-        for (int index = 0; index < tasks.Length; index++)
+        foreach (DriveInfo drive in drives)
         {
-            int index1 = index;
-            tasks[index1] = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drives[index1], 
+            IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, 
                 SearchOption.AllDirectories, cancellationToken);
-            
-            tasks[index1].Start();
-        }
-        
-        await foreach (Task<FileInfo[]> resultTask in Task.WhenEach(tasks).WithCancellation(cancellationToken))
-        {
-            foreach (FileInfo fileInfo in resultTask.Result)
+
+            await foreach (FileInfo file in driveFiles)
             {
-                yield return fileInfo;
+                yield return file;
             }
         }
     }

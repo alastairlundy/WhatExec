@@ -4,6 +4,7 @@ namespace WhatExec.Cli.Commands;
 
 [CliCommand(
     Name = "all",
+    ShortFormAutoGenerate = CliNameAutoGenerate.None,
     Description = "Locate commands and/or executable files.",
     Parent = typeof(FindCommand)
 )]
