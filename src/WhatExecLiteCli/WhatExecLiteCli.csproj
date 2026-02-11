@@ -21,6 +21,7 @@
     <FileVersion>0.1.0</FileVersion>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <Version>0.2.0</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ConsoleAppFramework" Version="5.7.13">
@@ -28,6 +29,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md">
+      <Link>README.md</Link>
+      <PackagePath>README.md</PackagePath>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />

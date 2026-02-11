@@ -25,12 +25,17 @@
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="..\WhatExecLib.Abstractions\README.md"/>
     <Content Remove="..\WhatExecLib\README.md" />
-    <Content Include="..\..\CLI_README.md">
-      <Link>CLI_README.md</Link>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md">
+      <Link>README.md</Link>
+      <PackagePath>README.md</PackagePath>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +50,6 @@
     <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
   </ItemGroup>
-  
   <ItemGroup>
     <EmbeddedResource Update="Localizations\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
