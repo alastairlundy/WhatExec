@@ -12,7 +12,7 @@ This document serves as the README for the Command Line Interface (CLI) programs
    - Usage Examples
    - Features and Capabilities
    - License Information
-2. [WhatExecLite](#whatexec-lite)
+2. [WhatExecLite](#whatexeclite)
    - Description
    - Installation Instructions
    - Usage Examples
@@ -59,28 +59,28 @@ WhatExecLite makes use of .NET Trimming and NativeAOT.
 ### Usage Examples
 **NOTE** Regardless of the number of commands passed as arguments, each resolved command has its file path printed to a new line in Standard Output.
 
-WhatExecLite's assembly/binary name is ``whatexec-lite``. It accepts commands as it's 1st positional argument. The order of other options/arguments should not matter. 
+WhatExecLite's assembly/binary name is ``whatexec-lite``. It accepts commands as its first positional argument. The order of other options/arguments should not matter. 
 
 #### Single Command
-To resolve the file path of the .NET SDK CLI enter:
+To resolve the file path of the .NET SDK CLI, enter:
 ```bash
 whatexec-lite dotnet
 ```
 
-The output for this on a Linux based system is typically:
+The output for this on a Linux-based system is typically:
 ```
 /usr/bin/dotnet
 ```
 
 #### Multiple Commands
-To resolve multiple file paths at once, add the space separated list of commands.
+To resolve multiple file paths at once, add the space-separated list of commands.
 
 For example, to look for dotnet, git, and wc you'd enter
 ```bash
 whatexec-lite dotnet git wc
 ```
 
-The output or this on a Linux based system is typically:
+The output or this on a Linux-based system is typically:
 ```
 /usr/bin/dotnet
 /usr/bin/git
