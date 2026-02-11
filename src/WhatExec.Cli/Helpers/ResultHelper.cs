@@ -25,7 +25,11 @@ public class ResultHelper
         {
             if (total < limit)
             {
+#if NET10_0_OR_GREATER
                 Console.WriteLine(result.FullName.TrimEnd(" ").TrimEnd(Environment.NewLine));
+#else
+                Console.WriteLine(result.FullName.TrimEnd(" ").TrimEnd(Environment.NewLine).ToArray());
+#endif
                 Interlocked.Increment(ref total);
             }
 
@@ -53,7 +57,12 @@ public class ResultHelper
 
     private static int HandleIncompleteResults(IEnumerable<string> missedCommands, int resultsCount)
     {
+#if NET10_0_OR_GREATER
         Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", missedCommands)).TrimEnd(", "));
+#else
+        Console.WriteLine(Resources.Errors_Results_CommandsNotFound.Replace("{x}", string.Join(", ", missedCommands)).TrimEnd(", ")
+            .ToArray());
+#endif
         return resultsCount > 0 ? 1 : -1;
     }
     
