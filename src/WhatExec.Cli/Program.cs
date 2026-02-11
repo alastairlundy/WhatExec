@@ -24,4 +24,7 @@ Cli.Ext.ConfigureServices(services =>
     services.AddWhatExecLib(ServiceLifetime.Singleton);
 });
 
-Cli.Run<FindCommand>();
+await Cli.RunAsync<FindCommand>(args, new CliSettings()
+{
+    EnablePosixBundling = true
+});

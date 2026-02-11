@@ -35,7 +35,7 @@ public class SearchCommand
     [Range(1, int.MaxValue)]
     public int Limit { get; set; } = 1;
     
-    public async Task<int> Run(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CliContext cliContext)
     {
         if (Limit < 1)
         { 

@@ -42,7 +42,7 @@ public class SearchDriveCommand
     [DefaultValue(false)]
     public bool Verbose { get; set; }
     
-    public async Task<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CliContext cliContext)
     {
         try
         {

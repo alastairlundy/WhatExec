@@ -35,7 +35,7 @@ public class FindAllCommand
     [Range(1, int.MaxValue)]
     public int Limit { get; set; } = 1;
     
-    public async Task<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CliContext cliContext)
     {
         Dictionary<string, List<FileInfo>> commandLocations = new();
 
@@ -53,7 +53,7 @@ public class FindAllCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
         
-        IReadOnlyDictionary<string, FileInfo[]> result = await TrySearchSystem_LocateAllInstances(Commands, cancellationToken);
+        IReadOnlyDictionary<string, FileInfo[]> result = await TrySearchSystem_LocateAllInstances(Commands, cliContext.CancellationToken);
      
         foreach (KeyValuePair<string, FileInfo[]> pair in result)
         {

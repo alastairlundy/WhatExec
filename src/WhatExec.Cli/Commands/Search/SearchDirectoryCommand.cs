@@ -44,7 +44,7 @@ public class SearchDirectoryCommand
     public string? Directory { get; set; }
     
     
-    public async Task<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> Run(CliContext cliContext)
     {
         try
         {

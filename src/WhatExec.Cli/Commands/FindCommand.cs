@@ -53,7 +53,7 @@ public class FindCommand
 
     private readonly Stopwatch _stopwatch = new();
     
-    public async Task<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CliContext cliContext)
     {
         if(ReportTimeTaken)
             _stopwatch.Start();
@@ -75,7 +75,7 @@ public class FindCommand
         }
 
         IReadOnlyDictionary<string, FileInfo> result = await TrySearchSystem_DoNotLocateAll(
-            Commands, cancellationToken);
+            Commands, cliContext.CancellationToken);
         
         foreach (KeyValuePair<string, FileInfo> pair in result)
         {
