@@ -99,19 +99,9 @@ public class FindCommand
     {
         try
         {
-            return await _executableFileResolver.LocateExecutableFiles(commandLeftToLookFor,
+            (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results =  await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor,
                 SearchOption.AllDirectories, cancellationToken);
-        }
-        catch (FileNotFoundException fileNotFoundException)
-        {
-            if (Verbose)
-            {
-                Console.WriteLine(Resources.Information_Results_CommandsNotFound.Replace("{0}", fileNotFoundException.FileName));
-            }
-            
-            (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results = await _executableFileResolver.
-                TryLocateExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
-            
+
             return results.executableFiles;
         }
         catch(AggregateException unauthorizedAccessException)
