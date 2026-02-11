@@ -81,4 +81,7 @@
     <data name="Information.Results.CommandsNotFound" xml:space="preserve">
         <value>Information: Couldn't find command(s) or executable(s): {0}</value>
     </data>
+    <data name="Errors.Information.CommandNotLocated" xml:space="preserve">
+        <value>Failed to locate executable {0}. An exception was thrown with the message '{1}'.</value>
+    </data>
 </root>
