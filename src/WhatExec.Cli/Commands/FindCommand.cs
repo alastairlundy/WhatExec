@@ -131,7 +131,7 @@ public class FindCommand
 
             if (Verbose)
             {
-                Console.WriteLine(Resources.Error
+                Console.WriteLine(Resources.Errors_Information_CommandNotLocated
                     .Replace("{0}", problematicCommand)       
                     .Replace("{1}", unauthorizedAccessException.InnerExceptions.First().Message));
                 Console.WriteLine();
