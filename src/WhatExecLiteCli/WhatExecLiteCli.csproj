@@ -11,7 +11,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <AssemblyName>whatexec-lite</AssemblyName>
     <RootNamespace>WhatExecLite</RootNamespace>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
     <Title>whatexec-lite</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) 2026 Alastair Lundy</Copyright>

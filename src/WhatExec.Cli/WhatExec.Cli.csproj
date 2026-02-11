@@ -29,6 +29,9 @@
   <ItemGroup>
     <Content Remove="..\WhatExecLib.Abstractions\README.md"/>
     <Content Remove="..\WhatExecLib\README.md" />
+    <Content Include="..\..\CLI_README.md">
+      <Link>CLI_README.md</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DotExtensions" Version="9.6.1" />
