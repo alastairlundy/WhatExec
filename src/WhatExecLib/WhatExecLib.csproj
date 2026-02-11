@@ -28,7 +28,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotExtensions" Version="9.6.0" />
+    <PackageReference Include="DotExtensions" Version="9.6.1" />
     <PackageReference
       Include="Polyfill"
       Version="9.8.1"
