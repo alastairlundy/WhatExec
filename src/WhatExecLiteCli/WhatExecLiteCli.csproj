@@ -22,6 +22,7 @@
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <Version>0.2.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageId>WhatExec.Lite</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ConsoleAppFramework" Version="5.7.13">
