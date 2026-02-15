@@ -14,7 +14,7 @@ using System.Runtime.Versioning;
 namespace WhatExecLib.Caching.Resolvers;
 
 /// <summary>
-///
+/// Represents a cached resolver for environment variables containing paths to executable files.
 /// </summary>
 public class MemoryCachedPathEnvironmentVariableResolver : PathEnvironmentVariableResolver, ICachedPathEnvironmentVariableResolver
 {
