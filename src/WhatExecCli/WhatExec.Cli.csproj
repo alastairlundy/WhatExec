@@ -43,7 +43,7 @@
     <PackageReference Include="DotMake.CommandLine" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
-    <PackageReference Include="Polyfill" Version="9.8.1" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'"/>
+    <PackageReference Include="Polyfill" Version="9.9.0" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
