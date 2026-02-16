@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
     <PackageId>WhatExec.Lib</PackageId>
-    <Title>WhatExecLib</Title>
+    <Title>WhatExec.Lib</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) Alastair Lundy</Copyright>
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
@@ -14,9 +14,8 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>* Updated to Polyfill 9.3.0 from 9.1.0
-* Updated implementation to work with Abstractions Preview 2
-* Reduced technical debt and simplified implementation code</PackageReleaseNotes>
+    <PackageReleaseNotes>* Fixed issues
+* Updated implementation code</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>

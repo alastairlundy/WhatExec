@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>WhatExec.Lib.Abstractions</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Title>WhatExecLib.Abstractions</Title>
+    <Title>WhatExec.Lib.Abstractions</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) Alastair Lundy 2025-2026</Copyright>
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
@@ -15,7 +15,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated API surfaces to be simpler and easier to work with asynchronously</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
