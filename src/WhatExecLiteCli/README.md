@@ -13,7 +13,10 @@ WhatExecLite makes use of .NET Trimming and NativeAOT.
 
 ### Installation Instructions
 
-- Provide step-by-step instructions to install `whatexec-lite`.
+Install as a dotnet-tool via: 
+```bash
+ dotnet install WhatExec.Cli.Lite
+ ```
 
 ### Usage Examples
 **NOTE** Regardless of the number of commands passed as arguments, each resolved command has its file path printed to a new line in Standard Output.

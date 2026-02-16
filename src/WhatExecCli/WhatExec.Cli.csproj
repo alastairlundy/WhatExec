@@ -17,11 +17,11 @@
     <RepositoryType>git</RepositoryType>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Version>1.0.0-preview.2</Version>
-    <PackageId>WhatExec</PackageId>
+    <PackageId>WhatExec.Cli</PackageId>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <LangVersion>14</LangVersion>
     <Description>A CLI program (installable as a tool) to find executable files in PATH Environment Variables or elsewhere on your system.</Description>
-    <PackageTags>whatexec, which,</PackageTags>
+    <PackageTags>whatexec, which, resolver,file-path</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>

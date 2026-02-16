@@ -22,7 +22,7 @@ Choose the installation method that matches your needs:
 
 - Install as a .NET global tool (recommended for end users):
 
-  ``dotnet tool install -g WhatExec``
+  ``dotnet tool install -g WhatExec.Cli``
 
   After installation invoke as:
 
