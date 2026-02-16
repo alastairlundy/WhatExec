@@ -65,11 +65,16 @@ jobs:
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
+       # Push the Dependency Injection package
         working-directory: src/WhatExecLib.Extensions.DependencyInjection
       - name: Create packages
         run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
         working-directory: src/WhatExecLib.Extensions.DependencyInjection
+      - name: Sleep for 300 seconds
+        run: sleep 300s
+      # Push the Tool packages
+      - name: NuGet push WhatExec.Cli.Lite
+        run: dotnet nuget push src/WhatExecLiteCli/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: NuGet push WhatExec.Cli
+        run: dotnet nuget push src/WhatExecCli/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
-      # Push the Main package
-      - name: NuGet push
-        run: dotnet nuget push src/WhatExecLib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
