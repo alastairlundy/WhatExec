@@ -20,7 +20,7 @@ WhatExec is a small cross-platform CLI that locates executable files and command
 ### Installation
 Choose the installation method that matches your needs:
 
-- Install as a .NET global tool (recommended for end users when a package is published):
+- Install as a .NET global tool (recommended for end users):
 
   ``dotnet tool install -g WhatExec``
 
@@ -83,8 +83,8 @@ Enable verbose output and timing:
 ### Contributing
 Contributions welcome. To develop locally:
 
-  dotnet restore
-  dotnet build
+  ``dotnet restore``
+  ``dotnet build``
 
 Run the built binary from the output folder to test changes. Open issues or PRs on the repository and include tests where applicable.
 
