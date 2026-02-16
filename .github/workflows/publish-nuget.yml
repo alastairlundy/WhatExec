@@ -47,7 +47,7 @@ jobs:
               
           # Push the Core package
       - name: NuGet push
-        run: dotnet nuget push src/WhatExecLib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExecLib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
