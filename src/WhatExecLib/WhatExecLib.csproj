@@ -4,7 +4,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
-    <PackageId>WhatExecLib</PackageId>
+    <PackageId>WhatExec.Lib</PackageId>
     <Title>WhatExecLib</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) Alastair Lundy</Copyright>

@@ -4,7 +4,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>13</LangVersion>
     <Nullable>enable</Nullable>
-    <PackageId>WhatExecLib.Abstractions</PackageId>
+    <PackageId>WhatExec.Lib.Abstractions</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>WhatExecLib.Abstractions</Title>
     <Authors>Alastair Lundy</Authors>
