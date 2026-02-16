@@ -33,10 +33,10 @@ jobs:
           dotnet-version: 10.0.x
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: src/CliInvoke.Core
+        working-directory: src
       - name: Create packages
         run: dotnet build -c Release
-        working-directory: src/CliInvoke.Core
+        working-directory: src
         
           # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
