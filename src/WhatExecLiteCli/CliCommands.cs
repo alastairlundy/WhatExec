@@ -20,8 +20,8 @@ public class CliCommands
     {
         try
         {
-            (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results = await pathEnvironmentVariableResolver.TryResolveAllExecutableFilePathsAsync(commands,
-                cancellationToken);
+            (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results = await pathEnvironmentVariableResolver.
+                TryResolveAllExecutableFilePathsAsync(commands, cancellationToken);
             
             foreach (FileInfo resolvedCommand in results.resolvedExecutables.Values)
             {

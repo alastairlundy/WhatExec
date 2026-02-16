@@ -79,7 +79,7 @@ public class FindCommand
             Commands, cliContext.CancellationToken);
 
         AnsiConsole.Status()
-            .Start("Preparing to display results...", context =>
+            .Start("Preparing to display results...", _ =>
             {
                 foreach (KeyValuePair<string, FileInfo> pair in result)
                 {
