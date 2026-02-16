@@ -28,8 +28,21 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
   </ItemGroup>
+  <PropertyGroup>
+    <!-- default false, CI can set to true -->
+    <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
+    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
+    <!-- set CliInvokeCoreVersion in the workflow -->
+    <ProjectReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)" />
+  </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
     <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
   </ItemGroup>
 </Project>
