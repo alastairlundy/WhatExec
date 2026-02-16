@@ -7,10 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using ConsoleAppFramework;
-using WhatExecLib.Abstractions;
-using WhatExecLite.Localizations;
-
 namespace WhatExecLite;
 
 public class CliCommands
