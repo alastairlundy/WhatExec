@@ -33,10 +33,10 @@ jobs:
           dotnet-version: 10.0.x
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: src/CliInvoke.Core
+        working-directory: src
       - name: Create packages
         run: dotnet build -c Release
-        working-directory: src/CliInvoke.Core
+        working-directory: src
         
           # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
@@ -47,7 +47,7 @@ jobs:
               
           # Push the Core package
       - name: NuGet push
-        run: dotnet nuget push src/WhatExecLib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExecLib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
