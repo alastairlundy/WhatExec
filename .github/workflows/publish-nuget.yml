@@ -45,8 +45,8 @@ jobs:
         with:
             user: ${{ secrets.NUGET_USER }}
               
-          # Push the Core package
-      - name: NuGet push
+          # Push the Abstractions package
+      - name: NuGet push WhatExec.Lib.Abstractions
         run: dotnet nuget push src/WhatExecLib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
@@ -55,18 +55,15 @@ jobs:
         run: dotnet restore
         working-directory: src/WhatExecLib
       - name: Create packages
-        run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}
+        run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}
         working-directory: src/WhatExecLib
         # Push the Main package
-      - name: NuGet push
+      - name: NuGet push WhatExec.Lib
         run: dotnet nuget push src/WhatExecLib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Restore dependencies
-        run: dotnet restore
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
        # Push the Dependency Injection package
-        working-directory: src/WhatExecLib.Extensions.DependencyInjection
       - name: Create packages
         run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
         working-directory: src/WhatExecLib.Extensions.DependencyInjection
