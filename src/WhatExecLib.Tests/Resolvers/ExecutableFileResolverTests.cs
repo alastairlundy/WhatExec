@@ -19,7 +19,9 @@ public class ExecutableFileResolverTests
     [Test]
     public async Task Resolve_VsCode_ExecutableFile()
     {
-        FileInfo actual = await _executableFileResolver.LocateExecutableAsync("Code.exe", SearchOption.AllDirectories, CancellationToken.None);
+        string codeExecutableName = OperatingSystem.IsWindows() ? "Code.exe" : "code";
+        
+        FileInfo actual = await _executableFileResolver.LocateExecutableAsync(codeExecutableName, SearchOption.AllDirectories, CancellationToken.None);
         
         await Assert.That(actual)
             .IsNotNull()
