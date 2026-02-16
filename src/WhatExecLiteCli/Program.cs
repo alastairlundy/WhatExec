@@ -8,7 +8,7 @@
  */
 
 using Microsoft.Extensions.DependencyInjection;
-using WhatExecLib.Extensions.DependencyInjection;
+using WhatExec.Lib.Extensions.DependencyInjection;
 using WhatExecLite;
 
 ConsoleApp.ConsoleAppBuilder app = ConsoleApp

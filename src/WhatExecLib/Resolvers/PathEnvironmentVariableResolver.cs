@@ -8,8 +8,10 @@
  */
 
 using System.Collections.ObjectModel;
+using WhatExec.Lib.Abstractions;
+using WhatExec.Lib.Abstractions.Detectors;
 
-namespace WhatExecLib;
+namespace WhatExec.Lib;
 
 /// <summary>
 /// Provides functionality to resolve the path of an executable file based on the system's PATH environment variable.

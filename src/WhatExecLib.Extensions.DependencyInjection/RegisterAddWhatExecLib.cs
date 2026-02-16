@@ -9,11 +9,11 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using WhatExecLib.Abstractions;
-using WhatExecLib.Abstractions.Detectors;
-using WhatExecLib.Detectors;
+using WhatExec.Lib.Abstractions;
+using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Detectors;
 
-namespace WhatExecLib.Extensions.DependencyInjection;
+namespace WhatExec.Lib.Extensions.DependencyInjection;
 
 /// <summary>
 /// Provides extension methods for registering and adding WhatExecLib functionality to the dependency injection container.

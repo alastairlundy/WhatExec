@@ -1,6 +1,7 @@
-﻿using WhatExecLib.Abstractions;
-using WhatExecLib.Abstractions.Detectors;
-using WhatExecLib.Detectors;
+﻿using WhatExec.Lib;
+using WhatExec.Lib.Abstractions;
+using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Detectors;
 
 namespace WhatExecLib.Tests.Resolvers;
 

@@ -7,7 +7,11 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib;
+using WhatExec.Lib.Abstractions;
+using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Extensions;
+
+namespace WhatExec.Lib;
 
 /// <summary>
 /// Represents a class that provides functionality to locate instances of executable files

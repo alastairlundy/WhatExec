@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExecLib.Abstractions.Detectors;
+namespace WhatExec.Lib.Abstractions.Detectors;
 
 /// <summary>
 /// Represents an interface for detecting PATH environment variables.

@@ -26,6 +26,8 @@
     <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
 </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>WhatExec.Lib</AssemblyName>
+    <RootNamespace>WhatExec.Lib</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DotExtensions" Version="9.6.2" />

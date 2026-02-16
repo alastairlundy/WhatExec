@@ -9,7 +9,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using WhatExec.Cli.Commands;
-using WhatExecLib.Extensions.DependencyInjection;
+using WhatExec.Lib.Extensions.DependencyInjection;
 
 if (args.Any(s => s.Contains("--interactive")))
 {

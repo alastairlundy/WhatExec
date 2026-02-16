@@ -9,8 +9,6 @@ global using System.Threading;
 global using DotExtensions.IO.Directories;
 global using DotExtensions.IO.Drives;
 global using DotMake.CommandLine;
-global using DotPrimitives.IO.Drives;
 global using Spectre.Console;
 global using WhatExec.Cli.Helpers;
 global using WhatExec.Cli.Localizations;
-global using WhatExecLib.Abstractions;

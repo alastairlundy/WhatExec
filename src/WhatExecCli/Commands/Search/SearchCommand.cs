@@ -8,6 +8,7 @@
  */
 
 using System.Runtime.CompilerServices;
+using WhatExec.Lib.Abstractions;
 
 namespace WhatExec.Cli.Commands.Search;
 
@@ -20,12 +21,10 @@ namespace WhatExec.Cli.Commands.Search;
 public class SearchCommand
 {
     private readonly IExecutablesResolver _executablesResolver;
-    private readonly IStorageDriveDetector _storageDriveDetector;
 
-    public SearchCommand(IExecutablesResolver executablesResolver, IStorageDriveDetector storageDriveDetector)
+    public SearchCommand(IExecutablesResolver executablesResolver)
     {
         _executablesResolver = executablesResolver;
-        _storageDriveDetector = storageDriveDetector;
     }
 
     [CliOption(
@@ -51,7 +50,7 @@ public class SearchCommand
 
     private async IAsyncEnumerable<FileInfo> LocateExecutables([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        DriveInfo[] drives = _storageDriveDetector.GetLogicalDrives();
+        DriveInfo[] drives = DriveInfo.SafelyGetLogicalDrives();
 
         foreach (DriveInfo drive in drives)
         {

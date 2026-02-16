@@ -1,4 +1,4 @@
-namespace WhatExecLib.Extensions;
+namespace WhatExec.Lib.Extensions;
 
 internal static class SearchPatternExtensions
 {

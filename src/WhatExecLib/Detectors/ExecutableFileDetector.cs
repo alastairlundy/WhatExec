@@ -9,7 +9,11 @@
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UseUtf8StringLiteral
-namespace WhatExecLib.Detectors;
+
+using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Localizations;
+
+namespace WhatExec.Lib.Detectors;
 
 /// <summary>
 /// Provides functionality to detect whether a file is executable on the current operating system.

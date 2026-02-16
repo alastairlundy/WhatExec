@@ -1,4 +1,6 @@
-namespace WhatExecLib.Helpers;
+using WhatExec.Lib.Abstractions.Detectors;
+
+namespace WhatExec.Lib.Helpers;
 
 internal class FileLocatorHelper
 {
