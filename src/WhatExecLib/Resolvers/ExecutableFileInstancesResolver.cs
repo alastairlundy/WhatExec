@@ -36,11 +36,9 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances.</returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<FileInfo[]> LocateExecutableInstancesAsync(string executableName,
         SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
@@ -68,11 +66,9 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<FileInfo[]> LocateExecutableInstancesInDriveAsync(DriveInfo driveInfo,
         string executableName,
         SearchOption directorySearchOption, CancellationToken cancellationToken)
@@ -114,11 +110,9 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable files within the directory.</returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<FileInfo[]> LocateExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
         string executableName,
         SearchOption directorySearchOption, CancellationToken cancellationToken)
