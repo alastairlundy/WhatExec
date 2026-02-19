@@ -8,7 +8,6 @@
  */
 
 using System.Runtime.CompilerServices;
-using WhatExec.Lib.Abstractions;
 using WhatExec.Lib.Abstractions.Detectors;
 
 namespace WhatExec.Lib;

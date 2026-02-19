@@ -10,3 +10,5 @@ global using System.Threading.Tasks;
 global using DotExtensions.IO.Directories;
 global using DotExtensions.IO.Drives;
 global using DotExtensions.IO.Permissions;
+global using WhatExec.Lib.Abstractions;
+global using WhatExec.Lib.Localizations;
