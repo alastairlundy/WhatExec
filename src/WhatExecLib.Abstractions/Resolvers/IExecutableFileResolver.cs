@@ -10,7 +10,7 @@
 namespace WhatExec.Lib.Abstractions;
 
 /// <summary>
-/// 
+/// Represents an interface for locating executable files based on search criteria.
 /// </summary>
 public interface IExecutableFileResolver
 {

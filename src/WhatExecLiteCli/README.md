@@ -9,7 +9,7 @@ The main features of WhatExecLite are:
 * B) doing so very quickly
 * C) with a small binary size
 
-WhatExecLite makes use of .NET Trimming and NativeAOT.
+WhatExecLite makes use of .NET Trimming and, for the CLI not distributed as a dotnet tool, NativeAOT.
 
 ### Installation Instructions
 
