@@ -23,6 +23,9 @@ public class ExecutableFileResolver : IExecutableFileResolver
         _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
     }
 
+    /// <inheritdoc/>
+    public event EventHandler<KeyValuePair<string, FileInfo>>? ExecutableFileLocated;
+
     /// <summary>
     /// Asynchronously locates the specified executable file within a directory or its subdirectories.
     /// </summary>
@@ -164,9 +167,12 @@ public class ExecutableFileResolver : IExecutableFileResolver
             if (file is not null)
             {
                 bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
-             
-                if(isExecutable)
+
+                if (isExecutable)
+                {
+                    ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(executableFileName, file));
                     output.Add(new KeyValuePair<string, FileInfo>(executableFileName, file));
+                }
             }
         }
         

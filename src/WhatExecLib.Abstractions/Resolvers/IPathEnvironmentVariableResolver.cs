@@ -15,6 +15,11 @@ namespace WhatExec.Lib.Abstractions;
 public interface IPathEnvironmentVariableResolver
 {
     /// <summary>
+    /// 
+    /// </summary>
+    event EventHandler<KeyValuePair<string, FileInfo>> ExecutableFileLocated;
+    
+    /// <summary>
     /// Resolves the file path of a file name that is in the PATH Environment Variable.
     /// </summary>
     /// <param name="inputFilePath"></param>

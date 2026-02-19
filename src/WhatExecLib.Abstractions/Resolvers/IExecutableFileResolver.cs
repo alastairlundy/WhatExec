@@ -15,6 +15,11 @@ namespace WhatExec.Lib.Abstractions;
 public interface IExecutableFileResolver
 {
     /// <summary>
+    /// An event that is triggered each time an executable file was located during the resolution process along with the input file name the <see cref="FileInfo"/> belongs to.
+    /// </summary>
+    event EventHandler<KeyValuePair<string, FileInfo>> ExecutableFileLocated;
+    
+    /// <summary>
     /// Locates an executable file within a specified drive based on the given search criteria.
     /// </summary>
     /// <param name="executableFileName">The name of the executable file to locate.</param>

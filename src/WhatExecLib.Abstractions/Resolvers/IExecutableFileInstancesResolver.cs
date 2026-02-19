@@ -15,6 +15,11 @@ namespace WhatExec.Lib.Abstractions;
 public interface IExecutableFileInstancesResolver
 {
     /// <summary>
+    /// 
+    /// </summary>
+    event EventHandler<FileInfo> ExecutableFileLocated;
+    
+    /// <summary>
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>

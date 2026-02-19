@@ -27,6 +27,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         _executableFileDetector = executableDetector;
     }
 
+    public event EventHandler<FileInfo>? ExecutableFileLocated;
+
     /// <summary>
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
@@ -90,7 +92,10 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
                 bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
 
                 if (isExecutable)
+                {
+                    ExecutableFileLocated?.Invoke(this, file);
                     output.Add(file);
+                }
             }
             catch (UnauthorizedAccessException)
             {
@@ -133,7 +138,10 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
                 bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
 
                 if (isExecutable)
+                {
+                    ExecutableFileLocated?.Invoke(this, file);
                     output.Add(file);
+                }
             }
             catch (UnauthorizedAccessException)
             {
