@@ -11,7 +11,6 @@
 // ReSharper disable UseUtf8StringLiteral
 
 using WhatExec.Lib.Abstractions.Detectors;
-using WhatExec.Lib.Localizations;
 
 namespace WhatExec.Lib.Detectors;
 

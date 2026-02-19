@@ -7,9 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using WhatExec.Lib.Abstractions;
 using WhatExec.Lib.Abstractions.Detectors;
-using WhatExec.Lib.Localizations;
 
 namespace WhatExec.Lib;
 
