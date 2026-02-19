@@ -164,11 +164,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     }
 
     #region File Resolving Code
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     protected virtual async Task<IReadOnlyDictionary<string, FileInfo>> InternalResolveFilePaths(string[] inputFilePaths, string[] pathContents, string[] pathExtensions,
         CancellationToken cancellationToken)
     {
@@ -237,11 +235,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         return new ReadOnlyDictionary<string, FileInfo>(output);
     }
 
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     protected virtual async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> InternalTryResolveFilePathsAsync(string[] inputFilePaths,
         string[] pathContents, string[] pathExtensions, CancellationToken cancellationToken)
     {
