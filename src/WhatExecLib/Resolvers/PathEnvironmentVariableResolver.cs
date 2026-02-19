@@ -66,6 +66,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         => _pathVariableDetector.GetDirectories();
     #endregion
 
+    /// <inheritdoc/>
+    public event EventHandler<KeyValuePair<string, FileInfo>>? ExecutableFileLocated;
+
     /// <summary>
     /// Resolves a file from the system's PATH environment variable using the provided file name.
     /// </summary>
@@ -190,6 +193,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken);
                 if (checkResults.success && checkResults.file is not null)
                 {
+                    ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, checkResults.file));
                     output.TryAdd(inputFilePath, checkResults.file);
                     continue;
                 }
@@ -212,6 +216,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
                         if (result.success && result.file is not null)
                         {
+                            ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, result.file));
                             output.TryAdd(inputFilePath, result.file);
                         }
                     }
@@ -227,6 +232,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
                     if (result.success && result.file is not null)
                     {
+                        ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, result.file));
                         output.TryAdd(inputFilePath, result.file);
                     }
                 }
@@ -260,6 +266,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken);
                 if (checkResults.success && checkResults.file is not null)
                 {
+                    ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, checkResults.file));
                     output.TryAdd(inputFilePath, checkResults.file);
                     continue;
                 }
@@ -280,6 +287,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
                         if (result.success && result.file is not null)
                         {
+                            ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, result.file));
                             output.TryAdd(inputFilePath, result.file);
                         }
                     }
@@ -292,6 +300,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
                     if (result.success && result.file is not null)
                     {
+                        ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, result.file));
                         output.TryAdd(inputFilePath, result.file);
                     }
                 }

@@ -28,6 +28,9 @@ public class ExecutablesResolver : IExecutablesResolver
         _executableFileDetector = executableFileDetector;
     }
 
+    /// <inheritdoc/>
+    public event EventHandler<FileInfo>? ExecutableFileLocated;
+
     /// <summary>
     /// Locates all executable files within the specified directory and its subdirectories.
     /// </summary>
@@ -65,7 +68,10 @@ public class ExecutablesResolver : IExecutablesResolver
             }
 
             if (isExecutable)
+            {
+                ExecutableFileLocated?.Invoke(this, file);
                 yield return file;
+            }
         }
     }
 
@@ -103,9 +109,12 @@ public class ExecutablesResolver : IExecutablesResolver
             {
                 isExecutable =  file.HasExecutePermission();
             }
-            
-            if(isExecutable)
+
+            if (isExecutable)
+            {
+                ExecutableFileLocated?.Invoke(this, file);
                 yield return file;
+            }
         }
     }
 }
