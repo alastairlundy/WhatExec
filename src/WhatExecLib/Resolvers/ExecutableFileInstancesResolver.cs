@@ -9,7 +9,6 @@
 
 using WhatExec.Lib.Abstractions;
 using WhatExec.Lib.Abstractions.Detectors;
-using WhatExec.Lib.Extensions;
 
 namespace WhatExec.Lib;
 
@@ -81,7 +80,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
         List<FileInfo> output = new();
 
-        IEnumerable<FileInfo> files = executableName.GetSearchPatterns()
+        IEnumerable<FileInfo> files = GetSearchPatterns(executableName)
             .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
@@ -124,7 +123,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
         List<FileInfo> output = new();
         
-        IEnumerable<FileInfo> files = executableName.GetSearchPatterns()
+        IEnumerable<FileInfo> files = GetSearchPatterns(executableName)
             .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
@@ -145,4 +144,19 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
         return output.ToArray();
     }
+
+    #region Helper Code
+
+    private static IEnumerable<string> GetSearchPatterns(string executableFileName)
+    {
+        FileInfo fileInfo = new FileInfo(executableFileName);
+
+        if (Path.HasExtension(executableFileName))
+        {
+            yield return fileInfo.Extension;
+        }
+
+        yield return fileInfo.Name;
+    }
+    #endregion
 }
