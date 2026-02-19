@@ -39,11 +39,9 @@ public class ExecutablesResolver : IExecutablesResolver
     /// <param name="cancellationToken"></param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the executable files found.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDirectoryAsync(DirectoryInfo directory,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -82,11 +80,9 @@ public class ExecutablesResolver : IExecutablesResolver
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing executable files found within the drive.</returns>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {

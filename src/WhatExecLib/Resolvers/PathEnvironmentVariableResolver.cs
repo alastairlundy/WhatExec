@@ -32,11 +32,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     }
 
     #region Helper Methods
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     protected virtual async Task<(bool success, FileInfo? file)> CheckFileExistsAndIsExecutable(
         string filePath,
         CancellationToken cancellationToken)
@@ -78,11 +76,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// <exception cref="FileNotFoundException">Thrown if the file could not be found.</exception>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
     /// <exception cref="InvalidOperationException">Thrown if an invalid operation occurs during file resolution, such as PATH not being able to be resolved.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<KeyValuePair<string, FileInfo>> ResolveExecutableFilePathAsync(string inputFilePath,
         CancellationToken cancellationToken)
     {
@@ -101,11 +97,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// <exception cref="FileNotFoundException">Thrown if one or more files could not be found in the specified locations.</exception>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
     /// <exception cref="InvalidOperationException">Thrown if an invalid operation occurs during file resolution, such as PATH not being able to be resolved.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<IReadOnlyDictionary<string, FileInfo>> ResolveAllExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
@@ -124,11 +118,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// <param name="cancellationToken"></param>
     /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableAsync(string inputFilePath, CancellationToken cancellationToken)
     {
         (bool success, IReadOnlyDictionary<string, FileInfo> files) result = await TryResolveAllExecutableFilePathsAsync([inputFilePath], cancellationToken);
@@ -147,11 +139,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// <exception cref="InvalidOperationException">
     /// Thrown if resolving the PATH environment variable fails, or an invalid operation occurs during the resolution process.
     /// </exception>
-    [SupportedOSPlatform("windows")]
-    [SupportedOSPlatform("macos")]
-    [SupportedOSPlatform("linux")]
-    [SupportedOSPlatform("freebsd")]
-    [SupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryResolveAllExecutableFilePathsAsync(string[] inputFilePaths,
         CancellationToken cancellationToken)
     {
