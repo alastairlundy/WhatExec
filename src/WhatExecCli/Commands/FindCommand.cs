@@ -70,7 +70,7 @@ public class FindCommand
         
         if (Limit < 1)
         { 
-            Console.WriteLine(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
+            await Console.Error.WriteLineAsync(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
             return -1;
         }
 
@@ -78,7 +78,7 @@ public class FindCommand
             Commands = UserInputHelper.GetCommandInput();
         else if (Commands is null)
         {
-            Console.WriteLine(Resources.Errors_Commands_NoCommandsSpecified);
+            await Console.Error.WriteLineAsync(Resources.Errors_Commands_NoCommandsSpecified);
             return -1;
         }
         
