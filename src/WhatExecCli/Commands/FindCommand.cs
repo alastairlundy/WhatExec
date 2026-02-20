@@ -20,7 +20,7 @@ namespace WhatExec.Cli.Commands;
 public class FindCommand
 {
     private readonly IExecutableFileResolver _executableFileResolver;
-
+    
     public FindCommand(
         IExecutableFileResolver executableFileResolver)
     {
@@ -30,7 +30,7 @@ public class FindCommand
 
     private void ExecutableFileResolverOnExecutableFileLocated(object? sender, KeyValuePair<string, FileInfo> e)
     {
-        
+      
     }
 
     [CliArgument(
@@ -70,7 +70,7 @@ public class FindCommand
         
         if (Limit < 1)
         { 
-            Console.WriteLine(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
+            await Console.Error.WriteLineAsync(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
             return -1;
         }
 
@@ -78,21 +78,17 @@ public class FindCommand
             Commands = UserInputHelper.GetCommandInput();
         else if (Commands is null)
         {
-            Console.WriteLine(Resources.Errors_Commands_NoCommandsSpecified);
+            await Console.Error.WriteLineAsync(Resources.Errors_Commands_NoCommandsSpecified);
             return -1;
         }
         
         IReadOnlyDictionary<string, FileInfo> result = await TrySearchSystem_DoNotLocateAll(
             Commands, cliContext.CancellationToken);
 
-        AnsiConsole.Status()
-            .Start("Preparing to display results...", _ =>
-            {
-                foreach (KeyValuePair<string, FileInfo> pair in result)
-                {
-                    commandLocations.Add(pair.Key, pair.Value);
-                }
-            });
+        foreach (KeyValuePair<string, FileInfo> pair in result)
+        {
+            commandLocations.Add(pair.Key, pair.Value);
+        }
 
         int res = ResultHelper.PrintResults(commandLocations, Commands);
         
