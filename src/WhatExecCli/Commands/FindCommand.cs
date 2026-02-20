@@ -25,6 +25,12 @@ public class FindCommand
         IExecutableFileResolver executableFileResolver)
     {
         _executableFileResolver = executableFileResolver;
+        _executableFileResolver.ExecutableFileLocated += ExecutableFileResolverOnExecutableFileLocated;
+    }
+
+    private void ExecutableFileResolverOnExecutableFileLocated(object? sender, KeyValuePair<string, FileInfo> e)
+    {
+        
     }
 
     [CliArgument(

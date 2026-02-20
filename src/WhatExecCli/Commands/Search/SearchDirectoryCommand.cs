@@ -24,6 +24,12 @@ public class SearchDirectoryCommand
     public SearchDirectoryCommand(IExecutablesResolver executablesResolver)
     {
         _executablesResolver = executablesResolver;
+        _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
+    }
+
+    private void ExecutablesResolverOnExecutableFileLocated(object? sender, FileInfo e)
+    {
+        
     }
 
     [CliOption(

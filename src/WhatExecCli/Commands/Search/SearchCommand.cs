@@ -25,6 +25,12 @@ public class SearchCommand
     public SearchCommand(IExecutablesResolver executablesResolver)
     {
         _executablesResolver = executablesResolver;
+        _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
+    }
+
+    private void ExecutablesResolverOnExecutableFileLocated(object? sender, FileInfo e)
+    {
+        
     }
 
     [CliOption(

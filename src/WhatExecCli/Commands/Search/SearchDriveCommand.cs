@@ -23,6 +23,12 @@ public class SearchDriveCommand
     public SearchDriveCommand(IExecutablesResolver executablesResolver)
     {
         _executablesResolver = executablesResolver;
+        _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
+    }
+
+    private void ExecutablesResolverOnExecutableFileLocated(object? sender, FileInfo e)
+    {
+        
     }
 
     [CliOption(

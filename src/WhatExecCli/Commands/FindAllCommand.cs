@@ -16,8 +16,15 @@ public class FindAllCommand
     public FindAllCommand(IExecutableFileInstancesResolver executableFileInstancesResolver)
     {
         _executableFileInstancesResolver = executableFileInstancesResolver;
+        
+        _executableFileInstancesResolver.ExecutableFileLocated += ExecutableFileInstancesResolverOnExecutableFileLocated;
     }
-    
+
+    private void ExecutableFileInstancesResolverOnExecutableFileLocated(object? sender, FileInfo e)
+    {
+        
+    }
+
     [CliOption(Description = "Enable interactivity.", Alias = "-i", Name = "--interactive")]
     [DefaultValue(false)]
     public bool Interactive { get; set; }
