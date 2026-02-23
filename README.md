@@ -1,6 +1,6 @@
 # WhatExec
 
-[![License](https://img.shields.io/github/license/alastairlundy/WhatExec?style=flat-square)](https://github.com/alastairlundy/WhatExec/blob/main/LICENSE.txt) [![NuGet WhatExec.Cli](https://img.shields.io/nuget/v/WhatExec.Cli?style=flat-square)](https://www.nuget.org/packages/WhatExec.Cli) [![NuGet WhatExec.Cli.Lite](https://img.shields.io/nuget/v/WhatExec.Cli.Lite?style=flat-square)](https://www.nuget.org/packages/WhatExec.Cli.Lite)
+![License](https://img.shields.io/github/license/alastairlundy/WhatExec?style=flat-square) [![NuGet WhatExec.Cli](https://img.shields.io/nuget/v/WhatExec.Cli?style=flat-square)](https://www.nuget.org/packages/WhatExec.Cli) [![NuGet WhatExec.Cli.Lite](https://img.shields.io/nuget/v/WhatExec.Cli.Lite?style=flat-square)](https://www.nuget.org/packages/WhatExec.Cli.Lite)
 
 Search for executables across PATH, directories and drives — quickly from the command line or from your .NET code.
 
