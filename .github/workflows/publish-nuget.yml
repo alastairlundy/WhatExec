@@ -9,6 +9,9 @@ on:
       main-version:
         type: string
         required: true
+      dependencyinjection-version:
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -65,8 +68,10 @@ jobs:
         shell: bash
        # Push the Dependency Injection package
       - name: Create packages
-        run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
+        run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
         working-directory: src/WhatExecLib.Extensions.DependencyInjection
+      - name: Push packages
+        run: dotnet nuget push src/WhatExecLib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
       # Push the Tool packages
