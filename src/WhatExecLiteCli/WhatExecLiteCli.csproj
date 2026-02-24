@@ -18,7 +18,7 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
-    <Version>1.0.0-preview.2</Version>
+    <Version>1.0.0-preview.3</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>WhatExec.Cli.Lite</PackageId>
     <Description>A lightweight executable file resolver that checks the PATH environment variable.</Description>

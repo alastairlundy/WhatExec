@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.0-preview.2</Version>
+    <Version>1.0.0-preview.3</Version>
     <PackageId>WhatExec.Cli</PackageId>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <LangVersion>14</LangVersion>

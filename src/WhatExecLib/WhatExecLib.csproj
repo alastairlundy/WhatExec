@@ -19,7 +19,7 @@
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>
-    <Version>1.0.0-preview.2</Version>
+    <Version>1.0.0-preview.3</Version>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsTrimmable>true</IsTrimmable>
     <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.

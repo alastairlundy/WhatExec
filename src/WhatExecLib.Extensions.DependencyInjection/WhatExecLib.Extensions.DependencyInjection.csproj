@@ -7,7 +7,7 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsTrimmable>true</IsTrimmable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-preview.2</Version>
+    <Version>1.0.0-preview.3</Version>
     <Title>WhatExec.Lib.Extensions.DependencyInjection</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) 2025-2026 Alastair Lundy</Copyright>
