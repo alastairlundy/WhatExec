@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WhatExec.Lib.Abstractions;
@@ -63,6 +64,8 @@ public static class RegisterAddWhatExecLib
                 services.AddTransient<IExecutablesResolver, ExecutablesResolver>();
                 services.TryAddTransient<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(serviceLifetime), serviceLifetime, null);
         }
 
         return services;
