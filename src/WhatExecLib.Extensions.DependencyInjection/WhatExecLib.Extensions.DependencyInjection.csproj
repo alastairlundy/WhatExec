@@ -35,14 +35,17 @@
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
     <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
+    <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
+    <PackageReference Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
+    <PackageReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)"/>
+  </ItemGroup>
+  
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
     <!-- set CliInvokeCoreVersion in the workflow -->
     <ProjectReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
   </ItemGroup>
 </Project>

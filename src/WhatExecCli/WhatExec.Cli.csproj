@@ -47,11 +47,25 @@
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
     <PackageReference Include="Polyfill" Version="9.11.0" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'"/>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
-    <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
+
+  <PropertyGroup>
+    <!-- default false, CI can set to true -->
+    <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
+    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
     <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
+    <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
+    <PackageReference Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
+    <PackageReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)"/>
+    <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
+  </ItemGroup>
+  
+  
   <ItemGroup>
     <EmbeddedResource Update="Localizations\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
