@@ -15,7 +15,9 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>* Updated API surfaces to be simpler and easier to work with asynchronously</PackageReleaseNotes>
+    <PackageReleaseNotes>* Added Event Handlers to file resolvers that are invoked when Executable Files are located.
+* Re-added non-async method to ``IExecutableFileDetector``
+* Added none-async methods to ``IExecutableFileResolver``</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>

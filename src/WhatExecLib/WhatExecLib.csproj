@@ -14,8 +14,11 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>* Fixed issues
-* Updated implementation code</PackageReleaseNotes>
+    <PackageReleaseNotes>* Implemented new Event Handlers
+* Code cleanup and other improvements
+* Updated internal Polyfill version from 9.9.0 to 9.11.0
+* Implemented re-added none-async method to ``ExecutableFileDetector``
+* Implemented non-async methods in ``ExecutableFileResolver``</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>

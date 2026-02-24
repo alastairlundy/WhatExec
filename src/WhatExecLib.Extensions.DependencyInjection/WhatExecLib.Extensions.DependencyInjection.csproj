@@ -16,7 +16,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated to use WhatExec.Lib.Abstractions 1.0.0 Preview 3 and WhatExec.Lib version 1.0.0 Preview 3</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Registers WhatExecLib with Microsoft.Extensions.DependencyInjection</Description>

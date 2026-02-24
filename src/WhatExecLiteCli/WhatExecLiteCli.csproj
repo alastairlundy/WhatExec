@@ -22,7 +22,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>WhatExec.Cli.Lite</PackageId>
     <Description>A lightweight executable file resolver that checks the PATH environment variable.</Description>
-    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated CLI to use updated library code</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
