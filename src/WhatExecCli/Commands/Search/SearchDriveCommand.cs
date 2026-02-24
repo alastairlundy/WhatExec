@@ -63,7 +63,7 @@ public class SearchDriveCommand
 
             Drive = UserInputHelper.GetDriveInput();
         }
-        
+
         DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d => d.Name == Drive);
         
         if(drive is null)

@@ -18,7 +18,7 @@ public interface IExecutableFileDetector
     /// Determines if a given file is an executable.
     /// </summary>
     /// <param name="file">The file to be checked.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to cancel the detection.</param>
     /// <returns>True if the file can be executed, false otherwise.</returns>
     Task<bool> IsFileExecutableAsync(FileInfo file, CancellationToken cancellationToken);
 }

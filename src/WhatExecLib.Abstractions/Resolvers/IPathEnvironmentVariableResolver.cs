@@ -15,7 +15,7 @@ namespace WhatExec.Lib.Abstractions;
 public interface IPathEnvironmentVariableResolver
 {
     /// <summary>
-    /// 
+    /// Represents the file location of an executable that has been located based on the system's PATH environment variable.
     /// </summary>
     event EventHandler<KeyValuePair<string, FileInfo>> ExecutableFileLocated;
     

@@ -68,6 +68,12 @@ public class ExecutableFileDetector : IExecutableFileDetector
     /// </summary>
     /// <param name="file">The file to be checked for executability.</param>
     /// <param name="cancellationToken"></param>
+
+    /// <summary>
+    /// Determines whether the specified file can be executed on the current operating system.
+    /// </summary>
+    /// <param name="file">The file to be checked for executability.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to cancel the detection.</param>
     /// <returns>True if the file is executable, false otherwise.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified file does not exist.</exception>
     [UnsupportedOSPlatform("tvos")]
