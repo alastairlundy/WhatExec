@@ -67,7 +67,18 @@ public class ExecutableFileDetector : IExecutableFileDetector
     /// Determines whether the specified file can be executed on the current operating system.
     /// </summary>
     /// <param name="file">The file to be checked for executability.</param>
-    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException">Thrown if the specified file does not exist.</exception>
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public bool IsFileExecutable(FileInfo file)
+    {
+        Task<bool> isFileExecutable = IsFileExecutableAsync(file, CancellationToken.None);
+
+        isFileExecutable.Wait();
+        
+        return isFileExecutable.Result;
+    }
 
     /// <summary>
     /// Determines whether the specified file can be executed on the current operating system.

@@ -15,6 +15,13 @@ namespace WhatExec.Lib.Abstractions.Detectors;
 public interface IExecutableFileDetector
 {
     /// <summary>
+    /// Determines whether a given file can be executed.
+    /// </summary>
+    /// <param name="file">The file to be checked for executability.</param>
+    /// <returns>True if the specified file is executable, false otherwise.</returns>
+    bool IsFileExecutable(FileInfo file);
+
+    /// <summary>
     /// Determines if a given file is an executable.
     /// </summary>
     /// <param name="file">The file to be checked.</param>
