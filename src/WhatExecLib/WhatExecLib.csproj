@@ -38,6 +38,7 @@
       PrivateAssets="all"/>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"
                       Version="10.0.3" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
+    <PackageReference Include="System.Linq.AsyncEnumerable" Version="10.0.3" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'netstandard2.0'"/>
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md">

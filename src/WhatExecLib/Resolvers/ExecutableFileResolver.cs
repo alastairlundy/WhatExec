@@ -40,7 +40,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         if(result is { success: true, file: not null })
             return result.file;
         
-        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{x}", executableFileName));
+        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{0}", executableFileName));
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         if(result is { success: true, file: not null })
             return result.file;
         
-        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{x}", executableFileName));
+        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{0}", executableFileName));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         {
             string filesNotFound = string.Join(", ", executableFileNames.Except(result.executables.Keys));
             
-            throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{x}", filesNotFound));
+            throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{0}", filesNotFound));
         }
         
         return result.executables;
@@ -155,7 +155,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         {
             string filesNotFound = string.Join(", ", executableFileNames.Except(result.executables.Keys));
             
-            throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{x}", filesNotFound));
+            throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{0}", filesNotFound));
         }
         
         return result.executables;
@@ -169,7 +169,8 @@ public class ExecutableFileResolver : IExecutableFileResolver
         string[] executablesToLookFor;
         Dictionary<string, FileInfo> output = new(capacity: executableFileNames.Length);
         
-        (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.TryResolveAllExecutableFilePathsAsync(executableFileNames, cancellationToken);
+        (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.
+            TryResolveAllExecutableFilePathsAsync(executableFileNames, cancellationToken);
 
         if (result.foundInPath && result.pathExecutables.Count == executableFileNames.Length)
         {

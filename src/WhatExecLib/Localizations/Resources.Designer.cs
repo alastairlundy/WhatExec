@@ -8,6 +8,9 @@
 //------------------------------------------------------------------------------
 
 namespace WhatExec.Lib.Localizations {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -35,7 +38,7 @@ namespace WhatExec.Lib.Localizations {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WhatExecLib.Localizations.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WhatExec.Lib.Localizations.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -75,7 +78,7 @@ namespace WhatExec.Lib.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not locate the specified executable file {x}..
+        ///   Looks up a localized string similar to Could not locate the specified executable file {0}..
         /// </summary>
         internal static string Exceptions_FileNotFound {
             get {

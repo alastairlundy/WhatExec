@@ -37,7 +37,7 @@ public interface IPathEnvironmentVariableResolver
     /// <exception cref="FileNotFoundException">
     /// Thrown when one or more of the specified file names could not be found in the PATH environment variable.
     /// </exception>
-    Task<IReadOnlyDictionary<string, FileInfo>> ResolveAllExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
+    IAsyncEnumerable<KeyValuePair<string, FileInfo>> ResolveAllExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
 
     /// <summary>
     /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
