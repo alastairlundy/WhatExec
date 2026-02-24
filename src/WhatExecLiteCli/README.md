@@ -1,5 +1,10 @@
 ﻿## WhatExecLite
 
+![GitHub License](https://img.shields.io/github/license/alastairlundy/whatexec?style=flat-square)
+
+[![NuGet WhatExec.Cli.Lite](https://img.shields.io/nuget/v/WhatExec.Cli.Lite?style=flat-square&label=WhatExec.Cli.Lite%20NuGet)](https://www.nuget.org/packages/WhatExec.Cli.Lite)
+
+
 ### Description
 A lightweight CLI specifically focused on resolving file paths from the PATH environment variable.
 

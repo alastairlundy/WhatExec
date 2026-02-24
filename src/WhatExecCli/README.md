@@ -1,5 +1,8 @@
 ## WhatExec
 
+![GitHub License](https://img.shields.io/github/license/alastairlundy/whatexec?style=flat-square)
+[![NuGet WhatExec.Cli](https://img.shields.io/nuget/v/WhatExec.Cli?style=flat-square)](https://www.nuget.org/packages/WhatExec.Cli)
+
 ### Table of Contents
 - [Description](#description)
 - [Installation](#installation)
