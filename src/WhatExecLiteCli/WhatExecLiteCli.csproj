@@ -11,7 +11,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <AssemblyName>whatexec-lite</AssemblyName>
     <RootNamespace>WhatExecLite</RootNamespace>
-    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
     <Title>whatexec-lite</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) 2026 Alastair Lundy</Copyright>
@@ -43,11 +43,24 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj" />
-    <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
+
+  <PropertyGroup>
+    <!-- default false, CI can set to true -->
+    <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
+    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
     <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
+    <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
+    <PackageReference Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
+    <PackageReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)"/>
+    <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
+  </ItemGroup>
+  
   <ItemGroup>
     <EmbeddedResource Update="Localizations\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

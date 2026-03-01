@@ -9,6 +9,9 @@ on:
       main-version:
         type: string
         required: true
+      dependencyinjection-version:
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -23,7 +26,7 @@ jobs:
         
       steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
         with:
           egress-policy: audit
 
@@ -65,8 +68,10 @@ jobs:
         shell: bash
        # Push the Dependency Injection package
       - name: Create packages
-        run: dotnet build -c Release -p:UsePublishedPackages=true -p:WhatExecLibAbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
+        run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
         working-directory: src/WhatExecLib.Extensions.DependencyInjection
+      - name: Push packages
+        run: dotnet nuget push src/WhatExecLib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
       # Push the Tool packages
