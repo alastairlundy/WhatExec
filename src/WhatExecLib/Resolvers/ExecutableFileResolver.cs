@@ -27,23 +27,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
     public event EventHandler<KeyValuePair<string, FileInfo>>? ExecutableFileLocated;
 
     /// <summary>
-    /// Locates the specified executable file within a directory or its subdirectories.
-    /// </summary>
-    /// <param name="executableFileName">The name of the executable file to locate.</param>
-    /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
-    /// <returns>A <see cref="FileInfo"/> indicating the location of the executable if found, otherwise null.</returns>
-    /// <exception cref="FileNotFoundException">Thrown when the specified executable file is not found.</exception>
-    public FileInfo LocateExecutable(string executableFileName, SearchOption directorySearchOption)
-    {
-        (bool success, FileInfo? file) result = TryLocateExecutable(executableFileName, directorySearchOption);
-
-        if(result is { success: true, file: not null })
-            return result.file;
-        
-        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{0}", executableFileName));
-    }
-
-    /// <summary>
     /// Asynchronously locates the specified executable file within a directory or its subdirectories.
     /// </summary>
     /// <param name="executableFileName">The name of the executable file to locate.</param>
@@ -96,21 +79,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="executableFileName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <returns></returns>
-    public (bool, FileInfo?) TryLocateExecutable(string executableFileName, SearchOption directorySearchOption)
-    {
-        Task<(bool, FileInfo?)> task =
-            TryLocateExecutableAsync(executableFileName, directorySearchOption, CancellationToken.None);
-        task.Wait();
-
-        return task.Result;
-    }
-
-    /// <summary>
     /// Asynchronously locates multiple executable files within a directory or its subdirectories.
     /// </summary>
     /// <param name="executableFileNames">The names of the executable files to locate.</param>
@@ -124,32 +92,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
     {
         (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryLocateExecutableFilesAsync(executableFileNames,
             directorySearchOption, cancellationToken);
-        
-        if (!result.success && result.executables.Count < executableFileNames.Length)
-        {
-            string filesNotFound = string.Join(", ", executableFileNames.Except(result.executables.Keys));
-            
-            throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{0}", filesNotFound));
-        }
-        
-        return result.executables;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="executableFileNames"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <returns></returns>
-    /// <exception cref="FileNotFoundException"></exception>
-    public IReadOnlyDictionary<string, FileInfo> LocateExecutableFiles(string[] executableFileNames, SearchOption directorySearchOption)
-    {
-        Task<(bool success, IReadOnlyDictionary<string, FileInfo> executables)> taskResult = TryLocateExecutableFilesAsync(executableFileNames,
-            directorySearchOption, CancellationToken.None);
-
-        taskResult.Wait();
-
-        (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = taskResult.Result;
         
         if (!result.success && result.executables.Count < executableFileNames.Length)
         {
@@ -204,22 +146,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
         }
         
         return (output.Count == executableFileNames.Length, new Dictionary<string, FileInfo>(output));
-    }
-
-    /// <summary>
-    /// Locates executable files based on specified names and search options.
-    /// </summary>
-    /// <param name="executableFileNames">The names of the executable files to locate.</param>
-    /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
-    /// <returns>A tuple containing a boolean indicating success or failure, and a dictionary mapping executable file names to their corresponding FileInfo objects.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the method fails to locate the specified executable files.</exception>
-    public (bool, IReadOnlyDictionary<string, FileInfo>) TryLocateExecutableFiles(string[] executableFileNames,
-        SearchOption directorySearchOption)
-    {
-        Task<(bool, IReadOnlyDictionary<string, FileInfo>)> task = TryLocateExecutableFilesAsync(executableFileNames, directorySearchOption, CancellationToken.None);
-        task.Wait();
-        
-        return task.Result;
     }
 
     private async Task<KeyValuePair<string, FileInfo>[]> LocateExecutablesInDriveAsync(DriveInfo driveInfo,

@@ -77,7 +77,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
         List<FileInfo> output = new();
 
-        IEnumerable<FileInfo> files = GetSearchPatterns(executableName)
+        IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
             .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
@@ -121,7 +121,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
         List<FileInfo> output = new();
         
-        IEnumerable<FileInfo> files = GetSearchPatterns(executableName)
+        IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
             .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
@@ -148,7 +148,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
     #region Helper Code
 
-    private static IEnumerable<string> GetSearchPatterns(string executableFileName)
+    private static IEnumerable<string> EnumerateSearchPatterns(string executableFileName)
     {
         FileInfo fileInfo = new FileInfo(executableFileName);
 
