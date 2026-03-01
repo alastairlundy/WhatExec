@@ -60,7 +60,7 @@ public class SearchCommand
 
         foreach (DriveInfo drive in drives)
         {
-            IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, 
+            IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, 
                 SearchOption.AllDirectories, cancellationToken);
 
             await foreach (FileInfo file in driveFiles)

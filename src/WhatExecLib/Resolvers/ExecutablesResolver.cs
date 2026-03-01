@@ -42,7 +42,7 @@ public class ExecutablesResolver : IExecutablesResolver
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDirectoryAsync(DirectoryInfo directory,
+    public async IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDirectoryAsync(DirectoryInfo directory,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if(!directory.Exists)
@@ -83,7 +83,7 @@ public class ExecutablesResolver : IExecutablesResolver
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
+    public async IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDriveAsync(DriveInfo driveInfo,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if(!driveInfo.IsReady)

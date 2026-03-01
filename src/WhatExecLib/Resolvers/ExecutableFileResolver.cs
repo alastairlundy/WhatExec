@@ -7,6 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.Runtime.CompilerServices;
 using WhatExec.Lib.Abstractions.Detectors;
 
 namespace WhatExec.Lib;
@@ -55,7 +56,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
-        (bool foundInPath, KeyValuePair<string, FileInfo>? executable) result = await _pathEnvironmentVariableResolver.TryResolveExecutableAsync(executableFileName, cancellationToken);
+        (bool foundInPath, KeyValuePair<string, FileInfo>? executable) result = await _pathEnvironmentVariableResolver.TryResolveExecutableFilePathAsync(executableFileName, cancellationToken);
 
         if (result.foundInPath && result.executable is not null)
         {
@@ -66,7 +67,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
 
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
-            KeyValuePair<string, FileInfo>[] driveResults = await LocateExecutablesInDriveAsync(drive, [executableFileName], directorySearchOption, cancellationToken);
+            KeyValuePair<string, FileInfo>[] driveResults = await GetExecutablesInDriveAsync(drive, [executableFileName], directorySearchOption, cancellationToken);
 
             foreach (KeyValuePair<string, FileInfo> fileKvp in driveResults)
             {
@@ -86,11 +87,11 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
     /// <returns>A dictionary containing the located executable files, where the keys are the original file names and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if any of the specified executable files are not found.</exception>
-    public async Task<IReadOnlyDictionary<string, FileInfo>> LocateExecutableFilesAsync(string[] executableFileNames,
+    public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] executableFileNames,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
-        (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryLocateExecutableFilesAsync(executableFileNames,
+        (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryGetExecutableFilesAsync(executableFileNames,
             directorySearchOption, cancellationToken);
         
         if (!result.success && result.executables.Count < executableFileNames.Length)
@@ -103,8 +104,48 @@ public class ExecutableFileResolver : IExecutableFileResolver
         return result.executables;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="executableFileNames"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        List<string> executablesToLookFor =
+#if NET8_0_OR_GREATER
+            new(executableFileNames);
+#else
+            new();
+        
+        executablesToLookFor.AddRange(executableFileNames);
+#endif
+        
+        IAsyncEnumerable<KeyValuePair<string, FileInfo>> result = _pathEnvironmentVariableResolver.
+            EnumerateExecutableFilePathsAsync(executableFileNames, cancellationToken);
+        
+        await foreach (KeyValuePair<string, FileInfo> kvp in result)
+        {
+            executablesToLookFor.Remove(kvp.Key);
+            yield return kvp;
+        }
+
+        foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
+        {
+            IAsyncEnumerable<KeyValuePair<string, FileInfo>> driveResults = EnumerateExecutablesInDriveAsync(drive, 
+                executablesToLookFor.ToArray(), directorySearchOption, cancellationToken);
+            
+            await foreach (KeyValuePair<string, FileInfo> driveResult in driveResults)
+            {
+                yield return new KeyValuePair<string, FileInfo>(driveResult.Key, driveResult.Value);
+            }
+        }
+    }
+
     /// <inheritdoc/>
-    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryLocateExecutableFilesAsync(string[] executableFileNames,
+    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] executableFileNames,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
@@ -112,7 +153,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         Dictionary<string, FileInfo> output = new(capacity: executableFileNames.Length);
         
         (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.
-            TryResolveAllExecutableFilePathsAsync(executableFileNames, cancellationToken);
+            TryGetExecutableFilePathsAsync(executableFileNames, cancellationToken);
 
         if (result.foundInPath && result.pathExecutables.Count == executableFileNames.Length)
         {
@@ -134,7 +175,8 @@ public class ExecutableFileResolver : IExecutableFileResolver
 
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
-            var driveResults = await LocateExecutablesInDriveAsync(drive, executablesToLookFor, directorySearchOption, cancellationToken);
+            KeyValuePair<string, FileInfo>[] driveResults = await GetExecutablesInDriveAsync(drive, 
+                executablesToLookFor, directorySearchOption, cancellationToken);
             
             foreach (KeyValuePair<string, FileInfo> driveResult in driveResults)
             {
@@ -148,7 +190,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         return (output.Count == executableFileNames.Length, new Dictionary<string, FileInfo>(output));
     }
 
-    private async Task<KeyValuePair<string, FileInfo>[]> LocateExecutablesInDriveAsync(DriveInfo driveInfo,
+    private async Task<KeyValuePair<string, FileInfo>[]> GetExecutablesInDriveAsync(DriveInfo driveInfo,
         string[] executableFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(executableFileNames);
@@ -178,5 +220,35 @@ public class ExecutableFileResolver : IExecutableFileResolver
         }
         
         return output.ToArray();
+    }
+    
+    
+    private async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutablesInDriveAsync(DriveInfo driveInfo,
+        string[] executableFileNames, SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(executableFileNames);
+        
+        StringComparison stringComparison = OperatingSystem.IsWindows()
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+
+        foreach (string executableFileName in executableFileNames)
+        {
+            FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path
+                    .GetFileName(executableFileName), directorySearchOption)
+                .Where(f => executableFileName.Equals(f.Name, stringComparison))
+                .FirstOrDefault(f => f.Exists);
+            
+            if (file is not null)
+            {
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+
+                if (isExecutable)
+                {
+                    ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(executableFileName, file));
+                    yield return new KeyValuePair<string, FileInfo>(executableFileName, file);
+                }
+            }
+        }
     }
 }

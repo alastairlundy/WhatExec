@@ -111,7 +111,7 @@ public class FindCommand
         try
         {
             (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results =  await _executableFileResolver.
-                TryLocateExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+                TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
 
             return results.executableFiles;
         }
@@ -124,7 +124,7 @@ public class FindCommand
             
             if (problematicCommand is null)
             {
-                results = await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor,
+                results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor,
                     SearchOption.AllDirectories, cancellationToken);
                 
                 return results.resolvedExecutables;
@@ -144,7 +144,7 @@ public class FindCommand
             
             if(continueInteractive)
             {
-                results = await _executableFileResolver.TryLocateExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+                results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
             }
             else
             {

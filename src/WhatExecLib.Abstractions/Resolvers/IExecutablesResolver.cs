@@ -28,7 +28,7 @@ public interface IExecutablesResolver
     /// <param name="cancellationToken"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
-    IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDirectoryAsync(
+    IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDirectoryAsync(
         DirectoryInfo directory,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken
@@ -43,6 +43,6 @@ public interface IExecutablesResolver
     /// <param name="cancellationToken"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
-    IAsyncEnumerable<FileInfo> LocateAllExecutablesWithinDriveAsync(DriveInfo driveInfo,
+    IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDriveAsync(DriveInfo driveInfo,
         SearchOption searchOption, CancellationToken cancellationToken);
 }

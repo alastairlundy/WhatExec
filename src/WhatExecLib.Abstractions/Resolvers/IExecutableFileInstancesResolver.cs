@@ -20,17 +20,38 @@ public interface IExecutableFileInstancesResolver
     event EventHandler<FileInfo> ExecutableFileLocated;
     
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="executableName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(string executableName, SearchOption directorySearchOption,
+        CancellationToken cancellationToken);
+    
+    /// <summary>
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing the located executable file instances.</returns>
-    Task<FileInfo[]> LocateExecutableInstancesAsync(
+    Task<FileInfo[]> GetExecutableInstancesAsync(
         string executableName,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken
     );
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="driveInfo"></param>
+    /// <param name="executableName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo,
+        string executableName, SearchOption directorySearchOption, CancellationToken cancellationToken);
 
     /// <summary>
     /// Locates all instances of the specified executable file within a specific drive on the system.
@@ -40,13 +61,27 @@ public interface IExecutableFileInstancesResolver
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing the located executable file instances within the specified drive.</returns>
-    Task<FileInfo[]> LocateExecutableInstancesInDriveAsync(
+    Task<FileInfo[]> GetExecutableInstancesInDriveAsync(
         DriveInfo driveInfo,
         string executableName,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken
     );
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="executableName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
+        string executableName,
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken
+    );
+    
     /// <summary>
     /// Locates instances of an executable file within the specified directory.
     /// </summary>
@@ -55,7 +90,7 @@ public interface IExecutableFileInstancesResolver
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>An array of FileInfo objects representing the located executable files within the directory.</returns>
-    Task<FileInfo[]> LocateExecutableInstancesInDirectoryAsync(
+    Task<FileInfo[]> GetExecutableInstancesInDirectoryAsync(
         DirectoryInfo directory,
         string executableName,
         SearchOption directorySearchOption,

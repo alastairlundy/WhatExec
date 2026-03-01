@@ -46,8 +46,18 @@ public interface IExecutableFileResolver
     /// <param name="cancellationToken"></param>
     /// <returns>A read-only dictionary where the keys are the names of the executable files and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if one or more of the specified executable files was not found.</exception>
-    Task<IReadOnlyDictionary<string, FileInfo>> LocateExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken);
+    Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="inputFileNames"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] inputFileNames, SearchOption directorySearchOption,
+        CancellationToken cancellationToken);
+    
     /// <summary>
     /// Attempts to locate the specified executable files and returns a boolean indicating the success of the operation.
     /// </summary>
@@ -57,6 +67,6 @@ public interface IExecutableFileResolver
     /// <returns>
     /// A boolean value indicating whether all the specified executable files were successfully located.
     /// </returns>
-    Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryLocateExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption,
+    Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption,
         CancellationToken cancellationToken);
 }

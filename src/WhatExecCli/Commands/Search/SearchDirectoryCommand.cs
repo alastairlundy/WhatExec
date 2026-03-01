@@ -78,7 +78,7 @@ public class SearchDirectoryCommand
             return -1;
         }
 
-        IAsyncEnumerable<FileInfo> files = _executablesResolver.LocateAllExecutablesWithinDirectoryAsync(directoryInfo,
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDirectoryAsync(directoryInfo,
             SearchOption.AllDirectories, cliContext.CancellationToken);
 
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);

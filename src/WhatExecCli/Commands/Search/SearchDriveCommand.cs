@@ -76,7 +76,7 @@ public class SearchDriveCommand
             return -1;
         }
 
-        IAsyncEnumerable<FileInfo> files = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
             cliContext.CancellationToken);
         
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);

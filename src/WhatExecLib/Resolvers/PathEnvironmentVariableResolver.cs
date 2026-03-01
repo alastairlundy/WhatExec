@@ -83,7 +83,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     public async Task<KeyValuePair<string, FileInfo>> ResolveExecutableFilePathAsync(string inputFilePath,
         CancellationToken cancellationToken)
     {
-        IAsyncEnumerable<KeyValuePair<string, FileInfo>> result = ResolveAllExecutableFilePathsAsync([inputFilePath], cancellationToken);
+        IAsyncEnumerable<KeyValuePair<string, FileInfo>> result = EnumerateExecutableFilePathsAsync([inputFilePath], cancellationToken);
 
         try
         {
@@ -111,8 +111,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public IAsyncEnumerable<KeyValuePair<string, FileInfo>> ResolveAllExecutableFilePathsAsync(
-        string[] inputFilePaths, CancellationToken cancellationToken)
+    public IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
@@ -121,6 +120,27 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                                 ?? throw new InvalidOperationException("PATH Variable could not be found.");
 
         return InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions, cancellationToken);
+    }
+
+    public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(inputFilePaths);
+
+        string[] pathExtensions = GetPathExtensions();
+        string[] pathContents = GetPathContents()
+                                ?? throw new InvalidOperationException("PATH Variable could not be found.");
+
+        Dictionary<string, FileInfo> output = new();
+        
+        IAsyncEnumerable<KeyValuePair<string, FileInfo>> results =  InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions,
+            cancellationToken);
+
+        await foreach (KeyValuePair<string, FileInfo> result in results)
+        {
+            output.Add(result.Key, result.Value);
+        }
+        
+        return output;
     }
 
     /// <summary>
@@ -133,9 +153,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableAsync(string inputFilePath, CancellationToken cancellationToken)
+    public async Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableFilePathAsync(string inputFilePath, CancellationToken cancellationToken)
     {
-        (bool success, IReadOnlyDictionary<string, FileInfo> files) result = await TryResolveAllExecutableFilePathsAsync([inputFilePath], cancellationToken);
+        (bool success, IReadOnlyDictionary<string, FileInfo> files) result = await TryGetExecutableFilePathsAsync([inputFilePath], cancellationToken);
         
         KeyValuePair<string, FileInfo>? resolvedExecutable = result.files.FirstOrDefault(f => f.Key == inputFilePath);
 
@@ -154,8 +174,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryResolveAllExecutableFilePathsAsync(string[] inputFilePaths,
-        CancellationToken cancellationToken)
+    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 
