@@ -22,7 +22,7 @@ public interface IExecutableFileInstancesResolver
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="executableName"></param>
+    /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -45,8 +45,8 @@ public interface IExecutableFileInstancesResolver
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="driveInfo"></param>
-    /// <param name="executableName"></param>
+    /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
+    /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -71,8 +71,8 @@ public interface IExecutableFileInstancesResolver
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="directory"></param>
-    /// <param name="executableName"></param>
+    /// <param name="directory">The directory where the search will be conducted.</param>
+    /// <param name="executableName">The name of the executable file to search for.</param>
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
