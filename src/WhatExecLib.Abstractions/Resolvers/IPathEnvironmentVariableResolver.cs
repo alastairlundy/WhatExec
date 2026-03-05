@@ -29,15 +29,12 @@ public interface IPathEnvironmentVariableResolver
         CancellationToken cancellationToken);
 
     /// <summary>
-    /// Resolves the file paths of multiple file names that are in the PATH Environment Variable.
+    /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
     /// </summary>
-    /// <param name="inputFilePaths">An array of input file names to resolve against the PATH environment variable.</param>
+    /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>An array of resolved <see cref="FileInfo"/> objects containing the file paths of the input file names.</returns>
-    /// <exception cref="FileNotFoundException">
-    /// Thrown when one or more of the specified file names could not be found in the PATH environment variable.
-    /// </exception>
-    IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
+    /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
+    Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableFilePathAsync(string inputFilePath, CancellationToken cancellationToken);
     
     /// <summary>
     /// 
@@ -45,21 +42,24 @@ public interface IPathEnvironmentVariableResolver
     /// <param name="inputFilePaths"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
+    IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Attempts to resolve a file from the system's PATH environment variable using the provided file name.
+    /// Gets the file paths of multiple file names that are in the PATH Environment Variable.
     /// </summary>
-    /// <param name="inputFilePath">The name of the file to resolve, including optional relative or absolute paths.</param>
+    /// <param name="inputFilePaths">An array of input file names to resolve against the PATH environment variable.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>True if the file is successfully resolved; otherwise, false.</returns>
-    Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableFilePathAsync(string inputFilePath, CancellationToken cancellationToken);
-
+    /// <returns>An array of resolved <see cref="FileInfo"/> objects containing the file paths of the input file names.</returns>
+    /// <exception cref="FileNotFoundException">
+    /// Thrown when one or more of the specified file names could not be found in the PATH environment variable.
+    /// </exception>
+    Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
+    
     /// <summary>
     /// Tries to resolve the file paths for a set of input file names that are in the PATH Environment Variable.
     /// </summary>
     /// <param name="inputFilePaths">An array of file names to resolve.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>True if at least one file path was successfully resolved; otherwise, false.</returns>
+    /// <returns>True if at all file paths were successfully resolved; otherwise, false.</returns>
     Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken);
 }

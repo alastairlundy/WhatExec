@@ -24,7 +24,7 @@ public interface IExecutablesLocator
     /// Filters the files to include only those that are recognized as executable based on the implementation of the provided executable file detector.
     /// </summary>
     /// <param name="directory">The directory in which to search for executable files.</param>
-    /// <param name="directorySearchOption"></param>
+    /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
@@ -37,8 +37,8 @@ public interface IExecutablesLocator
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="directory"></param>
-    /// <param name="directorySearchOption"></param>
+    /// <param name="directory">The directory in which to search for executable files.</param>
+    /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<FileInfo[]> GetExecutablesWithinDirectoryAsync(
@@ -52,13 +52,20 @@ public interface IExecutablesLocator
     /// Filters the files to include only those recognized as executables based on the provided executable file detector implementation.
     /// </summary>
     /// <param name="driveInfo">The drive in which to search for executable files.</param>
-    /// <param name="searchOption"></param>
+    /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
     IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDriveAsync(DriveInfo driveInfo,
-        SearchOption searchOption, CancellationToken cancellationToken);
+        SearchOption directorySearchOption, CancellationToken cancellationToken);
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="driveInfo">The drive in which to search for executable files.</param>
+    /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<FileInfo[]> GetExecutablesWithinDriveAsync(DriveInfo driveInfo,
-        SearchOption searchOption, CancellationToken cancellationToken);
+        SearchOption directorySearchOption, CancellationToken cancellationToken);
 }
