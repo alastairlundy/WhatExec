@@ -26,7 +26,7 @@
     <PackageTags>whatexec</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
   <PropertyGroup>
     <!-- default false, CI can set to true -->

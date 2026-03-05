@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="DotExtensions" Version="9.7.2" />
+    <PackageVersion Include="DotMake.CommandLine" Version="3.1.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageVersion Include="Spectre.Console" Version="0.54.0" />
+    <PackageVersion Include="Polyfill" Version="9.17.0"/>
+    <PackageVersion Include="ConsoleAppFramework" Version="5.7.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces"
+                      Version="10.0.3"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="TUnit" Version="1.18.21" />
+  </ItemGroup>
+</Project>
