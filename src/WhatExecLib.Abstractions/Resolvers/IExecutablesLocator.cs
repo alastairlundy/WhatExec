@@ -12,7 +12,7 @@ namespace WhatExec.Lib.Abstractions;
 /// <summary>
 /// Defines an interface for locating all executable files within a specified directory or drive.
 /// </summary>
-public interface IExecutablesResolver
+public interface IExecutablesLocator
 {
     /// <summary>
     /// An event that is triggered each time an executable file was located during the resolution process.
@@ -35,6 +35,19 @@ public interface IExecutablesResolver
     );
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<FileInfo[]> GetExecutablesWithinDirectoryAsync(
+        DirectoryInfo directory,
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken
+    );
+
+    /// <summary>
     /// Locates all executable files within a specified drive asynchronously.
     /// Filters the files to include only those recognized as executables based on the provided executable file detector implementation.
     /// </summary>
@@ -44,5 +57,8 @@ public interface IExecutablesResolver
     /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
     IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDriveAsync(DriveInfo driveInfo,
+        SearchOption searchOption, CancellationToken cancellationToken);
+    
+    Task<FileInfo[]> GetExecutablesWithinDriveAsync(DriveInfo driveInfo,
         SearchOption searchOption, CancellationToken cancellationToken);
 }

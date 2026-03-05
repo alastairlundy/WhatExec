@@ -14,31 +14,31 @@ namespace WhatExec.Lib;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.
-/// Implements the <see cref="IExecutablesResolver"/> interface to provide functionality for locating executables.
+/// Implements the <see cref="IExecutablesLocator"/> interface to provide functionality for locating executables.
 /// </summary>
-public class ExecutablesResolver : IExecutablesResolver
+public class ExecutablesLocator : IExecutablesLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
 
     /// <summary>
     /// Represents a locator for identifying all executable files within specified directories or drives.
     /// </summary>
-    public ExecutablesResolver(IExecutableFileDetector executableFileDetector)
+    public ExecutablesLocator(IExecutableFileDetector executableFileDetector)
     {
         _executableFileDetector = executableFileDetector;
     }
 
     /// <inheritdoc/>
     public event EventHandler<FileInfo>? ExecutableFileLocated;
-
+    
     /// <summary>
-    /// Locates all executable files within the specified directory and its subdirectories.
+    ///
     /// </summary>
-    /// <param name="directory">The directory to search for executables.</param>
+    /// <param name="directory"></param>
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns>An array of <see cref="FileInfo"/> objects representing the executable files found.</returns>
-    /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
+    /// <returns></returns>
+    /// <exception cref="DirectoryNotFoundException"></exception>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -74,12 +74,30 @@ public class ExecutablesResolver : IExecutablesResolver
     }
 
     /// <summary>
-    /// Identifies all executable files within the specified drive by recursively searching through all directories.
+    /// Locates all executable files within the specified directory and its subdirectories.
     /// </summary>
-    /// <param name="driveInfo">The drive to search within for executable files.</param>
+    /// <param name="directory">The directory to search for executables.</param>
     /// <param name="directorySearchOption"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns>An array of FileInfo objects representing executable files found within the drive.</returns>
+    /// <returns>An array of <see cref="FileInfo"/> objects representing the executable files found.</returns>
+    /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public async Task<FileInfo[]> GetExecutablesWithinDirectoryAsync(DirectoryInfo directory, SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
+        => await EnumerateExecutablesWithinDirectoryAsync(directory, directorySearchOption, cancellationToken)
+            .ToArrayAsync(cancellationToken: cancellationToken);
+
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="driveInfo"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -113,4 +131,19 @@ public class ExecutablesResolver : IExecutablesResolver
             }
         }
     }
+
+    /// <summary>
+    /// Identifies all executable files within the specified drive by recursively searching through all directories.
+    /// </summary>
+    /// <param name="driveInfo">The drive to search within for executable files.</param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>An array of FileInfo objects representing executable files found within the drive.</returns>
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public async Task<FileInfo[]> GetExecutablesWithinDriveAsync(DriveInfo driveInfo, SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
+        => await EnumerateExecutablesWithinDriveAsync(driveInfo, directorySearchOption, cancellationToken)
+            .ToArrayAsync(cancellationToken);
 }

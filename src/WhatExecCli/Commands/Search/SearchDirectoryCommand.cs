@@ -19,9 +19,9 @@ namespace WhatExec.Cli.Commands.Search;
 )]
 public class SearchDirectoryCommand
 {
-    private readonly IExecutablesResolver _executablesResolver;
+    private readonly IExecutablesLocator _executablesResolver;
 
-    public SearchDirectoryCommand(IExecutablesResolver executablesResolver)
+    public SearchDirectoryCommand(IExecutablesLocator executablesResolver)
     {
         _executablesResolver = executablesResolver;
         _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;

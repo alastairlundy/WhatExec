@@ -18,9 +18,9 @@ namespace WhatExec.Cli.Commands.Search;
 )]
 public class SearchDriveCommand
 {
-    private readonly IExecutablesResolver _executablesResolver;
+    private readonly IExecutablesLocator _executablesResolver;
 
-    public SearchDriveCommand(IExecutablesResolver executablesResolver)
+    public SearchDriveCommand(IExecutablesLocator executablesResolver)
     {
         _executablesResolver = executablesResolver;
         _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
