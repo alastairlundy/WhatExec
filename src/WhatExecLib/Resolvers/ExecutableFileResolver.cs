@@ -12,6 +12,9 @@ using WhatExec.Lib.Abstractions.Detectors;
 
 namespace WhatExec.Lib;
 
+/// <summary>
+/// 
+/// </summary>
 public class ExecutableFileResolver : IExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;

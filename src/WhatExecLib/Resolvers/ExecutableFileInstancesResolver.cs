@@ -84,6 +84,17 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         return output.ToArray();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="driveInfo"></param>
+    /// <param name="executableName"></param>
+    /// <param name="directorySearchOption"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
     public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo, string executableName,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
