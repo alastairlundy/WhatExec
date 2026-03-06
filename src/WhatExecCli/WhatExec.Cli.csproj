@@ -41,11 +41,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotExtensions" Version="10.0.0-alpha.4" />
-    <PackageReference Include="DotMake.CommandLine" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
-    <PackageReference Include="Spectre.Console" Version="0.54.0" />
-    <PackageReference Include="Polyfill" Version="9.18.0" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'"/>
+    <PackageReference Include="DotExtensions" />
+    <PackageReference Include="DotMake.CommandLine"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+    <PackageReference Include="Spectre.Console"/>
+    <PackageReference Include="Polyfill" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'"/>
   </ItemGroup>
 
   <PropertyGroup>

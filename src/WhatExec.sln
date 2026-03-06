@@ -13,6 +13,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLiteCli", "WhatExecLiteCli\WhatExecLiteCli.csproj", "{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CLIs", "CLIs", "{14C4F29D-CB29-4F02-9069-09B3097D6D80}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{68247CF9-AB48-49F1-AEF0-BA7D3C187F27}"
 EndProject

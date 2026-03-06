@@ -32,13 +32,12 @@
     <RootNamespace>WhatExec.Lib</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotExtensions" Version="10.0.0-alpha.4" />
+    <PackageReference Include="DotExtensions" />
     <PackageReference
-      Include="Polyfill" Version="9.18.0" Condition="'$(TargetFramework)' == 'netstandard2.0'"
+      Include="Polyfill" Condition="'$(TargetFramework)' == 'netstandard2.0'"
       PrivateAssets="all"/>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"
-                      Version="10.0.3" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
-    <PackageReference Include="System.Linq.AsyncEnumerable" Version="10.0.3" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'netstandard2.0'"/>
+                     Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md">
