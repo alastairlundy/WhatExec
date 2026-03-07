@@ -18,9 +18,9 @@ namespace WhatExec.Cli.Commands.Search;
 )]
 public class SearchDriveCommand
 {
-    private readonly IExecutablesResolver _executablesResolver;
+    private readonly IExecutablesLocator _executablesResolver;
 
-    public SearchDriveCommand(IExecutablesResolver executablesResolver)
+    public SearchDriveCommand(IExecutablesLocator executablesResolver)
     {
         _executablesResolver = executablesResolver;
         _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
@@ -76,7 +76,7 @@ public class SearchDriveCommand
             return -1;
         }
 
-        IAsyncEnumerable<FileInfo> files = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
             cliContext.CancellationToken);
         
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);

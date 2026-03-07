@@ -81,7 +81,7 @@ public class FindAllCommand
         {
             try
             {
-                FileInfo[] info = await _executableFileInstancesResolver.LocateExecutableInstancesAsync(
+                FileInfo[] info = await _executableFileInstancesResolver.GetExecutableInstancesAsync(
                     command,
                     SearchOption.AllDirectories,
                     cancellationToken

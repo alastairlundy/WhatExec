@@ -20,9 +20,9 @@ namespace WhatExec.Cli.Commands.Search;
 )]
 public class SearchCommand
 {
-    private readonly IExecutablesResolver _executablesResolver;
+    private readonly IExecutablesLocator _executablesResolver;
 
-    public SearchCommand(IExecutablesResolver executablesResolver)
+    public SearchCommand(IExecutablesLocator executablesResolver)
     {
         _executablesResolver = executablesResolver;
         _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
@@ -60,7 +60,7 @@ public class SearchCommand
 
         foreach (DriveInfo drive in drives)
         {
-            IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.LocateAllExecutablesWithinDriveAsync(drive, 
+            IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, 
                 SearchOption.AllDirectories, cancellationToken);
 
             await foreach (FileInfo file in driveFiles)

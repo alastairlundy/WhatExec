@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0;netstandard2.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>13</LangVersion>
     <Nullable>enable</Nullable>
@@ -22,7 +22,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsTrimmable>true</IsTrimmable>
-    <Version>1.0.0-preview.3</Version>
+    <Version>1.0.0-preview.4</Version>
     <Description>This is an abstractions-only library that provides interfaces for resolving Executable File locations.</Description>
     <AssemblyName>WhatExec.Lib.Abstractions</AssemblyName>
     <RootNamespace>WhatExec.Lib.Abstractions</RootNamespace>
