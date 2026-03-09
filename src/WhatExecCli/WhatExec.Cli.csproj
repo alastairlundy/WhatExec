@@ -43,9 +43,13 @@
   <ItemGroup>
     <PackageReference Include="DotExtensions" />
     <PackageReference Include="DotMake.CommandLine"/>
+    <PackageReference Include="Meziantou.Analyzer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
     <PackageReference Include="Spectre.Console"/>
-    <PackageReference Include="Polyfill" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'"/>
+    <PackageReference Include="Polyfill" PrivateAssets="all"/>
   </ItemGroup>
 
   <PropertyGroup>

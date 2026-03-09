@@ -78,6 +78,15 @@ namespace WhatExec.Lib.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified drive {0} is not ready.
+        /// </summary>
+        internal static string Exceptions_Drives_DriveNotReady {
+            get {
+                return ResourceManager.GetString("Exceptions.Drives.DriveNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate the specified executable file {0}..
         /// </summary>
         internal static string Exceptions_FileNotFound {

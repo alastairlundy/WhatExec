@@ -20,15 +20,22 @@
 * Added none-async methods to ``IExecutableFileResolver``</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-    <IsTrimmable>true</IsTrimmable>
     <Version>1.0.0-preview.4</Version>
     <Description>This is an abstractions-only library that provides interfaces for resolving Executable File locations.</Description>
     <AssemblyName>WhatExec.Lib.Abstractions</AssemblyName>
     <RootNamespace>WhatExec.Lib.Abstractions</RootNamespace>
   </PropertyGroup>
+    
+    <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <IsTrimmable>true</IsTrimmable>
+    </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Meziantou.Analyzer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
   </ItemGroup>
   

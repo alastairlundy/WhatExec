@@ -49,7 +49,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         {
             IAsyncEnumerable<FileInfo> driveResults = EnumerableExecutableInstancesInDriveAsync(drive, executableName, directorySearchOption, cancellationToken);
 
-            await foreach (FileInfo driveResult in driveResults)
+            await foreach (FileInfo driveResult in driveResults.ConfigureAwait(false))
             {
                 yield return driveResult;
             }
@@ -77,7 +77,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         
         foreach (DriveInfo drive in drives)
         {
-            FileInfo[] driveResults = await GetExecutableInstancesInDriveAsync(drive, executableName, directorySearchOption, cancellationToken);
+            FileInfo[] driveResults = await GetExecutableInstancesInDriveAsync(drive, executableName, directorySearchOption, cancellationToken).ConfigureAwait(false);
            
             output.AddRange(driveResults);
         }
@@ -111,7 +111,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
             bool validExecutable = false;
             try
             {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (isExecutable)
                 {
@@ -157,7 +158,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         {
             try
             {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (isExecutable)
                 {
@@ -197,7 +199,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
             bool validExecutable = false;
             try
             {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (isExecutable)
                 {
@@ -243,7 +246,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         {
             try
             {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (isExecutable)
                 {

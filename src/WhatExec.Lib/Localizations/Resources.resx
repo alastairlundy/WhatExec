@@ -27,4 +27,7 @@
     <data name="Errors.ExecutableDetection.MagicNumberIssue" xml:space="preserve">
         <value>Found magic number buffer of '{0}' but expected '{1}'.</value>
     </data>
+    <data name="Exceptions.Drives.DriveNotReady" xml:space="preserve">
+        <value>The specified drive {0} is not ready</value>
+    </data>
 </root>

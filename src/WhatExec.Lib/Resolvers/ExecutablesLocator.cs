@@ -58,7 +58,7 @@ public class ExecutablesLocator : IExecutablesLocator
             
             try
             {
-                isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+                isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException)
             {
@@ -87,7 +87,7 @@ public class ExecutablesLocator : IExecutablesLocator
     public async Task<FileInfo[]> GetExecutablesWithinDirectoryAsync(DirectoryInfo directory, SearchOption directorySearchOption,
         CancellationToken cancellationToken)
         => await EnumerateExecutablesWithinDirectoryAsync(directory, directorySearchOption, cancellationToken)
-            .ToArrayAsync(cancellationToken: cancellationToken);
+            .ToArrayAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
 
     /// <summary>
@@ -105,7 +105,7 @@ public class ExecutablesLocator : IExecutablesLocator
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if(!driveInfo.IsReady)
-            throw new ArgumentException("The specified drive is not ready");
+            throw new ArgumentException(string.Format(Resources.Exceptions_Drives_DriveNotReady, driveInfo.Name), nameof(driveInfo));
         
         IEnumerable<FileInfo> files = driveInfo.RootDirectory.SafelyEnumerateFiles("*",
                 directorySearchOption)
@@ -117,7 +117,7 @@ public class ExecutablesLocator : IExecutablesLocator
             
             try
             {
-                isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken);
+                isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException)
             {
@@ -145,5 +145,5 @@ public class ExecutablesLocator : IExecutablesLocator
     public async Task<FileInfo[]> GetExecutablesWithinDriveAsync(DriveInfo driveInfo, SearchOption directorySearchOption,
         CancellationToken cancellationToken)
         => await EnumerateExecutablesWithinDriveAsync(driveInfo, directorySearchOption, cancellationToken)
-            .ToArrayAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken).ConfigureAwait(false);
 }

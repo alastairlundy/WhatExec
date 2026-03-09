@@ -32,23 +32,29 @@ public class ExecutableFileDetector : IExecutableFileDetector
     
     private async Task<bool> ReadMagicNumberAsync(FileInfo file, byte[] magicNumberToCompare, CancellationToken cancellationToken)
     {
+        FileStream fileStream = new(file.FullName, FileMode.Open);
 #if NET8_0_OR_GREATER
         await
 #endif
-        using FileStream fileStream = new(file.FullName, FileMode.Open);
+#if NET8_0_OR_GREATER
+        using (fileStream.ConfigureAwait(false))
+#else
+        using (fileStream)
+#endif
+        {
+            byte[] buffer = new byte[magicNumberToCompare.Length];
 
-        byte[] buffer = new byte[magicNumberToCompare.Length];
-
-        int bytesRead = await fileStream.ReadAsync(buffer, 0, magicNumberToCompare.Length, cancellationToken);
+            int bytesRead = await fileStream.ReadAsync(buffer, 0, magicNumberToCompare.Length, cancellationToken).ConfigureAwait(false);
 
 #if DEBUG
-        Console.WriteLine(Resources.Errors_ExecutableDetection_MagicNumberIssue, string.Join("", buffer), string.Join("", magicNumberToCompare));
+            Console.WriteLine(Resources.Errors_ExecutableDetection_MagicNumberIssue, string.Join("", buffer), string.Join("", magicNumberToCompare));
 #endif
 
-        return buffer.SequenceEqual(magicNumberToCompare) && bytesRead == magicNumberToCompare.Length;
+            return buffer.SequenceEqual(magicNumberToCompare) && bytesRead == magicNumberToCompare.Length;
+        }
     }
     #endregion
-    
+
     private bool IsMac { get; }
 
     /// <summary>
@@ -98,17 +104,18 @@ public class ExecutableFileDetector : IExecutableFileDetector
         {
             bool hasExecutableExtension = file.Extension.ToLowerInvariant() switch
             {
+                // ReSharper disable once StringLiteralTypo
                 ".exe" or ".msi" or ".appx" or ".com" or ".sys" or ".drv" or ".mui" or ".ocx" or ".ax" or ".msstyles" or ".scr"
                     or ".cpl" or ".acm" or ".efi" or ".dll" or ".tsp" => true,
                 _ => false
             };
 
-            if (file.Extension.ToLowerInvariant() == ".exe")
+            if (string.Equals(file.Extension.ToLowerInvariant(), ".exe", StringComparison.Ordinal))
             {
                 try
                 {
-                    bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken) ||
-                                            await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken);
+                    bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken).ConfigureAwait(false) ||
+                                            await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
 
                     return file.HasExecutePermission() &&
                            hasExecutableExtension
@@ -126,15 +133,15 @@ public class ExecutableFileDetector : IExecutableFileDetector
         {
             byte[] machOMagicNumber = Environment.Is64BitOperatingSystem ? MachO64BitMagicNumber : MachO32BitMagicNumber;
 
-            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken);
+            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken).ConfigureAwait(false);
         }
         if (OperatingSystem.IsIOS())
         {
-            return await ReadMagicNumberAsync(file, MachO64BitMagicNumber, cancellationToken);
+            return await ReadMagicNumberAsync(file, MachO64BitMagicNumber, cancellationToken).ConfigureAwait(false);
         }
         if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
-            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken);
+            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken).ConfigureAwait(false);
         }
 
         return file.HasExecutePermission();

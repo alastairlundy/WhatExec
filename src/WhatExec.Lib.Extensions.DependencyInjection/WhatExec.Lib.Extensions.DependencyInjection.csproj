@@ -4,8 +4,6 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-    <IsTrimmable>true</IsTrimmable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0-preview.3</Version>
     <Title>WhatExec.Lib.Extensions.DependencyInjection</Title>
@@ -25,7 +23,17 @@
     <RootNamespace>WhatExec.Lib.Extensions.DependencyInjection</RootNamespace>
     <PackageTags>whatexec</PackageTags>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+  
   <ItemGroup>
+    <PackageReference Include="Meziantou.Analyzer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
   <PropertyGroup>

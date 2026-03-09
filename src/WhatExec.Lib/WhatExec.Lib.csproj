@@ -23,14 +23,18 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>
     <Version>1.0.0-preview.3</Version>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-    <IsTrimmable>true</IsTrimmable>
     <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
 </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>WhatExec.Lib</AssemblyName>
     <RootNamespace>WhatExec.Lib</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="DotExtensions" />
     <PackageReference Include="Meziantou.Analyzer">
@@ -38,8 +42,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference
-      Include="Polyfill" Condition="'$(TargetFramework)' == 'netstandard2.0'"
-      PrivateAssets="all"/>
+      Include="Polyfill" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"
                      Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
     <PackageReference Include="System.Linq.AsyncEnumerable" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>

@@ -8,6 +8,7 @@
  */
 
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using WhatExec.Lib.Abstractions.Detectors;
 
@@ -21,6 +22,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     private readonly IPathEnvironmentVariableDetector _pathVariableDetector;
     private readonly IExecutableFileDetector _executableFileDetector;
 
+    private readonly StringComparison _stringComparison;
+    private readonly StringComparer _stringComparer;
+    
     /// <summary>
     /// Represents a class that resolves file paths based on the system's PATH environment variable.
     /// </summary>
@@ -30,6 +34,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     {
         _pathVariableDetector = pathVariableDetector;
         _executableFileDetector = executableFileDetector;
+        
+        _stringComparison = OperatingSystem.IsWindows() ?  StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        _stringComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
     }
 
     #region Helper Methods
@@ -49,7 +56,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         {
             FileInfo file = new(filePath);
 
-            if (file.Exists && await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken))
+            if (file.Exists && await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken).ConfigureAwait(false))
             {
                 return (true, file);
             }
@@ -88,7 +95,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         try
         {
             KeyValuePair<string, FileInfo> value =
-                await result.FirstAsync(p => p.Key == inputFilePath, cancellationToken);
+                await result.FirstAsync(p => string.Equals(p.Key, inputFilePath, _stringComparison), cancellationToken).ConfigureAwait(false);
 
             return value;
         }
@@ -138,12 +145,12 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         string[] pathContents = GetPathContents()
                                 ?? throw new InvalidOperationException("PATH Variable could not be found.");
 
-        Dictionary<string, FileInfo> output = new();
+        Dictionary<string, FileInfo> output = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
         
         IAsyncEnumerable<KeyValuePair<string, FileInfo>> results =  InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions,
             cancellationToken);
 
-        await foreach (KeyValuePair<string, FileInfo> result in results)
+        await foreach (KeyValuePair<string, FileInfo> result in results.ConfigureAwait(false))
         {
             output.Add(result.Key, result.Value);
         }
@@ -163,9 +170,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     [UnsupportedOSPlatform("browser")]
     public async Task<(bool, KeyValuePair<string, FileInfo>?)> TryResolveExecutableFilePathAsync(string inputFilePath, CancellationToken cancellationToken)
     {
-        (bool success, IReadOnlyDictionary<string, FileInfo> files) result = await TryGetExecutableFilePathsAsync([inputFilePath], cancellationToken);
+        (bool success, IReadOnlyDictionary<string, FileInfo> files) result = await TryGetExecutableFilePathsAsync([inputFilePath], cancellationToken).ConfigureAwait(false);
         
-        KeyValuePair<string, FileInfo>? resolvedExecutable = result.files.FirstOrDefault(f => f.Key == inputFilePath);
+        KeyValuePair<string, FileInfo>? resolvedExecutable = result.files.FirstOrDefault(f => string
+            .Equals(f.Key, inputFilePath, _stringComparison));
 
         return (result.success, resolvedExecutable);
     }
@@ -196,10 +204,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         }
         catch (InvalidOperationException)
         {
-            return (false, new ReadOnlyDictionary<string, FileInfo>(new Dictionary<string, FileInfo>()));
+            return (false, new ReadOnlyDictionary<string, FileInfo>(new Dictionary<string, FileInfo>(StringComparer.Ordinal)));
         }
 
-        return await InternalTryResolveFilePathsAsync(inputFilePaths, pathContents, pathExtensions, cancellationToken);
+        return await InternalTryResolveFilePathsAsync(inputFilePaths, pathContents, pathExtensions, cancellationToken).ConfigureAwait(false);
     }
 
     #region File Resolving Code
@@ -212,10 +220,10 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         foreach (string inputFilePath in inputFilePaths)
         {
             if (Path.IsPathRooted(inputFilePath)
-                || inputFilePath.Contains(Path.DirectorySeparatorChar)
-                || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
+                || inputFilePath.Contains(Path.DirectorySeparatorChar, _stringComparison)
+                || inputFilePath.Contains(Path.AltDirectorySeparatorChar, _stringComparison))
             {
-                (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken);
+                (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken).ConfigureAwait(false);
                 if (checkResults.success && checkResults.file is not null)
                 {
                     ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, checkResults.file));
@@ -234,11 +242,11 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                     foreach (string pathExtension in pathExtensions)
                     {
                         string filePath = Path.Combine(pathEntry,
-                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}");
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower(CultureInfo.InvariantCulture)}");
                         
                         (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(
                             filePath,
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
 
                         if (result.success && result.file is not null)
                         {
@@ -254,7 +262,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                     (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(
                         filePath,
                         cancellationToken
-                    );
+                    ).ConfigureAwait(false);
 
                     if (result.success && result.file is not null)
                     {
@@ -272,15 +280,15 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     protected virtual async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> InternalTryResolveFilePathsAsync(string[] inputFilePaths,
         string[] pathContents, string[] pathExtensions, CancellationToken cancellationToken)
     {
-        Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length);
+        Dictionary<string, FileInfo> output = new(capacity: inputFilePaths.Length, _stringComparer);
 
         foreach (string inputFilePath in inputFilePaths)
         {
             if (Path.IsPathRooted(inputFilePath)
-                || inputFilePath.Contains(Path.DirectorySeparatorChar)
-                || inputFilePath.Contains(Path.AltDirectorySeparatorChar))
+                || inputFilePath.Contains(Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                || inputFilePath.Contains(Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
             {
-                (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken);
+                (bool success, FileInfo? file) checkResults = await CheckFileExistsAndIsExecutable(inputFilePath, cancellationToken).ConfigureAwait(false);
                 if (checkResults.success && checkResults.file is not null)
                 {
                     ExecutableFileLocated?.Invoke(this, new KeyValuePair<string, FileInfo>(inputFilePath, checkResults.file));
@@ -298,9 +306,9 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                     foreach (string pathExtension in pathExtensions)
                     {
                         string filePath = Path.Combine(pathEntry,
-                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower()}");
+                            $"{Path.GetFileNameWithoutExtension(inputFilePath)}{pathExtension.ToLower(CultureInfo.InvariantCulture)}");
                         
-                        (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(filePath, cancellationToken);
+                        (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(filePath, cancellationToken).ConfigureAwait(false);
 
                         if (result.success && result.file is not null)
                         {
@@ -313,7 +321,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 {
                     string filePath = Path.Combine(pathEntry, Path.GetFileName(inputFilePath));
                     
-                    (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(filePath, cancellationToken);
+                    (bool success, FileInfo? file) result = await CheckFileExistsAndIsExecutable(filePath, cancellationToken).ConfigureAwait(false);
 
                     if (result.success && result.file is not null)
                     {
