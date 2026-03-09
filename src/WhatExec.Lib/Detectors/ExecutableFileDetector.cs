@@ -108,7 +108,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 _ => false
             };
 
-            if (string.Equals(file.Extension.ToLowerInvariant(), ".exe", StringComparison.Ordinal))
+            if (string.Equals(file.Extension.ToLowerInvariant(), ".exe", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
