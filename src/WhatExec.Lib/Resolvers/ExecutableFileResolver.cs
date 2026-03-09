@@ -247,7 +247,6 @@ public class ExecutableFileResolver : IExecutableFileResolver
         return output.ToArray();
     }
     
-    
     private async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutablesInDriveAsync(DriveInfo driveInfo,
         string[] inputFileNames, SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
