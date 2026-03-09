@@ -17,11 +17,14 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
-    <Version>1.0.0-preview.3</Version>
+    <Version>1.0.0-preview.4</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>WhatExec.Cli.Lite</PackageId>
     <Description>A lightweight executable file resolver that checks the PATH environment variable.</Description>
-    <PackageReleaseNotes>* Updated CLI to use updated library code</PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated CLIs to use updated library code
+* Optimisations and Improvements
+* Updated DotExtensions version from 9.7.0 to 9.7.2
+* Updated internal Polyfill version from 9.11.0 to 9.18.0</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>

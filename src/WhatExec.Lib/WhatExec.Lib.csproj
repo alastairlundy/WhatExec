@@ -14,20 +14,23 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>* Implemented new Event Handlers
-* Code cleanup and other improvements
-* Updated internal Polyfill version from 9.9.0 to 9.11.0
-* Implemented re-added none-async method to ``ExecutableFileDetector``
-* Implemented non-async methods in ``ExecutableFileResolver``</PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated internal Polyfill version from 9.11.0 to 9.18.0
+* Updated DotExtensions version from 9.7.0 to 9.7.2
+* Added missing xml doc comments
+* Removed .NET 8 and .NET 9 TFMs  due to pending EOL later this year
+* Potential Performance improvements
+* Renamed ``ExecutablesResolver`` to ``ExecutablesLocator``
+* Renamed ``ExecutableFileInstancesResolver`` to ``ExecutableFileInstancesLocator``</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>
-    <Version>1.0.0-preview.3</Version>
+    <Version>1.0.0-preview.4</Version>
     <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
 </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>WhatExec.Lib</AssemblyName>
     <RootNamespace>WhatExec.Lib</RootNamespace>
+    <PackageTags>locate,resolve, resolver, locator, path</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">

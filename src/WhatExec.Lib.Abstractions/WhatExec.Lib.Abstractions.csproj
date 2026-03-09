@@ -15,15 +15,17 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>* Added Event Handlers to file resolvers that are invoked when Executable Files are located.
-* Re-added non-async method to ``IExecutableFileDetector``
-* Added none-async methods to ``IExecutableFileResolver``</PackageReleaseNotes>
+    <PackageReleaseNotes>* Added missing xml doc comments
+* Removed .NET 8 and .NET 9 TFMs  due to pending EOL later this year
+* Renamed ``IExecutablesResolver`` to ``IExecutablesLocator``
+* Renamed ``IExecutableFileInstancesResolver`` to ``IExecutableFileInstancesLocator``</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Version>1.0.0-preview.4</Version>
     <Description>This is an abstractions-only library that provides interfaces for resolving Executable File locations.</Description>
     <AssemblyName>WhatExec.Lib.Abstractions</AssemblyName>
     <RootNamespace>WhatExec.Lib.Abstractions</RootNamespace>
+    <PackageTags>locate,resolve, resolver, locator, path</PackageTags>
   </PropertyGroup>
     
     <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">

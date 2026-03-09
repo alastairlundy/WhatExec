@@ -16,15 +16,15 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.0-preview.3</Version>
+    <Version>1.0.0-preview.4</Version>
     <PackageId>WhatExec.Cli</PackageId>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <LangVersion>14</LangVersion>
     <Description>A CLI program (installable as a tool) to find executable files in PATH Environment Variables or elsewhere on your system.</Description>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
     <PackageReleaseNotes>* Updated CLIs to use updated library code
-* Updated DotExtensions version from 9.6.1 to 9.7.0
-* Updated internal Polyfill version from 9.9.0 to 9.11.0</PackageReleaseNotes>
+* Optimisations and Improvements
+* Fixed an issue where the NuGet package wasn't explicitly marked as a tool</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

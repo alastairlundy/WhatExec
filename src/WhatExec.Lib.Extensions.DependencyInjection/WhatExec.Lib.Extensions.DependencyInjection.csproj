@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-preview.3</Version>
+    <Version>1.0.0-preview.4</Version>
     <Title>WhatExec.Lib.Extensions.DependencyInjection</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) 2025-2026 Alastair Lundy</Copyright>
@@ -14,7 +14,8 @@
     <IncludeSymbols>true</IncludeSymbols>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>* Updated to use WhatExec.Lib.Abstractions 1.0.0 Preview 3 and WhatExec.Lib version 1.0.0 Preview 3</PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated to use WhatExec.Lib.Abstractions 1.0.0 Preview 4 and WhatExec.Lib version 1.0.0 Preview 4
+* Converted extension method to C#14 extension block</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Registers WhatExecLib with Microsoft.Extensions.DependencyInjection</Description>
