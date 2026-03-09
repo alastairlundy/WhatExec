@@ -1,5 +1,5 @@
 ﻿/*
-    WhatExecLib
+    WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,7 +14,6 @@ namespace WhatExec.Lib;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.
-/// Implements the <see cref="IExecutablesLocator"/> interface to provide functionality for locating executables.
 /// </summary>
 public class ExecutablesLocator : IExecutablesLocator
 {
@@ -23,6 +22,7 @@ public class ExecutablesLocator : IExecutablesLocator
     /// <summary>
     /// Represents a locator for identifying all executable files within specified directories or drives.
     /// </summary>
+    /// <param name="executableFileDetector">The executable file detector to use.</param>
     public ExecutablesLocator(IExecutableFileDetector executableFileDetector)
     {
         _executableFileDetector = executableFileDetector;
@@ -30,15 +30,15 @@ public class ExecutablesLocator : IExecutablesLocator
 
     /// <inheritdoc/>
     public event EventHandler<FileInfo>? ExecutableFileLocated;
-    
+
     /// <summary>
-    ///
+    /// Asynchronously enumerates executable files within a specified directory.
     /// </summary>
-    /// <param name="directory"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <param name="directory">The directory to enumerate.</param>
+    /// <param name="directorySearchOption">A value that specifies whether to search subdirectories or not.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>An asynchronous enumerable sequence of <see cref="FileInfo"/> objects representing executable files.</returns>
+    /// <exception cref="DirectoryNotFoundException">Thrown if the specified directory does not exist.</exception>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -77,8 +77,8 @@ public class ExecutablesLocator : IExecutablesLocator
     /// Locates all executable files within the specified directory and its subdirectories.
     /// </summary>
     /// <param name="directory">The directory to search for executables.</param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="directorySearchOption">A value that specifies whether to search subdirectories or not.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the executable files found.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
     [UnsupportedOSPlatform("ios")]
@@ -89,15 +89,15 @@ public class ExecutablesLocator : IExecutablesLocator
         => await EnumerateExecutablesWithinDirectoryAsync(directory, directorySearchOption, cancellationToken)
             .ToArrayAsync(cancellationToken: cancellationToken);
 
-    
+
     /// <summary>
-    /// 
+    /// Asynchronously enumerates executable files within a specified drive.
     /// </summary>
-    /// <param name="driveInfo"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="driveInfo">The drive information.</param>
+    /// <param name="directorySearchOption">Specifies whether to search all subdirectories or only the specified directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An asynchronous enumerable sequence of <see cref="FileInfo"/> objects representing executable files within the drive.</returns>
+    /// <exception cref="ArgumentException">Thrown when the specified drive is not ready.</exception>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -136,8 +136,8 @@ public class ExecutablesLocator : IExecutablesLocator
     /// Identifies all executable files within the specified drive by recursively searching through all directories.
     /// </summary>
     /// <param name="driveInfo">The drive to search within for executable files.</param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="directorySearchOption">Specifies whether to search all subdirectories or only the specified directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>An array of FileInfo objects representing executable files found within the drive.</returns>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]

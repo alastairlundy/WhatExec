@@ -1,5 +1,5 @@
 /*
-    WhatExecLib
+    WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
@@ -25,7 +25,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// Represents a class that resolves file paths based on the system's PATH environment variable.
     /// </summary>
     /// <param name="pathVariableDetector">The path environment variable detector to use.</param>
-    /// <param name="executableFileDetector"></param>
+    /// <param name="executableFileDetector">The executable file detector to use.</param>
     public PathEnvironmentVariableResolver(IPathEnvironmentVariableDetector pathVariableDetector, IExecutableFileDetector executableFileDetector)
     {
         _pathVariableDetector = pathVariableDetector;
@@ -107,7 +107,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     /// <returns>An array of <see cref="FileInfo"/> objects representing the resolved files.</returns>
     /// <exception cref="FileNotFoundException">Thrown if one or more files could not be found in the specified locations.</exception>
     /// <exception cref="PlatformNotSupportedException">Thrown if the current platform is unsupported.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if an invalid operation occurs during file resolution, such as PATH not being able to be resolved.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the PATH environment variable cannot be found.</exception>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -122,7 +122,15 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         return InternalResolveFilePaths(inputFilePaths, pathContents, pathExtensions, cancellationToken);
     }
 
-    public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilePathsAsync(string[] inputFilePaths, CancellationToken cancellationToken)
+    /// <summary>
+    /// Asynchronously resolves the file paths of executables based on the system's PATH environment variable.
+    /// </summary>
+    /// <param name="inputFilePaths">The array of input file paths to resolve.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A dictionary containing the resolved executable file paths and their corresponding FileInfo objects.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the PATH environment variable cannot be found.</exception>
+    public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilePathsAsync(string[] inputFilePaths,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
 

@@ -33,6 +33,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DotExtensions" />
+    <PackageReference Include="Meziantou.Analyzer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference
       Include="Polyfill" Condition="'$(TargetFramework)' == 'netstandard2.0'"
       PrivateAssets="all"/>
@@ -55,7 +59,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
-    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
+    <ProjectReference Include="..\WhatExec.Lib.Abstractions\WhatExec.Lib.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">

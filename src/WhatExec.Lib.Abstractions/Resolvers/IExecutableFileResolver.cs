@@ -1,5 +1,5 @@
 /*
-    WhatExecLib
+    WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public

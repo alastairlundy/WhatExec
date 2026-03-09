@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib", "WhatExecLib\WhatExecLib.csproj", "{C4567029-F397-44AA-A7CA-0367942E2F79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Lib", "WhatExec.Lib\WhatExec.Lib.csproj", "{C4567029-F397-44AA-A7CA-0367942E2F79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logic", "logic", "{BB3A9684-4F93-4B06-9456-730B2271307B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib.Abstractions", "WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj", "{D3A25A4C-3493-49EF-B6C4-3186BE9B34DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Lib.Abstractions", "WhatExec.Lib.Abstractions\WhatExec.Lib.Abstractions.csproj", "{D3A25A4C-3493-49EF-B6C4-3186BE9B34DB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extras", "extras", "{28B50084-A8FD-470F-97A8-7FF96DE5A911}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib.Extensions.DependencyInjection", "WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj", "{C536E97B-74FF-411E-8344-406137D48CCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Lib.Extensions.DependencyInjection", "WhatExec.Lib.Extensions.DependencyInjection\WhatExec.Lib.Extensions.DependencyInjection.csproj", "{C536E97B-74FF-411E-8344-406137D48CCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLiteCli", "WhatExecLiteCli\WhatExecLiteCli.csproj", "{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Cli.Lite", "WhatExec.Cli.Lite\WhatExec.Cli.Lite.csproj", "{EBCD9CBB-991C-4BDA-84DF-C97F4209142B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CLIs", "CLIs", "{14C4F29D-CB29-4F02-9069-09B3097D6D80}"
 	ProjectSection(SolutionItems) = preProject

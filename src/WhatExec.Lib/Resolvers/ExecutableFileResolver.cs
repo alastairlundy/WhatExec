@@ -1,5 +1,5 @@
 /*
-    WhatExecLib
+    WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,14 +13,19 @@ using WhatExec.Lib.Abstractions.Detectors;
 namespace WhatExec.Lib;
 
 /// <summary>
-/// 
+/// Represents a class that resolves the location of specified executable files.
 /// </summary>
 public class ExecutableFileResolver : IExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
-
-    public ExecutableFileResolver(IExecutableFileDetector executableFileDetector, 
+    
+    /// <summary>
+    /// Represents a class that resolves the location of specified executable files.
+    /// </summary>
+    /// <param name="executableFileDetector">The executable file detector to use.</param>
+    /// <param name="pathEnvironmentVariableResolver">The path environment variable resolver to use.</param>
+    public ExecutableFileResolver(IExecutableFileDetector executableFileDetector,
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver)
     {
         _executableFileDetector = executableFileDetector;
@@ -35,8 +40,9 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// </summary>
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that returns a <see cref="FileInfo"/> indicating the location of the executable if found, otherwise null.</returns>
+    /// <exception cref="FileNotFoundException">Thrown if the specified executable file could not be found.</exception>
     public async Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
@@ -45,15 +51,15 @@ public class ExecutableFileResolver : IExecutableFileResolver
         if(result is { success: true, file: not null })
             return result.file;
         
-        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{0}", executableFileName));
+        throw new FileNotFoundException(Resources.Exceptions_FileNotFound.Replace("{0}", executableFileName), executableFileName);
     }
 
     /// <summary>
-    /// Resolves the location of an executable file.
+    /// Attempts to resolve the location of an executable file.
     /// </summary>
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that returns a tuple indicating whether the executable was found and its location if successful, otherwise null.</returns>
     public async Task<(bool, FileInfo?)> TryLocateExecutableAsync(string executableFileName,
         SearchOption directorySearchOption,
@@ -85,21 +91,21 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <summary>
     /// Asynchronously locates multiple executable files within a directory or its subdirectories.
     /// </summary>
-    /// <param name="executableFileNames">The names of the executable files to locate.</param>
+    /// <param name="inputFileNames">The names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A dictionary containing the located executable files, where the keys are the original file names and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if any of the specified executable files are not found.</exception>
-    public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] executableFileNames,
+    public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
-        (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryGetExecutableFilesAsync(executableFileNames,
+        (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryGetExecutableFilesAsync(inputFileNames,
             directorySearchOption, cancellationToken);
         
-        if (!result.success && result.executables.Count < executableFileNames.Length)
+        if (!result.success && result.executables.Count < inputFileNames.Length)
         {
-            string filesNotFound = string.Join(", ", executableFileNames.Except(result.executables.Keys));
+            string filesNotFound = string.Join(", ", inputFileNames.Except(result.executables.Keys));
             
             throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{0}", filesNotFound));
         }
@@ -108,26 +114,27 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <summary>
-    /// 
+    /// Asynchronously enumerates executable files within a directory or its subdirectories.
     /// </summary>
-    /// <param name="executableFileNames"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] executableFileNames, SearchOption directorySearchOption,
+    /// <param name="inputFileNames">The names of the executable files to locate.</param>
+    /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An asynchronous sequence of key-value pairs, where each key is a filename and the corresponding value is the location of the executable file if found.</returns>
+    public async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] inputFileNames,
+        SearchOption directorySearchOption,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         List<string> executablesToLookFor =
 #if NET8_0_OR_GREATER
-            new(executableFileNames);
+            new(inputFileNames);
 #else
             new();
         
-        executablesToLookFor.AddRange(executableFileNames);
+        executablesToLookFor.AddRange(inputFileNames);
 #endif
         
         IAsyncEnumerable<KeyValuePair<string, FileInfo>> result = _pathEnvironmentVariableResolver.
-            EnumerateExecutableFilePathsAsync(executableFileNames, cancellationToken);
+            EnumerateExecutableFilePathsAsync(inputFileNames, cancellationToken);
         
         await foreach (KeyValuePair<string, FileInfo> kvp in result)
         {
@@ -147,18 +154,24 @@ public class ExecutableFileResolver : IExecutableFileResolver
         }
     }
 
-    /// <inheritdoc/>
-    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] executableFileNames,
+    /// <summary>
+    /// Asynchronously attempts to locate specified executable files within a directory or its subdirectories.
+    /// </summary>
+    /// <param name="inputFileNames">An array of names of the executable files to locate.</param>
+    /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A tuple containing a boolean indicating whether all executables were found and a dictionary of found executables keyed by their file names.</returns>
+    public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
         string[] executablesToLookFor;
-        Dictionary<string, FileInfo> output = new(capacity: executableFileNames.Length);
+        Dictionary<string, FileInfo> output = new(capacity: inputFileNames.Length);
         
         (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.
-            TryGetExecutableFilePathsAsync(executableFileNames, cancellationToken);
+            TryGetExecutableFilePathsAsync(inputFileNames, cancellationToken);
 
-        if (result.foundInPath && result.pathExecutables.Count == executableFileNames.Length)
+        if (result.foundInPath && result.pathExecutables.Count == inputFileNames.Length)
         {
             return (true, result.pathExecutables);
         }
@@ -169,11 +182,11 @@ public class ExecutableFileResolver : IExecutableFileResolver
                 output.Add(executable.Key, executable.Value);
             }
             
-            executablesToLookFor = executableFileNames.Where(f => !result.pathExecutables.ContainsKey(f)).ToArray();
+            executablesToLookFor = inputFileNames.Where(f => !result.pathExecutables.ContainsKey(f)).ToArray();
         }
         else
         {
-            executablesToLookFor = executableFileNames;
+            executablesToLookFor = inputFileNames;
         }
 
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
@@ -190,21 +203,21 @@ public class ExecutableFileResolver : IExecutableFileResolver
             }
         }
         
-        return (output.Count == executableFileNames.Length, new Dictionary<string, FileInfo>(output));
+        return (output.Count == inputFileNames.Length, new Dictionary<string, FileInfo>(output));
     }
 
     private async Task<KeyValuePair<string, FileInfo>[]> GetExecutablesInDriveAsync(DriveInfo driveInfo,
-        string[] executableFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken)
+        string[] inputFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(executableFileNames);
+        ArgumentNullException.ThrowIfNull(inputFileNames);
 
-        List<KeyValuePair<string, FileInfo>> output = new(capacity: executableFileNames.Length);
+        List<KeyValuePair<string, FileInfo>> output = new(capacity: inputFileNames.Length);
         
         StringComparison stringComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
 
-        foreach (string executableFileName in executableFileNames)
+        foreach (string executableFileName in inputFileNames)
         {
             FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path.GetFileName(executableFileName), directorySearchOption)
                 .Where(f => executableFileName.Equals(f.Name, stringComparison))
@@ -227,15 +240,15 @@ public class ExecutableFileResolver : IExecutableFileResolver
     
     
     private async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutablesInDriveAsync(DriveInfo driveInfo,
-        string[] executableFileNames, SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
+        string[] inputFileNames, SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(executableFileNames);
+        ArgumentNullException.ThrowIfNull(inputFileNames);
         
         StringComparison stringComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
 
-        foreach (string executableFileName in executableFileNames)
+        foreach (string executableFileName in inputFileNames)
         {
             FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path
                     .GetFileName(executableFileName), directorySearchOption)

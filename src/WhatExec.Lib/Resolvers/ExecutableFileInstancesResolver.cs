@@ -1,5 +1,5 @@
 ﻿/*
-    WhatExecLib
+    WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
@@ -31,13 +31,14 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     public event EventHandler<FileInfo>? ExecutableFileLocated;
 
     /// <summary>
-    /// 
+    /// Asynchronously enumerates resolved <see cref="FileInfo"/> objects representing executable instances found across logical drives.
     /// </summary>
-    /// <param name="executableName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(string executableName, SearchOption directorySearchOption,
+    /// <param name="executableName">The name of the executable to search for.</param>
+    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing instances of an executable file.</returns>
+    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(string executableName,
+        SearchOption directorySearchOption,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
@@ -59,8 +60,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// Locates all instances of the specified executable file across all available drives on the system.
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances.</returns>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
@@ -85,17 +86,18 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     }
 
     /// <summary>
-    /// 
+    /// Enumerates resolved instances of a specified executable name from a specified drive.
     /// </summary>
-    /// <param name="driveInfo"></param>
-    /// <param name="executableName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="driveInfo">The drive information to search.</param>
+    /// <param name="executableName">The name of the executable file to find.</param>
+    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing executable files that match the specified criteria.</returns>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo, string executableName,
+    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo,
+        string executableName,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
@@ -133,8 +135,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// </summary>
     /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
     /// <param name="executableName">The name of the executable file to be located.</param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
@@ -171,16 +173,17 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
         
         return output.ToArray();
     }
-    
+
     /// <summary>
-    /// 
+    /// Asynchronously enumerates instances of <see cref="FileInfo"/> objects representing executable files within a specified directory that match the given executable name.
     /// </summary>
-    /// <param name="directory"></param>
-    /// <param name="executableName"></param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(DirectoryInfo directory, string executableName,
+    /// <param name="directory">The directory to search for executable files.</param>
+    /// <param name="executableName">The name of the executable file to locate.</param>
+    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to abort the operation.</param>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing executable files that match the specified criteria.</returns>
+    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
+        string executableName,
         SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
@@ -218,8 +221,8 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
     /// </summary>
     /// <param name="directory">The directory where the search will be conducted.</param>
     /// <param name="executableName">The name of the executable file to search for.</param>
-    /// <param name="directorySearchOption"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to abort the operation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable files within the directory.</returns>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]

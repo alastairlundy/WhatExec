@@ -34,8 +34,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
-    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
-    <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
+    <ProjectReference Include="..\WhatExec.Lib.Abstractions\WhatExec.Lib.Abstractions.csproj" />
+    <ProjectReference Include="..\WhatExec.Lib\WhatExec.Lib.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">

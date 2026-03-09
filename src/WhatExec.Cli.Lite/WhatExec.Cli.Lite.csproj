@@ -47,9 +47,9 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
-    <ProjectReference Include="..\WhatExecLib.Abstractions\WhatExecLib.Abstractions.csproj"/>
-    <ProjectReference Include="..\WhatExecLib\WhatExecLib.csproj" />
-    <ProjectReference Include="..\WhatExecLib.Extensions.DependencyInjection\WhatExecLib.Extensions.DependencyInjection.csproj" />
+    <ProjectReference Include="..\WhatExec.Lib.Abstractions\WhatExec.Lib.Abstractions.csproj" />
+    <ProjectReference Include="..\WhatExec.Lib\WhatExec.Lib.csproj" />
+    <ProjectReference Include="..\WhatExec.Lib.Extensions.DependencyInjection\WhatExec.Lib.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
