@@ -16,19 +16,19 @@ namespace WhatExec.Lib;
 /// Represents a class that provides functionality to locate instances of executable files
 /// across multiple drives, directories, and files in a system.
 /// </summary>
-public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
+public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
 {
     private readonly IExecutableFileDetector _executableFileDetector;
 
     /// <summary>
     /// Provides functionality for locating instances of executable files across drives, directories, and files.
     /// </summary>
-    public ExecutableFileInstancesResolver(IExecutableFileDetector executableDetector)
+    public ExecutableFileInstancesLocator(IExecutableFileDetector executableDetector)
     {
         _executableFileDetector = executableDetector;
     }
 
-    public event EventHandler<FileInfo>? ExecutableFileLocated;
+    public event EventHandler<FileInfo>? ExecutableFileInstanceLocated;
 
     /// <summary>
     /// Asynchronously enumerates resolved <see cref="FileInfo"/> objects representing executable instances found across logical drives.
@@ -116,7 +116,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
                 if (isExecutable)
                 {
-                    ExecutableFileLocated?.Invoke(this, file);
+                    ExecutableFileInstanceLocated?.Invoke(this, file);
                     validExecutable = true;
                 }
             }
@@ -163,7 +163,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
                 if (isExecutable)
                 {
-                    ExecutableFileLocated?.Invoke(this, file);
+                    ExecutableFileInstanceLocated?.Invoke(this, file);
                     output.Add(file);
                 }
             }
@@ -204,7 +204,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
                 if (isExecutable)
                 {
-                    ExecutableFileLocated?.Invoke(this, file);
+                    ExecutableFileInstanceLocated?.Invoke(this, file);
                     validExecutable = true;
                 }
             }
@@ -251,7 +251,7 @@ public class ExecutableFileInstancesResolver : IExecutableFileInstancesResolver
 
                 if (isExecutable)
                 {
-                    ExecutableFileLocated?.Invoke(this, file);
+                    ExecutableFileInstanceLocated?.Invoke(this, file);
                     output.Add(file);
                 }
             }

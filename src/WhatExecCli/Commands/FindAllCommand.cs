@@ -11,13 +11,13 @@ namespace WhatExec.Cli.Commands;
 )]
 public class FindAllCommand
 {
-    private readonly IExecutableFileInstancesResolver _executableFileInstancesResolver;
+    private readonly IExecutableFileInstancesLocator _executableFileInstancesResolver;
 
-    public FindAllCommand(IExecutableFileInstancesResolver executableFileInstancesResolver)
+    public FindAllCommand(IExecutableFileInstancesLocator executableFileInstancesResolver)
     {
         _executableFileInstancesResolver = executableFileInstancesResolver;
         
-        _executableFileInstancesResolver.ExecutableFileLocated += ExecutableFileInstancesResolverOnExecutableFileLocated;
+        _executableFileInstancesResolver.ExecutableFileInstanceLocated += ExecutableFileInstancesResolverOnExecutableFileLocated;
     }
 
     private void ExecutableFileInstancesResolverOnExecutableFileLocated(object? sender, FileInfo e)

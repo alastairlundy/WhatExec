@@ -4,13 +4,18 @@
 
 This is an abstractions-only library that provides interfaces for resolving Executable File locations.
 
+### Locators
+
+| Scenario                                                                 | Interface                            | 
+|--------------------------------------------------------------------------|--------------------------------------|
+| Finding all Executable files on a Drive or in a Directory                | ``IExecutablesLocator``              |
+| Finding all Executable files with the same name                          | ``IExecutableFileInstancesLocator``  |
+
 ### Resolvers
 
 | Scenario                                                                 | Interface                            | 
 |--------------------------------------------------------------------------|--------------------------------------|
-| Finding all Executable files on a Drive or in a Directory                | ``IExecutablesResolver``             |
-| Finding all Executable files with the same name                          | ``IExecutableFileInstancesResolver`` |
-| Resolve Executable file paths                                            | ``IExecutableFileResolver``          |
+| Resolve the file paths of specified Executable files                     | ``IExecutableFileResolver``          |
 | Resolve an Executable file path using just the PATH Environment variable | ``IPathEnvironmentVariableResolver`` |
 
 

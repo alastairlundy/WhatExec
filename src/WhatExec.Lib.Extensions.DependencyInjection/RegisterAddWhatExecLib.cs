@@ -37,8 +37,8 @@ public static class RegisterAddWhatExecLib
                     services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
                     services.AddScoped<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddScoped<
-                        IExecutableFileInstancesResolver,
-                        ExecutableFileInstancesResolver
+                        IExecutableFileInstancesLocator,
+                        ExecutableFileInstancesLocator
                     >();
                     services.AddScoped<IExecutableFileResolver, ExecutableFileResolver>();
                     services.AddScoped<IExecutablesLocator, ExecutablesLocator>();
@@ -48,8 +48,8 @@ public static class RegisterAddWhatExecLib
                     services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
                     services.AddSingleton<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddSingleton<
-                        IExecutableFileInstancesResolver,
-                        ExecutableFileInstancesResolver
+                        IExecutableFileInstancesLocator,
+                        ExecutableFileInstancesLocator
                     >();
                     services.AddSingleton<IExecutableFileResolver, ExecutableFileResolver>();
                     services.AddSingleton<IExecutablesLocator, ExecutablesLocator>();
@@ -59,8 +59,8 @@ public static class RegisterAddWhatExecLib
                     services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
                     services.AddTransient<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddTransient<
-                        IExecutableFileInstancesResolver,
-                        ExecutableFileInstancesResolver
+                        IExecutableFileInstancesLocator,
+                        ExecutableFileInstancesLocator
                     >();
                     services.AddTransient<IExecutableFileResolver, ExecutableFileResolver>();
                     services.AddTransient<IExecutablesLocator, ExecutablesLocator>();

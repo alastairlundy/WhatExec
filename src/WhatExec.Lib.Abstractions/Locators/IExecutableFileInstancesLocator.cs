@@ -12,20 +12,20 @@ namespace WhatExec.Lib.Abstractions;
 /// <summary>
 /// Defines methods for locating executable file instances across various locations such as drives and directories.
 /// </summary>
-public interface IExecutableFileInstancesResolver
+public interface IExecutableFileInstancesLocator
 {
     /// <summary>
-    /// 
+    /// An event that is triggered each time an instance of an executable file was located during the resolution process.
     /// </summary>
-    event EventHandler<FileInfo> ExecutableFileLocated;
+    event EventHandler<FileInfo> ExecutableFileInstanceLocated;
     
     /// <summary>
-    /// 
+    /// Enumerates all instances of the specified executable file across all available drives on the system.
     /// </summary>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
-    /// <returns></returns>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the located executable file instances within the system.</returns>
     IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(string executableName, SearchOption directorySearchOption,
         CancellationToken cancellationToken);
     
@@ -35,7 +35,7 @@ public interface IExecutableFileInstancesResolver
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
-    /// <returns>An array of FileInfo objects representing the located executable file instances.</returns>
+    /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the system.</returns>
     Task<FileInfo[]> GetExecutableInstancesAsync(
         string executableName,
         SearchOption directorySearchOption,
@@ -43,24 +43,24 @@ public interface IExecutableFileInstancesResolver
     );
     
     /// <summary>
-    /// 
+    /// Enumerates instances of the specified executable file within the specified drive.
     /// </summary>
     /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
-    /// <returns></returns>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
     IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo,
         string executableName, SearchOption directorySearchOption, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Locates all instances of the specified executable file within a specific drive on the system.
+    /// Locates all instances of the specified executable file within the specified drive.
     /// </summary>
     /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
     /// <param name="executableName">The name of the executable file to be located.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
-    /// <returns>An array of FileInfo objects representing the located executable file instances within the specified drive.</returns>
+    /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
     Task<FileInfo[]> GetExecutableInstancesInDriveAsync(
         DriveInfo driveInfo,
         string executableName,
@@ -69,13 +69,13 @@ public interface IExecutableFileInstancesResolver
     );
 
     /// <summary>
-    /// 
+    /// Enumerates instances of the specified executable file within the specified directory.
     /// </summary>
     /// <param name="directory">The directory where the search will be conducted.</param>
     /// <param name="executableName">The name of the executable file to search for.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
-    /// <returns></returns>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the located executable file instances within the specified directory.</returns>
     IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
         string executableName,
         SearchOption directorySearchOption,
@@ -89,7 +89,7 @@ public interface IExecutableFileInstancesResolver
     /// <param name="executableName">The name of the executable file to search for.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
-    /// <returns>An array of FileInfo objects representing the located executable files within the directory.</returns>
+    /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified directory.</returns>
     Task<FileInfo[]> GetExecutableInstancesInDirectoryAsync(
         DirectoryInfo directory,
         string executableName,
