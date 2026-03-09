@@ -9,8 +9,9 @@
 
 using System.Runtime.CompilerServices;
 using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Abstractions.Locators;
 
-namespace WhatExec.Lib;
+namespace WhatExec.Lib.Locators;
 
 /// <summary>
 /// Represents a locator that identifies all executable files within specified directories or drives.

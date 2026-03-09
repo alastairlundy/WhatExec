@@ -9,8 +9,9 @@
 
 using System.Runtime.CompilerServices;
 using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Abstractions.Locators;
 
-namespace WhatExec.Lib;
+namespace WhatExec.Lib.Locators;
 
 /// <summary>
 /// Represents a class that provides functionality to locate instances of executable files

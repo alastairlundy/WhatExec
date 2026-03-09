@@ -11,8 +11,9 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Abstractions.Resolvers;
 
-namespace WhatExec.Lib;
+namespace WhatExec.Lib.Resolvers;
 
 /// <summary>
 /// Provides functionality to resolve the path of an executable file based on the system's PATH environment variable.

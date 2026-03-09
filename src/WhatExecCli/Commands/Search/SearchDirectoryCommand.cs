@@ -8,6 +8,7 @@
  */
 
 using WhatExec.Lib.Abstractions;
+using WhatExec.Lib.Abstractions.Locators;
 
 namespace WhatExec.Cli.Commands.Search;
 

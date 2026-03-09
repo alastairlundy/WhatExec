@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExec.Lib.Abstractions;
+namespace WhatExec.Lib.Abstractions.Resolvers;
 
 /// <summary>
 /// Defines methods to resolve file paths for executable files based on the system's PATH environment variable.

@@ -9,8 +9,9 @@
 
 using System.Runtime.CompilerServices;
 using WhatExec.Lib.Abstractions.Detectors;
+using WhatExec.Lib.Abstractions.Resolvers;
 
-namespace WhatExec.Lib;
+namespace WhatExec.Lib.Resolvers;
 
 /// <summary>
 /// Represents a class that resolves the location of specified executable files.

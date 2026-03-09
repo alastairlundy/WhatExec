@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExec.Lib.Abstractions;
+namespace WhatExec.Lib.Abstractions.Locators;
 
 /// <summary>
 /// Defines an interface for locating all executable files within a specified directory or drive.

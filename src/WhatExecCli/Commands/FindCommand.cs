@@ -9,6 +9,7 @@
 
 using System.Diagnostics;
 using WhatExec.Lib.Abstractions;
+using WhatExec.Lib.Abstractions.Resolvers;
 
 namespace WhatExec.Cli.Commands;
 
