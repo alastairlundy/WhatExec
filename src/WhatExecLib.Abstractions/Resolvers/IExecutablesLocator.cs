@@ -20,13 +20,12 @@ public interface IExecutablesLocator
     event EventHandler<FileInfo> ExecutableFileLocated;
     
     /// <summary>
-    /// Locates all executable files within a specified directory asynchronously.
-    /// Filters the files to include only those that are recognized as executable based on the implementation of the provided executable file detector.
+    /// Enumerates all executable files within a specified directory asynchronously.
     /// </summary>
     /// <param name="directory">The directory in which to search for executable files.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
     IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDirectoryAsync(
         DirectoryInfo directory,
@@ -35,12 +34,12 @@ public interface IExecutablesLocator
     );
 
     /// <summary>
-    /// 
+    /// Gets all executable files within a specified directory asynchronously.
     /// </summary>
     /// <param name="directory">The directory in which to search for executable files.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
+    /// <returns>A task that returns an array of <see cref="FileInfo"/> objects representing the executable files within the specified directory.</returns>
     Task<FileInfo[]> GetExecutablesWithinDirectoryAsync(
         DirectoryInfo directory,
         SearchOption directorySearchOption,
@@ -49,23 +48,22 @@ public interface IExecutablesLocator
 
     /// <summary>
     /// Locates all executable files within a specified drive asynchronously.
-    /// Filters the files to include only those recognized as executables based on the provided executable file detector implementation.
     /// </summary>
     /// <param name="driveInfo">The drive in which to search for executable files.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>A collection of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
+    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     /// <exception cref="DriveNotFoundException">Thrown when the specified drive does not exist or is unavailable.</exception>
     IAsyncEnumerable<FileInfo> EnumerateExecutablesWithinDriveAsync(DriveInfo driveInfo,
         SearchOption directorySearchOption, CancellationToken cancellationToken);
     
     /// <summary>
-    /// 
+    /// Gets all executable files within a specified drive asynchronously.
     /// </summary>
     /// <param name="driveInfo">The drive in which to search for executable files.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
+    /// <returns>A task that returns an array of <see cref="FileInfo"/> objects representing the executable files within the specified drive.</returns>
     Task<FileInfo[]> GetExecutablesWithinDriveAsync(DriveInfo driveInfo,
         SearchOption directorySearchOption, CancellationToken cancellationToken);
 }
