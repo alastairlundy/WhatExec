@@ -51,8 +51,6 @@ jobs:
           # Push the Abstractions package
       - name: NuGet push WhatExec.Lib.Abstractions
         run: dotnet nuget push src/WhatExec.Lib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Sleep for 300 seconds
-        run: sleep 300s
         shell: bash
       - name: Restore dependencies
         run: dotnet restore
@@ -63,8 +61,6 @@ jobs:
         # Push the Main package
       - name: NuGet push WhatExec.Lib
         run: dotnet nuget push src/WhatExec.Lib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Sleep for 300 seconds
-        run: sleep 300s
         shell: bash
        # Push the Dependency Injection package
       - name: Create packages
@@ -72,8 +68,6 @@ jobs:
         working-directory: src/WhatExec.Lib.Extensions.DependencyInjection
       - name: Push packages
         run: dotnet nuget push src/WhatExec.Lib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Sleep for 300 seconds
-        run: sleep 300s
       # Push the Tool packages
       - name: NuGet push WhatExec.Cli.Lite
         run: dotnet nuget push src/WhatExec.Cli.Lite/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
