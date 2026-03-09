@@ -56,7 +56,9 @@ public class SearchDirectoryCommand
     {
         try
         {
+#pragma warning disable MA0015
             ArgumentException.ThrowIfNullOrEmpty(Directory);
+#pragma warning restore MA0015
         }
         catch (Exception)
         {
@@ -81,6 +83,6 @@ public class SearchDirectoryCommand
         IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDirectoryAsync(directoryInfo,
             SearchOption.AllDirectories, cliContext.CancellationToken);
 
-        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);
+        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);
     }
 }

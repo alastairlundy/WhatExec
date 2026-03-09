@@ -4,9 +4,8 @@
     <LangVersion>14</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <PublishTrimmed>false</PublishTrimmed>
+    <PublishTrimmed>true</PublishTrimmed>
     <PublishAot>false</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
     <AssemblyName>whatexec-lite</AssemblyName>
@@ -29,6 +28,7 @@
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="ConsoleAppFramework"/>
     <PackageReference Include="Meziantou.Analyzer">
@@ -48,6 +48,13 @@
   <PropertyGroup>
     <!-- default false, CI can set to true -->
     <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
+    <BuildAsTool Condition="'$(BuildAsTool)'==''">True</BuildAsTool>
+
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(BuildAsTool)' == 'false'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">

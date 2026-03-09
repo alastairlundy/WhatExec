@@ -27,4 +27,4 @@ Cli.Ext.ConfigureServices(services =>
 await Cli.RunAsync<FindCommand>(args, new CliSettings()
 {
     EnablePosixBundling = true
-});
+}).ConfigureAwait(true);

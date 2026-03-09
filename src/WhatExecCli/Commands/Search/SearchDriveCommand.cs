@@ -54,7 +54,9 @@ public class SearchDriveCommand
     {
         try
         {
+#pragma warning disable MA0015
             ArgumentException.ThrowIfNullOrEmpty(Drive);
+#pragma warning restore MA0015
         }
         catch (Exception)
         {
@@ -64,7 +66,8 @@ public class SearchDriveCommand
             Drive = UserInputHelper.GetDriveInput();
         }
 
-        DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d => d.Name == Drive);
+        DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d => string.Equals(d.Name, Drive,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
         
         if(drive is null)
             return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),
@@ -79,6 +82,6 @@ public class SearchDriveCommand
         IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
             cliContext.CancellationToken);
         
-        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);
+        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);
     }
 }

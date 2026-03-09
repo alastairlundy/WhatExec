@@ -46,7 +46,8 @@ public class FindAllCommand
     
     public async Task<int> RunAsync(CliContext cliContext)
     {
-        Dictionary<string, List<FileInfo>> commandLocations = new();
+        Dictionary<string, List<FileInfo>> commandLocations = new(
+            StringComparer.OrdinalIgnoreCase);
 
         if (Commands is null && Interactive)
             Commands = UserInputHelper.GetCommandInput();
@@ -62,7 +63,7 @@ public class FindAllCommand
             commandLocations.Add(command, new List<FileInfo>());
         }
         
-        IReadOnlyDictionary<string, FileInfo[]> result = await TrySearchSystem_LocateAllInstances(Commands, cliContext.CancellationToken);
+        IReadOnlyDictionary<string, FileInfo[]> result = await TrySearchSystem_LocateAllInstances(Commands, cliContext.CancellationToken).ConfigureAwait(true);
      
         foreach (KeyValuePair<string, FileInfo[]> pair in result)
         {
@@ -75,7 +76,8 @@ public class FindAllCommand
     private async Task<IReadOnlyDictionary<string, FileInfo[]>> TrySearchSystem_LocateAllInstances(
         string[] commandsLeftToLookFor, CancellationToken cancellationToken)
     {
-        Dictionary<string, FileInfo[]> output = new(capacity: commandsLeftToLookFor.Length);
+        Dictionary<string, FileInfo[]> output = new(capacity: commandsLeftToLookFor.Length, 
+            StringComparer.OrdinalIgnoreCase);
 
         foreach (string command in commandsLeftToLookFor)
         {
@@ -85,7 +87,7 @@ public class FindAllCommand
                     command,
                     SearchOption.AllDirectories,
                     cancellationToken
-                );
+                ).ConfigureAwait(true);
             
                 output.Add(command, info);
             }

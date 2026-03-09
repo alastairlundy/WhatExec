@@ -20,4 +20,4 @@ ConsoleApp.ConsoleAppBuilder app = ConsoleApp
 
 app.Add<CliCommands>();
 
-await app.RunAsync(args);
+await app.RunAsync(args).ConfigureAwait(true);

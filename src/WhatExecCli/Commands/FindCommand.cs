@@ -66,11 +66,11 @@ public class FindCommand
         if(ReportTimeTaken)
             _stopwatch.Start();
         
-        Dictionary<string, FileInfo> commandLocations = new();
+        Dictionary<string, FileInfo> commandLocations = new(StringComparer.OrdinalIgnoreCase);
         
         if (Limit < 1)
         { 
-            await Console.Error.WriteLineAsync(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
+            await Console.Error.WriteLineAsync(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero).ConfigureAwait(true);
             return -1;
         }
 
@@ -78,12 +78,12 @@ public class FindCommand
             Commands = UserInputHelper.GetCommandInput();
         else if (Commands is null)
         {
-            await Console.Error.WriteLineAsync(Resources.Errors_Commands_NoCommandsSpecified);
+            await Console.Error.WriteLineAsync(Resources.Errors_Commands_NoCommandsSpecified).ConfigureAwait(true);
             return -1;
         }
         
         IReadOnlyDictionary<string, FileInfo> result = await TrySearchSystem_DoNotLocateAll(
-            Commands, cliContext.CancellationToken);
+            Commands, cliContext.CancellationToken).ConfigureAwait(true);
 
         AnsiConsole.Status()
             .Start("Preparing to display results...", _ =>
@@ -111,7 +111,7 @@ public class FindCommand
         try
         {
             (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results =  await _executableFileResolver.
-                TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+                TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true);
 
             return results.executableFiles;
         }
@@ -125,7 +125,7 @@ public class FindCommand
             if (problematicCommand is null)
             {
                 results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor,
-                    SearchOption.AllDirectories, cancellationToken);
+                    SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true);
                 
                 return results.resolvedExecutables;
             }
@@ -138,17 +138,18 @@ public class FindCommand
                 Console.WriteLine();
             }
             
-            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => c == problematicCommand).ToArray();
+            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => string.Equals(c, problematicCommand,
+                StringComparison.OrdinalIgnoreCase)).ToArray();
             
             bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
             
             if(continueInteractive)
             {
-                results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken);
+                results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true);
             }
             else
             {
-                results = (false, new Dictionary<string, FileInfo>());
+                results = (false, new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase));
             }
 
             return results.resolvedExecutables;

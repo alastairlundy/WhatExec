@@ -21,7 +21,7 @@ public class ResultHelper
     {
         int total = 0;
         
-        await foreach (FileInfo result in results)
+        await foreach (FileInfo result in results.ConfigureAwait(true))
         {
             if (total < limit)
             {
@@ -66,7 +66,7 @@ public class ResultHelper
         return resultsCount > 0 ? 1 : -1;
     }
     
-    public static int PrintResults(Dictionary<string, List<FileInfo>> results, string[] commands, int limit)
+    public static int PrintResults(IDictionary<string, List<FileInfo>> results, string[] commands, int limit)
     {
         foreach (KeyValuePair<string, List<FileInfo>> result in results)
         {
@@ -88,7 +88,7 @@ public class ResultHelper
         return HandleIncompleteResults(missedCommands, results.Count);
     }
     
-    public static int PrintResults(Dictionary<string, FileInfo> results, string[] commands)
+    public static int PrintResults(IDictionary<string, FileInfo> results, string[] commands)
     {
         StringBuilder stringBuilder = new StringBuilder();
 

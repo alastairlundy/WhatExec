@@ -51,7 +51,7 @@ public class SearchCommand
         
         IAsyncEnumerable<FileInfo> files = LocateExecutables(cliContext.CancellationToken);
 
-        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit);
+        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);
     }
 
     private async IAsyncEnumerable<FileInfo> LocateExecutables([EnumeratorCancellation] CancellationToken cancellationToken)
@@ -63,7 +63,7 @@ public class SearchCommand
             IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, 
                 SearchOption.AllDirectories, cancellationToken);
 
-            await foreach (FileInfo file in driveFiles)
+            await foreach (FileInfo file in driveFiles.ConfigureAwait(true))
             {
                 yield return file;
             }
