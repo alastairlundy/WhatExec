@@ -21,7 +21,7 @@
 * Renamed ``IExecutableFileInstancesResolver`` to ``IExecutableFileInstancesLocator``</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.0-preview.4</Version>
+    <Version>1.0.0</Version>
     <Description>This is an abstractions-only library that provides interfaces for resolving Executable File locations.</Description>
     <AssemblyName>WhatExec.Lib.Abstractions</AssemblyName>
     <RootNamespace>WhatExec.Lib.Abstractions</RootNamespace>
