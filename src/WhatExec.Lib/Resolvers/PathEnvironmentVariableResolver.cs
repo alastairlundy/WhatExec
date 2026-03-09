@@ -66,7 +66,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
     }
 
     protected virtual string[] GetPathExtensions()
-        => _pathVariableDetector.GetPathFileExtensions();
+        => _pathVariableDetector.GetFileExtensions();
 
     protected virtual string[]? GetPathContents()
         => _pathVariableDetector.GetDirectories();

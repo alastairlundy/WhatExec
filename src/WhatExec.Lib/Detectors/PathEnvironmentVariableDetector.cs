@@ -113,6 +113,6 @@ public class PathEnvironmentVariableDetector : IPathEnvironmentVariableDetector
     /// An array of strings representing the distinct file extensions in the PATHEXT environment variable,
     /// or a fallback to commonly used extensions if the variable is unset. Returns one file extension of "" on non-Windows systems.
     /// </returns>
-    public string[] GetPathFileExtensions() 
+    public string[] GetFileExtensions() 
         => EnumerateFileExtensions().ToArray();
 }

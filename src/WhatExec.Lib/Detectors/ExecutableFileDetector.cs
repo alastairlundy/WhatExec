@@ -33,11 +33,9 @@ public class ExecutableFileDetector : IExecutableFileDetector
     private async Task<bool> ReadMagicNumberAsync(FileInfo file, byte[] magicNumberToCompare, CancellationToken cancellationToken)
     {
         FileStream fileStream = new(file.FullName, FileMode.Open);
+        
 #if NET8_0_OR_GREATER
-        await
-#endif
-#if NET8_0_OR_GREATER
-        using (fileStream.ConfigureAwait(false))
+        await using (fileStream.ConfigureAwait(false))
 #else
         using (fileStream)
 #endif
