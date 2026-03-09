@@ -50,33 +50,33 @@ jobs:
               
           # Push the Abstractions package
       - name: NuGet push WhatExec.Lib.Abstractions
-        run: dotnet nuget push src/WhatExecLib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExec.Lib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: src/WhatExecLib
+        working-directory: src/WhatExec.Lib
       - name: Create packages
         run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}
-        working-directory: src/WhatExecLib
+        working-directory: src/WhatExec.Lib
         # Push the Main package
       - name: NuGet push WhatExec.Lib
-        run: dotnet nuget push src/WhatExecLib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExec.Lib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
        # Push the Dependency Injection package
       - name: Create packages
         run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
-        working-directory: src/WhatExecLib.Extensions.DependencyInjection
+        working-directory: src/WhatExec.Lib.Extensions.DependencyInjection
       - name: Push packages
-        run: dotnet nuget push src/WhatExecLib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExec.Lib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Sleep for 300 seconds
         run: sleep 300s
       # Push the Tool packages
       - name: NuGet push WhatExec.Cli.Lite
-        run: dotnet nuget push src/WhatExecLiteCli/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExec.Cli.Lite/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: NuGet push WhatExec.Cli
-        run: dotnet nuget push src/WhatExecCli/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push src/WhatExec.Cli/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
