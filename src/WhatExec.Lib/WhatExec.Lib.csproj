@@ -69,10 +69,6 @@
     <!-- set CliInvokeCoreVersion in the workflow -->
     <ProjectReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)" />
   </ItemGroup>
-  
-  <ItemGroup>
-    
-  </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>WhatExecLib.Tests</_Parameter1>
