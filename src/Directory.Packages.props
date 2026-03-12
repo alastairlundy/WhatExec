@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="DotExtensions" Version="9.7.3" />
     <PackageVersion Include="DotMake.CommandLine" Version="3.1.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageVersion Include="Spectre.Console" Version="0.54.0" />
     <PackageVersion Include="Polyfill" Version="9.18.0" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.7.13">
@@ -17,16 +17,14 @@
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.4" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.4" />
   </ItemGroup>
-
   <PropertyGroup>
     <!-- default false, CI can set to true -->
     <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
   </PropertyGroup>
-
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
-    <PackageVersion Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
-    <PackageVersion Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)"/>
-    <PackageVersion Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
+    <PackageVersion Include="WhatExec.Lib" Version="$(WhatExecLibVersion)" />
+    <PackageVersion Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)" />
+    <PackageVersion Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="TUnit" Version="1.19.0" />
