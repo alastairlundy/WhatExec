@@ -3,20 +3,19 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="DotExtensions" Version="9.7.2" />
+    <PackageVersion Include="DotExtensions" Version="9.7.3" />
     <PackageVersion Include="DotMake.CommandLine" Version="3.1.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.4" />
     <PackageVersion Include="Spectre.Console" Version="0.54.0" />
-    <PackageVersion Include="Polyfill" Version="9.18.0"/>
+    <PackageVersion Include="Polyfill" Version="9.18.0" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.7.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.21" PrivateAssets="all"/>
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces"
-                      Version="10.0.3"/>
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.3"/>
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.22" PrivateAssets="all" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.4" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.4" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="TUnit" Version="1.19.0" />
