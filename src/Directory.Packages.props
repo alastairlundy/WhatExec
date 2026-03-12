@@ -16,6 +16,8 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.4" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.4" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.4" />
+  </ItemGroup>
+
   <PropertyGroup>
     <!-- default false, CI can set to true -->
     <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
