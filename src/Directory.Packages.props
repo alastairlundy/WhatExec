@@ -16,6 +16,15 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.4" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.4" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.4" />
+  <PropertyGroup>
+    <!-- default false, CI can set to true -->
+    <UsePublishedPackages Condition="'$(UsePublishedPackages)'==''">false</UsePublishedPackages>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
+    <PackageVersion Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
+    <PackageVersion Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)"/>
+    <PackageVersion Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="TUnit" Version="1.19.0" />
