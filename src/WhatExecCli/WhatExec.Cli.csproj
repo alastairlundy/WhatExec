@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.0-preview.4</Version>
+    <Version>1.0.0</Version>
     <PackageId>WhatExec.Cli</PackageId>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <LangVersion>14</LangVersion>
@@ -24,7 +24,8 @@
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
     <PackageReleaseNotes>* Updated CLIs to use updated library code
 * Optimisations and Improvements
-* Fixed an issue where the NuGet package wasn't explicitly marked as a tool</PackageReleaseNotes>
+* Updated dependencies
+* Updated DotExtensions version from 9.7.2 to 10.0.0</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
