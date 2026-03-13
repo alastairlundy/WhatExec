@@ -3,7 +3,7 @@
 ![GitHub License](https://img.shields.io/github/license/alastairlundy/WhatExec?style=flat-square)
 [![NuGet WhatExecLite.Cli](https://img.shields.io/nuget/v/WhatExec.Cli.Lite?style=flat-square)](https://www.nuget.org/packages/WhatExec.Cli.Lite)
 
-### 🌟 Description
+### Description
 
 **WhatExecLite** is your trusty CLI tool for locating executables and command files on your system. Whether you're a seasoned developer or just starting out, WhatExecLite makes finding those elusive commands a breeze!
 
@@ -13,10 +13,10 @@ Support for **.NET 8** and **.NET 9** will be removed [when they become End-of-L
 ### 📜 Table of Contents
 
 - [Description](#description)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Examples](#examples)
-- [Features](#features)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Examples](#-examples)
+- [Features](#-features)
 - [Contributing](#contributing)
 
 ---
@@ -133,7 +133,7 @@ whatexeclite find git node npm
 
 ### Contributing
 
-We encourage you to read our [CONTRIBUTING.md](https://github.com/alastairlundy/whatexeclite/blob/main/CONTRIBUTING.md) file for details on contribution guidelines. Your contributions can help WhatExecLite become even better!
+We encourage you to read our [CONTRIBUTING.md](https://github.com/alastairlundy/whatexec/blob/main/CONTRIBUTING.md) file for details on contribution guidelines. Your contributions can help WhatExecLite become even better!
 
 ### License
 
