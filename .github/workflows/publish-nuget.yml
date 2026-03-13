@@ -34,12 +34,53 @@ jobs:
       - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
         with:
           dotnet-version: 10.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: src
-      - name: Create packages
-        run: dotnet build -c Release
-        working-directory: src
+
+      - name: Create local nupkg output dir
+        run: mkdir -p ./nupkgs
+
+      # Build Abstractions
+      - name: Build Abstractions
+        run: dotnet build src/WhatExec.Lib.Abstractions -c Release
+
+      # Pack Abstractions into ./nupkgs
+      - name: Pack Abstractions to local feed
+        run: dotnet pack src/WhatExec.Lib.Abstractions -c Release -o ./nupkg
+
+      # Use local feed for WhatExec.Lib
+      - name: Restore WhatExec.Lib from local feed + NuGet.org
+        run: dotnet restore src/WhatExec.Lib -s ./nupkgs -s https://api.nuget.org/v3/index.json
+
+      - name: Build WhatExec.Lib (resolves Abstractions from local feed)
+        run: dotnet build src/WhatExec.Lib -c Release -p:AbstractionsVersion=${{ inputs.core-version }}
+
+      # Use local feed for extensions
+      - name: Restore Extensions from local feed + NuGet.org
+        run: dotnet restore src/WhatExec.Lib.Extensions.DependencyInjection -s ./nupkgs -s https://api.nuget.org/v3/index.json
+
+      - name: Build Extensions (resolves Abstractions and Main from local feed)
+        run: dotnet build src/WhatExec.Lib.Extensions.DependencyInjection -c Release -p:AbstractionsVersion=${{ inputs.core-version }} -p:WhatExecLibVersion=${{ inputs.main-version }}
+
+      # Use local feed for WhatExec.Cli.Lite
+      - name: Restore Cli Lite from local feed + NuGet.org
+        run: dotnet restore src/WhatExec.Cli.Lite -s ./nupkgs -s https://api.nuget.org/v3/index.json
+
+      - name: Build Extensions (resolves Abstractions, Main, and DI version from local feed)
+        run: dotnet build src/WhatExec.Cli.Lite -c Release -p:AbstractionsVersion=${{ inputs.core-version }} -p:WhatExecLibVersion=${{ inputs.main-version }} -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
+
+      # Use local feed for WhatExec.Cli
+      - name: Restore Cli Lite from local feed + NuGet.org
+        run: dotnet restore src/WhatExec.Cli -s ./nupkgs -s https://api.nuget.org/v3/index.json
+
+      - name: Build Extensions (resolves Abstractions, Main, and DI version from local feed)
+        run: dotnet build src/WhatExec.Cli -c Release -p:AbstractionsVersion=${{ inputs.core-version }} -p:WhatExecLibVersion=${{ inputs.main-version }} -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
+
+      # Pack the builds to ./nupkgs as well (so all resulting nupkgs end up in ./nupkgs)
+      - name: Pack Specializations and Main into local feed
+        run: |
+          dotnet pack src/WhatExec.Lib -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}
+          dotnet pack src/WhatExec.Lib.Extensions.DependencyInjection -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}
+          dotnet pack src/WhatExec.Cli.Lite -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}   -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
+          dotnet pack src/WhatExec.Cli -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}   -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
         
           # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
@@ -47,36 +88,10 @@ jobs:
         id: login
         with:
             user: ${{ secrets.NUGET_USER }}
-              
-          # Push the Abstractions package
-      - name: NuGet push WhatExec.Lib.Abstractions
-        run: dotnet nuget push src/WhatExec.Lib.Abstractions/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Sleep for 300 seconds
-        run: sleep 300s
-        shell: bash
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: src/WhatExec.Lib
-      - name: Create packages
-        run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}
-        working-directory: src/WhatExec.Lib
-        # Push the Main package
-      - name: NuGet push WhatExec.Lib
-        run: dotnet nuget push src/WhatExec.Lib/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Sleep for 300 seconds
-        run: sleep 300s
-        shell: bash
-       # Push the Dependency Injection package
-      - name: Create packages
-        run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}  
-        working-directory: src/WhatExec.Lib.Extensions.DependencyInjection
-      - name: Push packages
-        run: dotnet nuget push src/WhatExec.Lib.Extensions.DependencyInjection/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Sleep for 300 seconds
-        run: sleep 300s
-      # Push the Tool packages
-      - name: NuGet push WhatExec.Cli.Lite
-        run: dotnet nuget push src/WhatExec.Cli.Lite/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: NuGet push WhatExec.Cli
-        run: dotnet nuget push src/WhatExec.Cli/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-
+      
+      # Push all nupkgs (no sleeps needed)
+      - name: Push all nupkgs to NuGet.org
+        run: |
+          for f in ./nupkgs/*.nupkg; do
+            dotnet nuget push "$f" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
