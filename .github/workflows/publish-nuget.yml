@@ -54,9 +54,9 @@ jobs:
       - name: Sleep for 300 seconds
         run: sleep 300s
         shell: bash
+        working-directory: src/WhatExec.Lib
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: src/WhatExec.Lib
       - name: Create packages
         run: dotnet build -c Release -p:UsePublishedPackages=true -p:AbstractionsVersion=${{ inputs.core-version }}
         working-directory: src/WhatExec.Lib
