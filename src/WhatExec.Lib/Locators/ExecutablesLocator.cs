@@ -7,8 +7,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System.Runtime.CompilerServices;
-using WhatExec.Lib.Abstractions.Detectors;
 using WhatExec.Lib.Abstractions.Locators;
 
 namespace WhatExec.Lib.Locators;

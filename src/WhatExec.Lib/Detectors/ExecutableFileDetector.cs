@@ -10,8 +10,6 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UseUtf8StringLiteral
 
-using WhatExec.Lib.Abstractions.Detectors;
-
 namespace WhatExec.Lib.Detectors;
 
 /// <summary>
