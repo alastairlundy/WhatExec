@@ -102,7 +102,11 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
         ArgumentException.ThrowIfNullOrEmpty(executableName);
         
         IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
+            .SelectMany(sp => driveInfo.RootDirectory.EnumerateFiles(sp, new EnumerationOptions
+            {
+                IgnoreInaccessible = true,
+                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+            }))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
         foreach (FileInfo file in files)
@@ -150,7 +154,12 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
         List<FileInfo> output = new();
 
         IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => driveInfo.RootDirectory.SafelyEnumerateFiles(sp, directorySearchOption))
+            .SelectMany(sp => driveInfo.RootDirectory.EnumerateFiles(sp, new EnumerationOptions
+            {
+                IgnoreInaccessible = true,
+                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories,
+                MatchCasing = MatchCasing.CaseInsensitive
+            }))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
         foreach (FileInfo file in files)
@@ -190,7 +199,11 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
         ArgumentException.ThrowIfNullOrEmpty(executableName);
         
         IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
+            .SelectMany(sp => directory.EnumerateFiles(sp, new EnumerationOptions
+            {
+                IgnoreInaccessible = true,
+                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+            }))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
         foreach (FileInfo file in files)
@@ -238,7 +251,11 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
         List<FileInfo> output = new();
         
         IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => directory.SafelyEnumerateFiles(sp, directorySearchOption))
+            .SelectMany(sp => directory.EnumerateFiles(sp, new EnumerationOptions
+            {
+                IgnoreInaccessible = true,
+                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+            }))
             .Where(f => f.Exists && f.Name.Equals(executableName));
 
         foreach (FileInfo file in files)

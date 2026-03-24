@@ -47,8 +47,12 @@ public class ExecutablesLocator : IExecutablesLocator
         if(!directory.Exists)
             throw new DirectoryNotFoundException("The specified directory does not exist");
         
-        IEnumerable<FileInfo> files = directory.SafelyEnumerateFiles("*",
-                directorySearchOption)
+        IEnumerable<FileInfo> files = directory.EnumerateFiles("*",
+                new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+                })
             .Where(file => file.Exists);
 
         foreach (FileInfo file in files)
@@ -106,8 +110,12 @@ public class ExecutablesLocator : IExecutablesLocator
         if(!driveInfo.IsReady)
             throw new ArgumentException(string.Format(Resources.Exceptions_Drives_DriveNotReady, driveInfo.Name), nameof(driveInfo));
         
-        IEnumerable<FileInfo> files = driveInfo.RootDirectory.SafelyEnumerateFiles("*",
-                directorySearchOption)
+        IEnumerable<FileInfo> files = driveInfo.RootDirectory.EnumerateFiles("*",
+                new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+                })
             .Where(file => file.Exists);
 
         foreach (FileInfo file in files)
