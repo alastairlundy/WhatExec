@@ -14,7 +14,7 @@ public class ExecutableFileResolverTests
     public ExecutableFileResolverTests()
     {
         IExecutableFileDetector executableFileDetector = new ExecutableFileDetector();
-        _executableFileResolver = new ExecutableFileResolver(new ExecutableFileDetector(),
+        _executableFileResolver = new ExecutableFileResolver(new ExecutableFileDetector(), new PathEnvironmentVariableDetector(),
             new PathEnvironmentVariableResolver(new PathEnvironmentVariableDetector(), executableFileDetector));
     }
 
@@ -39,7 +39,7 @@ public class ExecutableFileResolverTests
         
         int randomProcess = Random.Shared.Next(0, executableNames.Length - 1);
 
-        FileInfo result = await _executableFileResolver.LocateExecutableAsync(executableNames[randomProcess], SearchOption.AllDirectories
+        FileInfo result = await _executableFileResolver.LocateExecutableAsync($"{executableNames[randomProcess]}", SearchOption.AllDirectories
             ,CancellationToken.None);
 
         await Assert.That(result.Exists)
