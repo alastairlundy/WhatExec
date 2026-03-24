@@ -25,10 +25,9 @@ public interface IExecutableFileResolver
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <param name="stringComparison"></param>
     /// <returns>A <see cref="FileInfo"/> object representing the located executable file if found.</returns>
     Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption,
-        CancellationToken cancellationToken, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Asynchronously locates an executable file within specified drives based on the given search criteria.
@@ -36,10 +35,9 @@ public interface IExecutableFileResolver
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
-    /// <param name="stringComparison"></param>
     /// <returns>A tuple containing a boolean indicating if the executable was found and its location as a FileInfo object if successful, otherwise null.</returns>
     Task<(bool, FileInfo?)> TryLocateExecutableAsync(string executableFileName, SearchOption directorySearchOption,
-        CancellationToken cancellationToken, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Locates the specified executable files and returns a dictionary containing their names and corresponding file information.
@@ -47,12 +45,10 @@ public interface IExecutableFileResolver
     /// <param name="inputFileNames">An array of strings representing the names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <param name="stringComparison"></param>
     /// <returns>A read-only dictionary where the keys are the names of the executable files and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if one or more of the specified executable files was not found.</exception>
-    Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] inputFileNames, 
-        SearchOption directorySearchOption, CancellationToken cancellationToken,
-        StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
+    Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] inputFileNames,
+        SearchOption directorySearchOption, CancellationToken cancellationToken);
 
     /// <summary>
     /// Asynchronously enumerates the file information of specified executable files.
@@ -60,12 +56,10 @@ public interface IExecutableFileResolver
     /// <param name="inputFileNames">An array of strings representing the names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <param name="stringComparison"></param>
     /// <returns></returns>
     IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
-        CancellationToken cancellationToken,
-        StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Attempts to locate the specified executable files and returns a boolean indicating the success of the operation.
@@ -73,11 +67,10 @@ public interface IExecutableFileResolver
     /// <param name="inputFileNames">An array of strings representing the names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <param name="stringComparison"></param>
     /// <returns>
     /// A boolean value indicating whether all the specified executable files were successfully located.
     /// </returns>
     Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
-        CancellationToken cancellationToken, StringComparison stringComparison =  StringComparison.OrdinalIgnoreCase);
+        CancellationToken cancellationToken);
 }
