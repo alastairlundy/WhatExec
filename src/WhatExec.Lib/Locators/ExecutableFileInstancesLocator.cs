@@ -70,15 +70,23 @@ public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
     {
         ArgumentException.ThrowIfNullOrEmpty(executableName);
 
-        IEnumerable<DriveInfo> drives = DriveInfo.SafelyEnumerateLogicalDrives();
+        DriveInfo[] drives = DriveInfo.SafelyGetLogicalDrives();
 
         List<FileInfo> output = new();
+
+        Task<FileInfo[]>[] tasks = new Task<FileInfo[]>[drives.Length];
         
-        foreach (DriveInfo drive in drives)
+        for (int i = 0; i < tasks.Length; i++)
         {
-            FileInfo[] driveResults = await GetExecutableInstancesInDriveAsync(drive, executableName, directorySearchOption, cancellationToken).ConfigureAwait(false);
-           
-            output.AddRange(driveResults);
+            tasks[i] = GetExecutableInstancesInDriveAsync(drives[i], executableName, directorySearchOption, cancellationToken);
+            tasks[i].Start();
+        }
+        
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        foreach (Task<FileInfo[]> task in tasks)
+        {
+            output.AddRange(task.Result);
         }
 
         return output.ToArray();
