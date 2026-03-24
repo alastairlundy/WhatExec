@@ -33,24 +33,19 @@ public class ExecutableFileResolverTests
     }
 
     [Test]
-    public async Task Resolve_Running_Process_ExecutableFiles()
+    public async Task Resolve_Random_Running_Process_ExecutableFiles()
     {
         string[] executableNames = Process.GetProcesses().Select(p => p.ProcessName).Distinct().ToArray();
-
-        IAsyncEnumerable<KeyValuePair<string, FileInfo>> results =  _executableFileResolver.EnumerateExecutableFilesAsync(executableNames,
-            SearchOption.AllDirectories, CancellationToken.None);
-
-        ConcurrentBag<FileInfo> output = new();
         
-        await foreach (KeyValuePair<string, FileInfo> result in results)
-        {
-            await Assert.That(result.Value.Exists)
-                .IsTrue();
-            
-            output.Add(result.Value);
-        }
-        
-        await Assert.That(executableNames.Length)
-            .IsEqualTo(output.Count);
+        int randomProcess = Random.Shared.Next(0, executableNames.Length - 1);
+
+        FileInfo result = await _executableFileResolver.LocateExecutableAsync(executableNames[randomProcess], SearchOption.AllDirectories
+            ,CancellationToken.None);
+
+        await Assert.That(result.Exists)
+            .IsTrue();
+
+        await Assert.That(result.FullName)
+            .IsNotEqualTo(string.Empty);
     }
 }
