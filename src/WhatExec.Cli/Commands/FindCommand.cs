@@ -34,7 +34,7 @@ public class FindCommand
     }
 
     [CliArgument(
-        Name = "<Commands or Executable Files>",
+        Name = "Commands or Executable Files",
         Description = "The commands or executable files to locate."
     )]
     public string[]? Commands { get; set; }

@@ -19,7 +19,8 @@ public class ExecutableFileResolver : IExecutableFileResolver
     private readonly IExecutableFileDetector _executableFileDetector;
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
     
-    private readonly StringComparer _stringComparer;
+    private readonly StringComparer ignoreCase;
+    private readonly StringComparer caseSensitive;
     
     /// <summary>
     /// Represents a class that resolves the location of specified executable files.
@@ -31,8 +32,9 @@ public class ExecutableFileResolver : IExecutableFileResolver
     {
         _executableFileDetector = executableFileDetector;
         _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
-        
-        _stringComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+
+        ignoreCase = StringComparer.OrdinalIgnoreCase;
+        caseSensitive = StringComparer.Ordinal;
     }
 
     /// <inheritdoc/>
@@ -44,13 +46,14 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <param name="stringComparison"></param>
     /// <returns>A task that returns a <see cref="FileInfo"/> indicating the location of the executable if found, otherwise null.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified executable file could not be found.</exception>
     public async Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
     {
-        (bool success, FileInfo? file) result = await TryLocateExecutableAsync(executableFileName, directorySearchOption, cancellationToken)
-            .ConfigureAwait(false);
+        (bool success, FileInfo? file) result = await TryLocateExecutableAsync(executableFileName, directorySearchOption, cancellationToken, 
+            stringComparison).ConfigureAwait(false);
         
         if(result is { success: true, file: not null })
             return result.file;
@@ -64,10 +67,12 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="executableFileName">The name of the executable file to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <param name="stringComparison"></param>
     /// <returns>A task that returns a tuple indicating whether the executable was found and its location if successful, otherwise null.</returns>
     public async Task<(bool, FileInfo?)> TryLocateExecutableAsync(string executableFileName,
         SearchOption directorySearchOption,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, 
+        StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
     {
         (bool foundInPath, KeyValuePair<string, FileInfo>? executable) result = await _pathEnvironmentVariableResolver.
             TryResolveExecutableFilePathAsync(executableFileName, cancellationToken).ConfigureAwait(false);
@@ -77,16 +82,14 @@ public class ExecutableFileResolver : IExecutableFileResolver
             return (true, result.executable.Value.Value);
         }
         
-        StringComparison comparison = OperatingSystem.IsWindows() ?  StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
-            KeyValuePair<string, FileInfo>[] driveResults = await GetExecutablesInDriveAsync(drive, [executableFileName],
-                directorySearchOption, cancellationToken).ConfigureAwait(false);
+            IList<KeyValuePair<string, FileInfo>> driveResults = await GetExecutablesInDriveAsync(drive, [executableFileName],
+                directorySearchOption, stringComparison, cancellationToken).ConfigureAwait(false);
 
             foreach (KeyValuePair<string, FileInfo> fileKvp in driveResults)
             {
-                if(fileKvp.Value.Name.Equals(executableFileName, comparison))
+                if(fileKvp.Value.Name.Equals(executableFileName, stringComparison))
                     return (true, fileKvp.Value);
             }
         }
@@ -100,18 +103,20 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="inputFileNames">The names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <param name="stringComparison"></param>
     /// <returns>A dictionary containing the located executable files, where the keys are the original file names and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if any of the specified executable files are not found.</exception>
     public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
     {
         (bool success, IReadOnlyDictionary<string, FileInfo> executables) result = await TryGetExecutableFilesAsync(inputFileNames,
             directorySearchOption, cancellationToken).ConfigureAwait(false);
         
         if (!result.success && result.executables.Count < inputFileNames.Length)
         {
-            string filesNotFound = string.Join(", ", inputFileNames.Except(result.executables.Keys, _stringComparer));
+            string filesNotFound = string.Join(", ", inputFileNames.Except(result.executables.Keys, 
+                stringComparison == StringComparison.OrdinalIgnoreCase ? ignoreCase : caseSensitive));
             
             throw new FileNotFoundException(Resources.Exception_FilesNotFound.Replace("{0}", filesNotFound));
         }
@@ -125,10 +130,12 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="inputFileNames">The names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <param name="stringComparison"></param>
     /// <returns>An asynchronous sequence of key-value pairs, where each key is a filename and the corresponding value is the location of the executable file if found.</returns>
     public async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
+        [EnumeratorCancellation] CancellationToken cancellationToken,
+        StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
     {
         List<string> executablesToLookFor =
 #if NET8_0_OR_GREATER
@@ -151,7 +158,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
             IAsyncEnumerable<KeyValuePair<string, FileInfo>> driveResults = EnumerateExecutablesInDriveAsync(drive, 
-                executablesToLookFor.ToArray(), directorySearchOption, cancellationToken);
+                executablesToLookFor, directorySearchOption, stringComparison, cancellationToken);
             
             await foreach (KeyValuePair<string, FileInfo> driveResult in driveResults.ConfigureAwait(false))
             {
@@ -166,13 +173,16 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="inputFileNames">An array of names of the executable files to locate.</param>
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <param name="stringComparison"></param>
     /// <returns>A tuple containing a boolean indicating whether all executables were found and a dictionary of found executables keyed by their file names.</returns>
     public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        StringComparison stringComparison =  StringComparison.OrdinalIgnoreCase)
     {
         string[] executablesToLookFor;
-        Dictionary<string, FileInfo> output = new(capacity: inputFileNames.Length, _stringComparer);
+        Dictionary<string, FileInfo> output = new(capacity: inputFileNames.Length,
+            stringComparison == StringComparison.OrdinalIgnoreCase ? ignoreCase : caseSensitive);
         
         (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.
             TryGetExecutableFilePathsAsync(inputFileNames, cancellationToken).ConfigureAwait(false);
@@ -197,8 +207,8 @@ public class ExecutableFileResolver : IExecutableFileResolver
 
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
-            KeyValuePair<string, FileInfo>[] driveResults = await GetExecutablesInDriveAsync(drive, 
-                executablesToLookFor, directorySearchOption, cancellationToken).ConfigureAwait(false);
+            IList<KeyValuePair<string, FileInfo>> driveResults = await GetExecutablesInDriveAsync(drive, 
+                executablesToLookFor, directorySearchOption, stringComparison, cancellationToken).ConfigureAwait(false);
             
             foreach (KeyValuePair<string, FileInfo> driveResult in driveResults)
             {
@@ -209,26 +219,28 @@ public class ExecutableFileResolver : IExecutableFileResolver
             }
         }
         
-        return (output.Count == inputFileNames.Length, new Dictionary<string, FileInfo>(output, _stringComparer));
+        return (output.Count == inputFileNames.Length, new Dictionary<string, FileInfo>(output, 
+            stringComparison == StringComparison.OrdinalIgnoreCase ? ignoreCase : caseSensitive));
     }
 
-    private async Task<KeyValuePair<string, FileInfo>[]> GetExecutablesInDriveAsync(DriveInfo driveInfo,
-        string[] inputFileNames, SearchOption directorySearchOption, CancellationToken cancellationToken)
+    private async Task<IList<KeyValuePair<string, FileInfo>>> GetExecutablesInDriveAsync(DriveInfo driveInfo,
+        IList<string> inputFileNames, SearchOption directorySearchOption, StringComparison stringComparison, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFileNames);
 
-        List<KeyValuePair<string, FileInfo>> output = new(capacity: inputFileNames.Length);
-        
-        StringComparison stringComparison = OperatingSystem.IsWindows()
-            ? StringComparison.OrdinalIgnoreCase
-            : StringComparison.Ordinal;
+        List<KeyValuePair<string, FileInfo>> output = new(capacity: inputFileNames.Count);
 
         foreach (string executableFileName in inputFileNames)
         {
-            FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path.GetFileName(executableFileName),
-                    directorySearchOption)
-                .Where(f => executableFileName.Equals(f.Name, stringComparison))
-                .FirstOrDefault(f => f.Exists);
+            FileInfo? file = driveInfo.RootDirectory
+                .EnumerateFiles(Path.GetFileName(executableFileName),
+                    new EnumerationOptions
+                    {
+                        IgnoreInaccessible = true,
+                        MatchCasing = stringComparison == StringComparison.OrdinalIgnoreCase ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive,
+                        RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+                    })
+                .FirstOrDefault(f => executableFileName.Equals(f.Name, stringComparison));
             
             if (file is not null)
             {
@@ -242,25 +254,26 @@ public class ExecutableFileResolver : IExecutableFileResolver
                 }
             }
         }
-        
-        return output.ToArray();
+
+        return output;
     }
     
     private async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutablesInDriveAsync(DriveInfo driveInfo,
-        string[] inputFileNames, SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
+        IList<string> inputFileNames, SearchOption directorySearchOption, StringComparison stringComparison, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputFileNames);
         
-        StringComparison stringComparison = OperatingSystem.IsWindows()
-            ? StringComparison.OrdinalIgnoreCase
-            : StringComparison.Ordinal;
-
         foreach (string executableFileName in inputFileNames)
         {
-            FileInfo? file = driveInfo.RootDirectory.SafelyEnumerateFiles(Path
-                    .GetFileName(executableFileName), directorySearchOption)
-                .Where(f => executableFileName.Equals(f.Name, stringComparison))
-                .FirstOrDefault(f => f.Exists);
+            FileInfo? file = driveInfo.RootDirectory
+                .EnumerateFiles(Path
+                    .GetFileName(executableFileName), new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    MatchCasing = stringComparison == StringComparison.OrdinalIgnoreCase ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive,
+                    RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+                })
+                .FirstOrDefault(f => executableFileName.Equals(f.Name, stringComparison));
             
             if (file is not null)
             {

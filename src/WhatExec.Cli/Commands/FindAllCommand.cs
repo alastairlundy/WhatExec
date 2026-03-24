@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using WhatExec.Lib.Abstractions;
 using WhatExec.Lib.Abstractions.Locators;
 
 namespace WhatExec.Cli.Commands;
@@ -32,7 +31,7 @@ public class FindAllCommand
     
     
     [CliArgument(
-        Name = "<Commands or Executable Files>",
+        Name = "Commands or Executable Files",
         Description = "The commands or executable files to locate."
     )]
     public string[]? Commands { get; set; }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;netstandard2.0;net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
@@ -46,7 +46,7 @@
       Include="Polyfill" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"
                      Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
-    <PackageReference Include="System.Linq.AsyncEnumerable" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
+    <PackageReference Include="System.Linq.AsyncEnumerable" Condition="'$(TargetFramework)' == 'netstandard2.0' OR $(TargetFramework) == 'net8.0' OR $(TargetFramework) == 'net9.0'"/>
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md">
