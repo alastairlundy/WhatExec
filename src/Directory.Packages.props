@@ -12,7 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.26" PrivateAssets="all" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.27" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.5" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.5" />
