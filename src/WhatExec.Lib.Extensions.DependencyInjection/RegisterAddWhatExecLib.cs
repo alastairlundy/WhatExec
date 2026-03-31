@@ -7,15 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-using System;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using WhatExec.Lib.Abstractions.Detectors;
-using WhatExec.Lib.Abstractions.Locators;
-using WhatExec.Lib.Abstractions.Resolvers;
-using WhatExec.Lib.Detectors;
-using WhatExec.Lib.Locators;
-using WhatExec.Lib.Resolvers;
 
 namespace WhatExec.Lib.Extensions.DependencyInjection;
 
