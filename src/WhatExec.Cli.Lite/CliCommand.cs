@@ -11,7 +11,7 @@ using WhatExec.Lib.Abstractions.Resolvers;
 
 namespace WhatExecLite;
 
-public class CliCommands
+public class CliCommand
 {
     [Command("")]
     public async Task<int> RunAsync(
