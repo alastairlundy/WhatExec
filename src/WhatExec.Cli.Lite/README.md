@@ -142,4 +142,4 @@ WhatExecLite (CLI) is licensed under the [Mozilla Public License 2.0 (MPL 2.0)](
 ---
 
 ### Note:
-Remember to check your PATH and file permissions when using WhatExecLite on different platforms.
+Remember to check your PATH and file permissions when using WhatExec.Cli.Lite on different platforms.

@@ -1,5 +1,5 @@
 ﻿/*
-    WhatExecLite
+    WhatExec.Cli.Lite
     Copyright (c) 2025-2026 Alastair Lundy
 
     This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,9 +15,9 @@ ConsoleApp.ConsoleAppBuilder app = ConsoleApp
     .Create()
     .ConfigureServices(services =>
     {
-        services.AddWhatExecLib(ServiceLifetime.Scoped);
+        services.AddWhatExecLib(ServiceLifetime.Singleton);
     });
 
-app.Add<CliCommands>();
+app.Add<CliCommand>();
 
 await app.RunAsync(args).ConfigureAwait(true);
