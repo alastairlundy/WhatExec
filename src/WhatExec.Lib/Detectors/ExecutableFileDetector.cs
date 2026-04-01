@@ -106,38 +106,45 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 _ => false
             };
 
-            if (string.Equals(file.Extension.ToLowerInvariant(), ".exe", StringComparison.OrdinalIgnoreCase))
+            switch (file.Extension.ToLowerInvariant())
             {
-                try
+                case ".exe" or ".dll":
                 {
-                    bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken).ConfigureAwait(false) ||
-                                            await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken).ConfigureAwait(false) ||
+                                                await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
 
-                    return file.HasExecutePermission() &&
-                           hasExecutableExtension
-                           && magicNumberMatch;
+                        return hasExecutableExtension
+                               && magicNumberMatch;
+                    }
+                    catch
+                    {
+                        return file.HasExecutePermission() && hasExecutableExtension;
+                    }
                 }
-                catch
+                case ".com":
                 {
-                    return file.HasExecutePermission() && hasExecutableExtension;
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        return hasExecutableExtension && await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    return hasExecutableExtension;
                 }
+                case ".appx" or ".msix"
             }
 
             return file.HasExecutePermission() && hasExecutableExtension;
         }
-        if (IsMac)
-        {
-            byte[] machOMagicNumber = Environment.Is64BitOperatingSystem ? MachO64BitMagicNumber : MachO32BitMagicNumber;
-
-            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, machOMagicNumber, cancellationToken).ConfigureAwait(false);
-        }
-        if (OperatingSystem.IsIOS())
+        if (IsMac || OperatingSystem.IsIOS())
         {
             return await ReadMagicNumberAsync(file, MachO64BitMagicNumber, cancellationToken).ConfigureAwait(false);
         }
+
         if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
-            return file.HasExecutePermission() && await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken).ConfigureAwait(false);
+            return await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken).ConfigureAwait(false);
         }
 
         return file.HasExecutePermission();
