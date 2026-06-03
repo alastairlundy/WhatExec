@@ -3,19 +3,19 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="DotExtensions" Version="10.0.0" />
-    <PackageVersion Include="DotMake.CommandLine" Version="3.1.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-    <PackageVersion Include="Spectre.Console" Version="0.54.0" />
-    <PackageVersion Include="Polyfill" Version="9.23.0" />
+    <PackageVersion Include="DotExtensions" Version="10.3.2" />
+    <PackageVersion Include="DotMake.CommandLine" Version="3.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+    <PackageVersion Include="Spectre.Console" Version="0.55.2" />
+    <PackageVersion Include="Polyfill" Version="10.5.1" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.7.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.27" PrivateAssets="all" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.5" />
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.5" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.85" PrivateAssets="all" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.8" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.8" />
   </ItemGroup>
   <PropertyGroup>
     <!-- default false, CI can set to true -->
@@ -27,6 +27,6 @@
     <PackageVersion Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="TUnit" Version="1.19.0" />
+    <PackageVersion Include="TUnit" Version="1.44.39" />
   </ItemGroup>
 </Project>
