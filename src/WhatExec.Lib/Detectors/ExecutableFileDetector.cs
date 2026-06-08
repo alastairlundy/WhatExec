@@ -132,7 +132,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
                     return hasExecutableExtension;
                 }
-                case ".appx" or ".msix"
             }
 
             return file.HasExecutePermission() && hasExecutableExtension;
