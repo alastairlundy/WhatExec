@@ -15,17 +15,16 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>* Updated namespaces
-* Added missing xml doc comments
-* Renamed some methods
-* Updated Microsoft.Bcl.AsyncInterfaces version from 10.0.3 to 10.0.5</PackageReleaseNotes>
+    <PackageReleaseNotes>- Bumped Microsoft.Bcl.AsyncInterfaces from 10.0.5 to 10.0.8</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Description>This is an abstractions-only library that provides interfaces for resolving Executable File locations.</Description>
     <AssemblyName>WhatExec.Lib.Abstractions</AssemblyName>
     <RootNamespace>WhatExec.Lib.Abstractions</RootNamespace>
     <PackageTags>locate,resolve, resolver, locator, path</PackageTags>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
   </PropertyGroup>
     
     <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">

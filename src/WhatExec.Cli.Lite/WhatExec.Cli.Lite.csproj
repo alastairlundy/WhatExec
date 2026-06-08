@@ -17,18 +17,22 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>WhatExec.Cli.Lite</PackageId>
     <Description>A lightweight executable file resolver that checks the PATH environment variable.</Description>
-    <PackageReleaseNotes>* Updated CLIs to use updated library code
-* Optimisations and Improvements
-* Updated dependencies</PackageReleaseNotes>
+    <PackageReleaseNotes>#### ⚙️ Modifications
+- Renamed `CliCommands` class to `CliCommand`
+- Changed WhatExecLib service registration lifetime from Scoped to Singleton
+- Enabled implicit usings
+- Updated README to reference WhatExec.Cli.Lite instead of WhatExecLite</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
   
   <ItemGroup>

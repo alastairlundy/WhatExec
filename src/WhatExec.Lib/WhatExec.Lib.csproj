@@ -14,21 +14,46 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>* Updated namespaces
-* Updated DotExtensions version from 9.7.2 to 10.0.0
-* Renamed some methods
-* Updated Microsoft.Bcl.AsyncInterfaces version from 10.0.3 to 10.0.5
-* Updated System.Linq.AsyncEnumerable version from 10.0.3 to 10.0.5</PackageReleaseNotes>
+    <PackageReleaseNotes>
+#### 🆕 Additions
+- Added `IPathEnvironmentVariableDetector` as a constructor dependency to `ExecutableFileResolver` for improved PATH extension resolution
+- Added `System.Linq.AsyncEnumerable` package reference for .NET 8.0 and .NET 9.0 targets
+- Added .NET 8.0 and .NET 9.0 target frameworks, expanding platform support beyond net10.0 and netstandard2.0
+
+#### ⚙️ Modifications
+- Parallelized multi-drive executable searches in `ExecutableFileInstancesLocator` using `Task.WhenAll` for significantly improved performance
+- Replaced `SafelyEnumerateFiles` with `EnumerateFiles` using `EnumerationOptions` (with `IgnoreInaccessible` and `MatchCasing.CaseInsensitive`) across locators and resolvers
+- Converted `GetExecutablesInDriveAsync` to a streaming `IAsyncEnumerable`-based `EnumerateExecutablesInDriveAsync` to reduce memory allocations
+- Added `EnumerateExecutablesInDirectoryAsync` for directory-level executable enumeration with PATH extension awareness
+- Improved `ExecutableFileDetector` to detect `.dll` files via PE/MZ magic number validation on Windows
+- Added `.com` file handling in `ExecutableFileDetector` with 64-bit OS magic number check
+- Unified Mac and iOS detection logic in `ExecutableFileDetector` using MachO 64-bit magic number
+- Simplified Linux/FreeBSD detection in `ExecutableFileDetector` to rely on ELF magic number without execute permission check
+- Changed string comparison in `ExecutableFileResolver` to always use `OrdinalIgnoreCase` instead of platform-dependent comparison
+- Removed unused global usings (`DotExtensions.IO.Directories`, `DotExtensions.IO.Files`, `WhatExec.Lib.Abstractions`)
+- Enabled implicit usings in WhatExec.Lib.Abstractions
+- Bumped DotExtensions from 10.0.0 to 10.3.2
+- Bumped Microsoft.Extensions.DependencyInjection from 10.0.5 to 10.0.8
+- Bumped Microsoft.Extensions.DependencyInjection.Abstractions from 10.0.5 to 10.0.8
+- Bumped Microsoft.Bcl.AsyncInterfaces from 10.0.5 to 10.0.8
+- Bumped System.Linq.AsyncEnumerable from 10.0.5 to 10.0.8
+- Bumped Polyfill from 9.18.0 to 10.8.1
+- Bumped Meziantou.Analyzer from 3.0.23 to 3.0.101
+
+#### 🐛 Bug Fixes
+- Fixed `ExecutableFileDetector` to gracefully fall back to permission-based detection when magic number reading fails on Windows</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Description>WhatExecLib is a C# library that finds executable files in PATH Environment Variables, Directories or Drives.
 </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>WhatExec.Lib</AssemblyName>
     <RootNamespace>WhatExec.Lib</RootNamespace>
     <PackageTags>locate,resolve, resolver, locator, path</PackageTags>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">

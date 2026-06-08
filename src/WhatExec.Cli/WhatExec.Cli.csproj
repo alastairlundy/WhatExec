@@ -16,19 +16,24 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <PackageId>WhatExec.Cli</PackageId>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <LangVersion>14</LangVersion>
     <Description>A CLI program (installable as a tool) to find executable files in PATH Environment Variables or elsewhere on your system.</Description>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
-    <PackageReleaseNotes>* Updated CLIs to use updated library code
-* Optimisations and Improvements
-* Updated dependencies
-* Updated DotExtensions version from 9.7.2 to 10.0.0</PackageReleaseNotes>
+    <PackageReleaseNotes>#### ⚙️ Modifications
+- Bumped Polyfill from 9.18.0 to 10.8.1
+- Bumped DotMake.CommandLine from 3.1.0 to 3.5.0
+- Bumped Spectre.Console from 0.54.0 to 0.56.0
+- Renamed project folder from `WhatExecCli` to `WhatExec.Cli` for naming consistency
+- Removed unused `WhatExec.Lib.Abstractions` using statements from command classes
+- Removed angle brackets from CLI argument display names (`&lt;Commands or Executable Files&gt;` to `Commands or Executable Files`)</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="..\WhatExecLib.Abstractions\README.md"/>
