@@ -15,21 +15,17 @@ namespace WhatExec.Lib.Resolvers;
 public class ExecutableFileResolver : IExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
-    private readonly IPathEnvironmentVariableDetector _pathEnvironmentVariableDetector;
     private readonly IPathEnvironmentVariableResolver _pathEnvironmentVariableResolver;
 
     /// <summary>
     /// Represents a class that resolves the location of specified executable files.
     /// </summary>
     /// <param name="executableFileDetector">The executable file detector to use.</param>
-    /// <param name="pathEnvironmentVariableDetector"></param>
     /// <param name="pathEnvironmentVariableResolver">The path environment variable resolver to use.</param>
     public ExecutableFileResolver(IExecutableFileDetector executableFileDetector,
-        IPathEnvironmentVariableDetector pathEnvironmentVariableDetector,
         IPathEnvironmentVariableResolver pathEnvironmentVariableResolver)
     {
         _executableFileDetector = executableFileDetector;
-        _pathEnvironmentVariableDetector = pathEnvironmentVariableDetector;
         _pathEnvironmentVariableResolver = pathEnvironmentVariableResolver;
     }
 
@@ -67,12 +63,12 @@ public class ExecutableFileResolver : IExecutableFileResolver
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
-        (bool foundInPath, KeyValuePair<string, FileInfo>? executable) result = await _pathEnvironmentVariableResolver.
-            TryResolveExecutableFilePathAsync(executableFileName, cancellationToken).ConfigureAwait(false);
+        IReadOnlyDictionary<string, FileInfo> pathResult = await _pathEnvironmentVariableResolver.
+            TryGetExecutableFilePathsAsync(executableFileName, cancellationToken).ConfigureAwait(false);
 
-        if (result.foundInPath && result.executable is not null)
+        if (pathResult.Count > 0 && pathResult.TryGetValue(executableFileName, out FileInfo? resolvedFile))
         {
-            return (true, result.executable.Value.Value);
+            return (true, resolvedFile);
         }
         
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
@@ -173,21 +169,21 @@ public class ExecutableFileResolver : IExecutableFileResolver
         Dictionary<string, FileInfo> output = new(capacity: inputFileNames.Length,
             StringComparer.OrdinalIgnoreCase);
         
-        (bool foundInPath, IReadOnlyDictionary<string, FileInfo> pathExecutables) result = await _pathEnvironmentVariableResolver.
+        IReadOnlyDictionary<string, FileInfo> pathExecutables = await _pathEnvironmentVariableResolver.
             TryGetExecutableFilePathsAsync(inputFileNames, cancellationToken).ConfigureAwait(false);
 
-        if (result.foundInPath && result.pathExecutables.Count == inputFileNames.Length)
+        if (pathExecutables.Count == inputFileNames.Length)
         {
-            return (true, result.pathExecutables);
+            return (true, pathExecutables);
         }
-        if(result.pathExecutables.Count > 0)
+        if(pathExecutables.Count > 0)
         {
-            foreach (KeyValuePair<string, FileInfo> executable in result.pathExecutables)
+            foreach (KeyValuePair<string, FileInfo> executable in pathExecutables)
             {
                 output.Add(executable.Key, executable.Value);
             }
             
-            executablesToLookFor = inputFileNames.Where(f => !result.pathExecutables.ContainsKey(f)).ToArray();
+            executablesToLookFor = inputFileNames.Where(f => !pathExecutables.ContainsKey(f)).ToArray();
         }
         else
         {
@@ -244,7 +240,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         DirectoryInfo directoryInfo,
         IList<string> inputFileNames, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        string[] pathFileExtensions = _pathEnvironmentVariableDetector.GetFileExtensions();
+        string[] pathFileExtensions = PathEnvironmentVariableResolver.GetPathExtensions();
         
         foreach (string executableFileName in inputFileNames)
         {

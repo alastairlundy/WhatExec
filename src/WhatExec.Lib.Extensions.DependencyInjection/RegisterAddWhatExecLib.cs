@@ -30,7 +30,6 @@ public static class RegisterAddWhatExecLib
             {
                 case ServiceLifetime.Scoped:
                     services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddScoped<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddScoped<
                         IExecutableFileInstancesLocator,
                         ExecutableFileInstancesLocator
@@ -41,7 +40,6 @@ public static class RegisterAddWhatExecLib
                     break;
                 case ServiceLifetime.Singleton:
                     services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddSingleton<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddSingleton<
                         IExecutableFileInstancesLocator,
                         ExecutableFileInstancesLocator
@@ -52,7 +50,6 @@ public static class RegisterAddWhatExecLib
                     break;
                 case ServiceLifetime.Transient:
                     services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddTransient<IPathEnvironmentVariableDetector, PathEnvironmentVariableDetector>();
                     services.AddTransient<
                         IExecutableFileInstancesLocator,
                         ExecutableFileInstancesLocator

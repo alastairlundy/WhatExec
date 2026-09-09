@@ -10,8 +10,7 @@ public class PathExecutableResolverTests
     public PathExecutableResolverTests()
     {
         IExecutableFileDetector executableFileDetector = new ExecutableFileDetector();
-        IPathEnvironmentVariableDetector pathVariableDetector = new PathEnvironmentVariableDetector();
-        _pathVariableResolver = new PathEnvironmentVariableResolver(pathVariableDetector, executableFileDetector);
+        _pathVariableResolver = new PathEnvironmentVariableResolver(executableFileDetector);
     }
     
     private string ProgramFilesDirectory => Environment.GetFolderPath(Environment.Is64BitOperatingSystem
@@ -21,9 +20,11 @@ public class PathExecutableResolverTests
     [Test]
     public async Task Resolve_Dotnet_Path_Executable()
     {
-        KeyValuePair<string, FileInfo> actual =
-            await _pathVariableResolver.ResolveExecutableFilePathAsync(
-                OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet", CancellationToken.None);
+        string executableName = OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet";
+        
+        IReadOnlyDictionary<string, FileInfo> actual =
+            await _pathVariableResolver.TryGetExecutableFilePathsAsync(
+                executableName, CancellationToken.None);
         
         FileInfo expected;
 
@@ -43,8 +44,8 @@ public class PathExecutableResolverTests
             expected = new  FileInfo("/usr/bin/dotnet");
         }
 
-        
+        Assert.That(actual.ContainsKey(executableName), Is.True);
         await Assert.That(expected.FullName).
-            IsEqualTo(actual.Value.FullName);
+            IsEqualTo(actual[executableName].FullName);
     }
 }

@@ -27,5 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="TUnit" Version="1.66.27" />
+    <PackageVersion Include="System.IO.Abstractions" Version="21.0.29" />
+    <PackageVersion Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
   </ItemGroup>
 </Project>

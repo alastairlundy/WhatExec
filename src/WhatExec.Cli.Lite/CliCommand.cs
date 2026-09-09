@@ -22,15 +22,15 @@ public class CliCommand
     {
         try
         {
-            (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results = await pathEnvironmentVariableResolver.
+            IReadOnlyDictionary<string, FileInfo> resolvedExecutables = await pathEnvironmentVariableResolver.
                 TryGetExecutableFilePathsAsync(commands, cancellationToken).ConfigureAwait(true);
             
-            foreach (FileInfo resolvedCommand in results.resolvedExecutables.Values)
+            foreach (FileInfo resolvedCommand in resolvedExecutables.Values)
             {
                 await Console.Out.WriteLineAsync(resolvedCommand.FullName).ConfigureAwait(true);
             }
 
-            return results.success ? 0 : 1;
+            return resolvedExecutables.Count > 0 ? 0 : 1;
         }
         catch (Exception e)
         {

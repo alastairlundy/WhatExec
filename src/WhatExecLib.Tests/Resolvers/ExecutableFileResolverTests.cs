@@ -10,8 +10,8 @@ public class ExecutableFileResolverTests
     public ExecutableFileResolverTests()
     {
         IExecutableFileDetector executableFileDetector = new ExecutableFileDetector();
-        _executableFileResolver = new ExecutableFileResolver(new ExecutableFileDetector(), new PathEnvironmentVariableDetector(),
-            new PathEnvironmentVariableResolver(new PathEnvironmentVariableDetector(), executableFileDetector));
+        _executableFileResolver = new ExecutableFileResolver(executableFileDetector,
+            new PathEnvironmentVariableResolver(executableFileDetector));
     }
 
     [Test]

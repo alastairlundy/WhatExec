@@ -9,6 +9,8 @@
 
     <ItemGroup>
       <PackageReference Include="TUnit" />
+      <PackageReference Include="System.IO.Abstractions" />
+      <PackageReference Include="System.IO.Abstractions.TestingHelpers" />
     </ItemGroup>
 
     <ItemGroup>
