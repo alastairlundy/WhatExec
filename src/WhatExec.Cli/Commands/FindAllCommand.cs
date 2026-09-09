@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using WhatExec.Lib.Abstractions.Locators;
+using WhatExec.Lib.Locators;
 
 namespace WhatExec.Cli.Commands;
 

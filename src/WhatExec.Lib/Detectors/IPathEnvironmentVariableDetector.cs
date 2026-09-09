@@ -1,4 +1,4 @@
-﻿/*
+/*
     WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExec.Lib.Abstractions.Detectors;
+namespace WhatExec.Lib.Detectors;
 
 /// <summary>
 /// Represents an interface for detecting PATH environment variables.

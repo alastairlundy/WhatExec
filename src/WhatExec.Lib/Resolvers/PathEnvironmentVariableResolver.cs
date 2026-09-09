@@ -9,8 +9,6 @@
 
 using System.Collections.ObjectModel;
 using System.Globalization;
-using WhatExec.Lib.Abstractions.Resolvers;
-
 namespace WhatExec.Lib.Resolvers;
 
 /// <summary>

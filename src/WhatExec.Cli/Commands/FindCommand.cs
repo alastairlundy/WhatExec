@@ -8,7 +8,7 @@
  */
 
 using System.Diagnostics;
-using WhatExec.Lib.Abstractions.Resolvers;
+using WhatExec.Lib.Resolvers;
 
 namespace WhatExec.Cli.Commands;
 

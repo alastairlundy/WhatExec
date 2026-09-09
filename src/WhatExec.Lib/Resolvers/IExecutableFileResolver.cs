@@ -7,7 +7,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-namespace WhatExec.Lib.Abstractions.Resolvers;
+namespace WhatExec.Lib.Resolvers;
 
 /// <summary>
 /// Represents an interface for locating executable files based on search criteria.

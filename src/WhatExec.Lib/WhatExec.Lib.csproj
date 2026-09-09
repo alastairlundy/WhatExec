@@ -88,12 +88,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
-    <ProjectReference Include="..\WhatExec.Lib.Abstractions\WhatExec.Lib.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
     <!-- set CliInvokeCoreVersion in the workflow -->
-    <ProjectReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

@@ -23,7 +23,6 @@
   </PropertyGroup>
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
     <PackageVersion Include="WhatExec.Lib" Version="$(WhatExecLibVersion)" />
-    <PackageVersion Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)" />
     <PackageVersion Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)" />
   </ItemGroup>
   <ItemGroup>

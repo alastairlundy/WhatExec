@@ -64,14 +64,12 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='false'">
-    <ProjectReference Include="..\WhatExec.Lib.Abstractions\WhatExec.Lib.Abstractions.csproj" />
     <ProjectReference Include="..\WhatExec.Lib\WhatExec.Lib.csproj" />
     <ProjectReference Include="..\WhatExec.Lib.Extensions.DependencyInjection\WhatExec.Lib.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
     <PackageReference Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
-    <PackageReference Include="WhatExec.Lib.Abstractions" Version="$(AbstractionsVersion)"/>
     <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
   </ItemGroup>
   
