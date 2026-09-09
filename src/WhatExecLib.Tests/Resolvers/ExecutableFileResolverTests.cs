@@ -17,6 +17,10 @@ public class ExecutableFileResolverTests
             new PathEnvironmentVariableResolver(executableFileDetector));
     }
 
+    // Known issue: fails on machines where the target is installed via Winget.
+    // Winget install directories deny traversal, so the lookup throws
+    // UnauthorizedAccessException inside the walk, the entry is skipped per
+    // the fault rules, and the executable is reported as not found.
     [Test]
     public async Task Resolve_VsCode_ExecutableFile()
     {
