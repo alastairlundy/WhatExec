@@ -112,6 +112,10 @@ For concrete command examples and flags, consult:
 - [WhatExec Lite CLI README](https://github.com/alastairlundy/WhatExec/blob/main/src/WhatExecLiteCli/README.md)
 - [WhatExecLib README](https://github.com/alastairlundy/whatexec/blob/main/src/WhatExecLib/README.md)
 
+## Known Issues
+
+- Executables installed via Winget may not be found: Windows denies traversal of Winget install directories, so the lookup skips them and reports the executable as not found.
+
 ## Contributing
 Contributions are welcome! Please follow the contribution guidelines:
 - [CONTRIBUTING.md](https://github.com/alastairlundy/whatexec/blob/main/CONTRIBUTING.md)
