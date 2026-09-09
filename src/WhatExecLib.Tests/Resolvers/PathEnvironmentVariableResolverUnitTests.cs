@@ -3,6 +3,9 @@ using WhatExec.Lib.Resolvers;
 
 namespace WhatExecLib.Tests.Resolvers;
 
+// Serialized: every test mutates process-wide PATH/PATHEXT, so parallel
+// execution races (one test restoring PATH while another enumerates).
+[NotInParallel]
 public class PathEnvironmentVariableResolverUnitTests : IDisposable
 {
     private readonly string _tempRoot;

@@ -3,6 +3,9 @@ using System.Diagnostics;
 
 namespace WhatExecLib.Tests.Resolvers;
 
+// Serialized with the env-mutating resolver tests: these read the real PATH,
+// which PathEnvironmentVariableResolverUnitTests replaces per case.
+[NotInParallel]
 public class ExecutableFileResolverTests
 {
     private readonly IExecutableFileResolver _executableFileResolver;
