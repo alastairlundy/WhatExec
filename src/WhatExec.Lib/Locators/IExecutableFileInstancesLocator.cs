@@ -28,6 +28,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
     /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the located executable file instances within the system.</returns>
+    [Obsolete("Use IExecutableInstancesLocator.EnumerateExecutableInstancesAcrossDrivesAsync instead. This member will be removed in a future version. (D005)")]
     IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(string executableName, SearchOption directorySearchOption,
         CancellationToken cancellationToken);
     
@@ -38,6 +39,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the system.</returns>
+    [Obsolete("Use IExecutableInstancesLocator.EnumerateExecutableInstancesAcrossDrivesAsync instead. This member will be removed in a future version. (D005)")]
     Task<FileInfo[]> GetExecutableInstancesAsync(
         string executableName,
         SearchOption directorySearchOption,
@@ -52,6 +54,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
     /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
+    [Obsolete("Use IExecutableInstancesLocator.EnumerateExecutableInstancesInDriveAsync instead. This member will be removed in a future version. (D005)")]
     IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo,
         string executableName, SearchOption directorySearchOption, CancellationToken cancellationToken);
 
@@ -63,6 +66,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
+    [Obsolete("Use IExecutableInstancesLocator.EnumerateExecutableInstancesInDriveAsync instead. This member will be removed in a future version. (D005)")]
     Task<FileInfo[]> GetExecutableInstancesInDriveAsync(
         DriveInfo driveInfo,
         string executableName,
@@ -78,6 +82,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
     /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing the located executable file instances within the specified directory.</returns>
+    [Obsolete("Use IExecutableInstancesLocator.EnumerateExecutableInstancesInDirectoryAsync instead. This member will be removed in a future version. (D005)")]
     IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
         string executableName,
         SearchOption directorySearchOption,
@@ -92,6 +97,7 @@ public interface IExecutableFileInstancesLocator
     /// <param name="directorySearchOption">Specifies whether to search all directories or only the top-level directory.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to request cancellation.</param>
     /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified directory.</returns>
+    [Obsolete("Use IExecutableInstancesLocator.EnumerateExecutableInstancesInDirectoryAsync instead. This member will be removed in a future version. (D005)")]
     Task<FileInfo[]> GetExecutableInstancesInDirectoryAsync(
         DirectoryInfo directory,
         string executableName,

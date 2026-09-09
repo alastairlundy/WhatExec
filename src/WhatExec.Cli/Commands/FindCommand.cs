@@ -8,6 +8,7 @@
  */
 
 using System.Diagnostics;
+using WhatExec.Lib.Locators;
 using WhatExec.Lib.Resolvers;
 
 namespace WhatExec.Cli.Commands;
@@ -19,18 +20,15 @@ namespace WhatExec.Cli.Commands;
 )]
 public class FindCommand
 {
-    private readonly IExecutableFileResolver _executableFileResolver;
+    private readonly IPathEnvironmentVariableResolver _pathResolver;
+    private readonly IExecutableInstancesLocator _instancesLocator;
 
     public FindCommand(
-        IExecutableFileResolver executableFileResolver)
+        IPathEnvironmentVariableResolver pathResolver,
+        IExecutableInstancesLocator instancesLocator)
     {
-        _executableFileResolver = executableFileResolver;
-        _executableFileResolver.ExecutableFileLocated += ExecutableFileResolverOnExecutableFileLocated;
-    }
-
-    private void ExecutableFileResolverOnExecutableFileLocated(object? sender, KeyValuePair<string, FileInfo> e)
-    {
-        
+        _pathResolver = pathResolver;
+        _instancesLocator = instancesLocator;
     }
 
     [CliArgument(
@@ -110,24 +108,16 @@ public class FindCommand
     {
         try
         {
-            (bool success, IReadOnlyDictionary<string, FileInfo> executableFiles) results =  await _executableFileResolver.
-                TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true);
-
-            return results.executableFiles;
+            return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
         }
         catch(AggregateException unauthorizedAccessException)
         {
             string? problematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.InnerExceptions.First()
                 .Message.Contains(command));
 
-            (bool success, IReadOnlyDictionary<string, FileInfo> resolvedExecutables) results;
-            
             if (problematicCommand is null)
             {
-                results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor,
-                    SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true);
-                
-                return results.resolvedExecutables;
+                return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
             }
 
             if (Verbose)
@@ -145,14 +135,49 @@ public class FindCommand
             
             if(continueInteractive)
             {
-                results = await _executableFileResolver.TryGetExecutableFilesAsync(commandLeftToLookFor, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true);
+                return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
             }
             else
             {
-                results = (false, new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase));
+                return new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase);
             }
-
-            return results.resolvedExecutables;
         }
+    }
+
+    /// <summary>
+    /// PATH-first composition above both seams (D011): resolves each name against PATH first,
+    /// then scans drives for the remainder via the named-instances locator.
+    /// Legacy edge-case difference (D010): the retired resolver walked each drive's
+    /// directories per name with its own PATHEXT handling, while the shared traversal core
+    /// now walks recursively and verdicts every file through the detector - ordering and
+    /// completeness of scan hits may differ, but PATH-first precedence is preserved.
+    /// </summary>
+    private async Task<IReadOnlyDictionary<string, FileInfo>> LocateFirstMatchesPathFirstAsync(
+        string[] commandLeftToLookFor, CancellationToken cancellationToken)
+    {
+        Dictionary<string, FileInfo> output = new(StringComparer.OrdinalIgnoreCase);
+
+        IReadOnlyDictionary<string, FileInfo> pathMatches = await _pathResolver.
+            TryGetExecutableFilePathsAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
+
+        foreach (KeyValuePair<string, FileInfo> match in pathMatches)
+        {
+            output.TryAdd(match.Key, match.Value);
+        }
+
+        foreach (string command in commandLeftToLookFor)
+        {
+            if (output.ContainsKey(command))
+                continue;
+
+            await foreach (FileInfo file in _instancesLocator.EnumerateExecutableInstancesAcrossDrivesAsync(
+                               command, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true))
+            {
+                output.TryAdd(command, file);
+                break;
+            }
+        }
+
+        return output;
     }
 }

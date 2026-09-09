@@ -12,6 +12,7 @@ namespace WhatExec.Lib.Resolvers;
 /// <summary>
 /// Represents a class that resolves the location of specified executable files.
 /// </summary>
+[Obsolete("Compose IPathEnvironmentVariableResolver (PATH-first) with IExecutableInstancesLocator (scan) in the caller instead. This class will be removed in a future version. (D005)")]
 public class ExecutableFileResolver : IExecutableFileResolver
 {
     private readonly IExecutableFileDetector _executableFileDetector;
@@ -30,6 +31,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
     }
 
     /// <inheritdoc/>
+    [Obsolete("Events are removed from the new seam. Use enumeration instead. This event will be removed in a future version. (D008)")]
     public event EventHandler<KeyValuePair<string, FileInfo>>? ExecutableFileLocated;
 
     /// <summary>
@@ -40,6 +42,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that returns a <see cref="FileInfo"/> indicating the location of the executable if found, otherwise null.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the specified executable file could not be found.</exception>
+    [Obsolete("Compose IPathEnvironmentVariableResolver (PATH-first) with IExecutableInstancesLocator (scan) in the caller instead. This member will be removed in a future version. (D005)")]
     public async Task<FileInfo> LocateExecutableAsync(string executableFileName, SearchOption directorySearchOption,
         CancellationToken cancellationToken)
     {
@@ -59,6 +62,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable file.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that returns a tuple indicating whether the executable was found and its location if successful, otherwise null.</returns>
+    [Obsolete("Compose IPathEnvironmentVariableResolver (PATH-first) with IExecutableInstancesLocator (scan) in the caller instead. This member will be removed in a future version. (D005)")]
     public async Task<(bool, FileInfo?)> TryLocateExecutableAsync(string executableFileName,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)
@@ -96,6 +100,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <returns>A dictionary containing the located executable files, where the keys are the original file names
     /// and the values are their corresponding <see cref="FileInfo"/> objects.</returns>
     /// <exception cref="FileNotFoundException">Thrown if any of the specified executable files are not found.</exception>
+    [Obsolete("Compose IPathEnvironmentVariableResolver (PATH-first) with IExecutableInstancesLocator (scan) in the caller instead. This member will be removed in a future version. (D005)")]
     public async Task<IReadOnlyDictionary<string, FileInfo>> GetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption, CancellationToken cancellationToken)
     {
@@ -120,6 +125,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>An asynchronous sequence of key-value pairs, where each key is a filename and the corresponding value
     /// is the location of the executable file if found.</returns>
+    [Obsolete("Compose IPathEnvironmentVariableResolver (PATH-first) with IExecutableInstancesLocator (scan) in the caller instead. This member will be removed in a future version. (D005)")]
     public async IAsyncEnumerable<KeyValuePair<string, FileInfo>> EnumerateExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
         [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -161,6 +167,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
     /// <param name="directorySearchOption">Specifies how directories are searched for the executable files.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A tuple containing a boolean indicating whether all executables were found and a dictionary of found executables keyed by their file names.</returns>
+    [Obsolete("Compose IPathEnvironmentVariableResolver (PATH-first) with IExecutableInstancesLocator (scan) in the caller instead. This member will be removed in a future version. (D005)")]
     public async Task<(bool, IReadOnlyDictionary<string, FileInfo>)> TryGetExecutableFilesAsync(string[] inputFileNames,
         SearchOption directorySearchOption,
         CancellationToken cancellationToken)

@@ -11,18 +11,11 @@ namespace WhatExec.Cli.Commands;
 )]
 public class FindAllCommand
 {
-    private readonly IExecutableFileInstancesLocator _executableFileInstancesResolver;
+    private readonly IExecutableInstancesLocator _executableInstancesLocator;
 
-    public FindAllCommand(IExecutableFileInstancesLocator executableFileInstancesResolver)
+    public FindAllCommand(IExecutableInstancesLocator executableInstancesLocator)
     {
-        _executableFileInstancesResolver = executableFileInstancesResolver;
-        
-        _executableFileInstancesResolver.ExecutableFileInstanceLocated += ExecutableFileInstancesResolverOnExecutableFileLocated;
-    }
-
-    private void ExecutableFileInstancesResolverOnExecutableFileLocated(object? sender, FileInfo e)
-    {
-        
+        _executableInstancesLocator = executableInstancesLocator;
     }
 
     [CliOption(Description = "Enable interactivity.", Alias = "-i", Name = "--interactive")]
@@ -83,13 +76,20 @@ public class FindAllCommand
         {
             try
             {
-                FileInfo[] info = await _executableFileInstancesResolver.GetExecutableInstancesAsync(
-                    command,
-                    SearchOption.AllDirectories,
-                    cancellationToken
-                ).ConfigureAwait(true);
-            
-                output.Add(command, info);
+                // Named-instances scan only (D019): locate-all enumerates every drive
+                // through the shared traversal core. Legacy edge-case difference (D010):
+                // scan hits are now verdict-filtered per file by the detector and
+                // inaccessible entries are skipped, so instance sets may differ from
+                // the retired seam where unauthorized entries surfaced as errors.
+                List<FileInfo> instances = new();
+
+                await foreach (FileInfo file in _executableInstancesLocator.EnumerateExecutableInstancesAcrossDrivesAsync(
+                                   command, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true))
+                {
+                    instances.Add(file);
+                }
+
+                output.Add(command, instances.ToArray());
             }
             catch (AggregateException)
             {
