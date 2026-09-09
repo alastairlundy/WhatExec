@@ -7,297 +7,213 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+using System.IO.Abstractions;
+
 namespace WhatExec.Lib.Locators;
 
 /// <summary>
-/// Represents a class that provides functionality to locate instances of executable files
-/// across multiple drives, directories, and files in a system.
+/// Locates named executable file instances within directories, drives, or across drives.
+/// Split-pair discovery seam for named-instances queries (D019).
+/// Implements both <see cref="IExecutableInstancesLocator"/> (new) and the obsolete
+/// <see cref="IExecutableFileInstancesLocator"/> for backward compatibility (D005).
+/// One shared traversal core from <see cref="ExecutablesLocator"/> serves all overloads (D016).
+/// Filesystem access goes through System.IO.Abstractions seam (D009).
+/// Fault rules: IgnoreInaccessible, consistent casing, fixed patterns, no hot tasks (D010).
+/// No PATH knowledge (D002, D011); no events on new seam (D008).
 /// </summary>
-public class ExecutableFileInstancesLocator : IExecutableFileInstancesLocator
+public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExecutableFileInstancesLocator
 {
-    private readonly IExecutableFileDetector _executableFileDetector;
+    private readonly ExecutablesLocator _sharedCore;
 
     /// <summary>
-    /// Provides functionality for locating instances of executable files across drives, directories, and files.
+    /// Initializes a new instance of the <see cref="ExecutableFileInstancesLocator"/> class.
     /// </summary>
-    public ExecutableFileInstancesLocator(IExecutableFileDetector executableDetector)
+    /// <param name="detector">The executable file detector used to verify executability per file.</param>
+    /// <param name="fileSystem">The filesystem abstraction for all file and directory access.</param>
+    public ExecutableFileInstancesLocator(IExecutableFileDetector detector, IFileSystem fileSystem)
     {
-        _executableFileDetector = executableDetector;
+        _sharedCore = new ExecutablesLocator(detector, fileSystem);
     }
 
+    // ── IExecutableInstancesLocator (new seam) ────────────────────────────
+
+    /// <inheritdoc/>
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public async IAsyncEnumerable<FileInfo> EnumerateExecutableInstancesInDirectoryAsync(
+        DirectoryInfo directory,
+        string executableName,
+        SearchOption search,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(executableName);
+
+        await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(directory.FullName, search, executableName, ct)
+                           .ConfigureAwait(false))
+        {
+            yield return file;
+        }
+    }
+
+    /// <inheritdoc/>
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public async IAsyncEnumerable<FileInfo> EnumerateExecutableInstancesInDriveAsync(
+        DriveInfo drive,
+        string executableName,
+        SearchOption search,
+        CancellationToken ct)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(executableName);
+
+        if (!drive.IsReady)
+            throw new ArgumentException(
+                string.Format(Resources.Exceptions_Drives_DriveNotReady, drive.Name),
+                nameof(drive));
+
+        await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(drive.RootDirectory.FullName, search, executableName, ct)
+                           .ConfigureAwait(false))
+        {
+            yield return file;
+        }
+    }
+
+    /// <inheritdoc/>
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public async IAsyncEnumerable<FileInfo> EnumerateExecutableInstancesAcrossDrivesAsync(
+        string executableName,
+        SearchOption search,
+        CancellationToken ct)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(executableName);
+
+        DriveInfo[] drives;
+        try
+        {
+            drives = DriveInfo.GetDrives();
+        }
+        catch (Exception)
+        {
+            yield break;
+        }
+
+        foreach (DriveInfo drive in drives)
+        {
+            if (!drive.IsReady)
+                continue;
+
+            await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(drive.RootDirectory.FullName, search, executableName, ct)
+                               .ConfigureAwait(false))
+            {
+                yield return file;
+            }
+        }
+    }
+
+    // ── IExecutableFileInstancesLocator (obsolete, D005/D008) ─────────────
+
+    /// <inheritdoc/>
+    [Obsolete("Events are removed from the new seam. Use enumeration instead. (D008)")]
     public event EventHandler<FileInfo>? ExecutableFileInstanceLocated;
 
-    /// <summary>
-    /// Asynchronously enumerates resolved <see cref="FileInfo"/> objects representing executable instances found across logical drives.
-    /// </summary>
-    /// <param name="executableName">The name of the executable to search for.</param>
-    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
-    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing instances of an executable file.</returns>
-    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(string executableName,
+    /// <inheritdoc/>
+    [Obsolete("Use EnumerateExecutableInstancesAcrossDrivesAsync instead. (D005)")]
+    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(
+        string executableName,
         SearchOption directorySearchOption,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrEmpty(executableName);
-
-        IEnumerable<DriveInfo> drives = DriveInfo.SafelyEnumerateLogicalDrives();
-        
-        foreach (DriveInfo drive in drives)
+        await foreach (FileInfo file in EnumerateExecutableInstancesAcrossDrivesAsync(
+                           executableName, directorySearchOption, cancellationToken)
+                           .ConfigureAwait(false))
         {
-            IAsyncEnumerable<FileInfo> driveResults = EnumerableExecutableInstancesInDriveAsync(drive, executableName, directorySearchOption, cancellationToken);
-
-            await foreach (FileInfo driveResult in driveResults.ConfigureAwait(false))
-            {
-                yield return driveResult;
-            }
+            yield return file;
         }
     }
 
-    /// <summary>
-    /// Locates all instances of the specified executable file across all available drives on the system.
-    /// </summary>
-    /// <param name="executableName">The name of the executable file to be located.</param>
-    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances.</returns>
+    /// <inheritdoc/>
+    [Obsolete("Use EnumerateExecutableInstancesAcrossDrivesAsync instead. (D005)")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async Task<FileInfo[]> GetExecutableInstancesAsync(string executableName,
-        SearchOption directorySearchOption, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(executableName);
+    public async Task<FileInfo[]> GetExecutableInstancesAsync(
+        string executableName,
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
+        => await EnumerateExecutableInstancesAcrossDrivesAsync(
+               executableName, directorySearchOption, cancellationToken)
+               .ToArrayAsync(cancellationToken: cancellationToken)
+               .ConfigureAwait(false);
 
-        DriveInfo[] drives = DriveInfo.SafelyGetLogicalDrives();
-
-        List<FileInfo> output = new();
-
-        Task<FileInfo[]>[] tasks = new Task<FileInfo[]>[drives.Length];
-        
-        for (int i = 0; i < tasks.Length; i++)
-        {
-            tasks[i] = GetExecutableInstancesInDriveAsync(drives[i], executableName, directorySearchOption, cancellationToken);
-            tasks[i].Start();
-        }
-        
-        await Task.WhenAll(tasks).ConfigureAwait(false);
-
-        foreach (Task<FileInfo[]> task in tasks)
-        {
-            output.AddRange(task.Result);
-        }
-
-        return output.ToArray();
-    }
-
-    /// <summary>
-    /// Enumerates resolved instances of a specified executable name from a specified drive.
-    /// </summary>
-    /// <param name="driveInfo">The drive information to search.</param>
-    /// <param name="executableName">The name of the executable file to find.</param>
-    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing executable files that match the specified criteria.</returns>
+    /// <inheritdoc/>
+    [Obsolete("Use EnumerateExecutableInstancesInDriveAsync instead. (D005)")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(DriveInfo driveInfo,
+    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDriveAsync(
+        DriveInfo driveInfo,
         string executableName,
-        SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
+        SearchOption directorySearchOption,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrEmpty(executableName);
-        
-        IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => driveInfo.RootDirectory.EnumerateFiles(sp, new EnumerationOptions
-            {
-                IgnoreInaccessible = true,
-                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
-            }))
-            .Where(f => f.Exists && f.Name.Equals(executableName));
-
-        foreach (FileInfo file in files)
+        await foreach (FileInfo file in EnumerateExecutableInstancesInDriveAsync(
+                           driveInfo, executableName, directorySearchOption, cancellationToken)
+                           .ConfigureAwait(false))
         {
-            bool validExecutable = false;
-            try
-            {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (isExecutable)
-                {
-                    ExecutableFileInstanceLocated?.Invoke(this, file);
-                    validExecutable = true;
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Skip if not authorized.
-                validExecutable = false;
-            }
-            
-            if(validExecutable)
-                yield return file;
+            yield return file;
         }
     }
 
-    /// <summary>
-    /// Locates all instances of the specified executable file within a specific drive on the system.
-    /// </summary>
-    /// <param name="driveInfo">The drive on which to search for the executable file instances.</param>
-    /// <param name="executableName">The name of the executable file to be located.</param>
-    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable file instances within the specified drive.</returns>
+    /// <inheritdoc/>
+    [Obsolete("Use EnumerateExecutableInstancesInDriveAsync instead. (D005)")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async Task<FileInfo[]> GetExecutableInstancesInDriveAsync(DriveInfo driveInfo,
+    public async Task<FileInfo[]> GetExecutableInstancesInDriveAsync(
+        DriveInfo driveInfo,
         string executableName,
-        SearchOption directorySearchOption, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(executableName);
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
+        => await EnumerateExecutableInstancesInDriveAsync(
+               driveInfo, executableName, directorySearchOption, cancellationToken)
+               .ToArrayAsync(cancellationToken: cancellationToken)
+               .ConfigureAwait(false);
 
-        List<FileInfo> output = new();
-
-        IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => driveInfo.RootDirectory.EnumerateFiles(sp, new EnumerationOptions
-            {
-                IgnoreInaccessible = true,
-                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories,
-                MatchCasing = MatchCasing.CaseInsensitive
-            }))
-            .Where(f => f.Exists && f.Name.Equals(executableName));
-
-        foreach (FileInfo file in files)
-        {
-            try
-            {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (isExecutable)
-                {
-                    ExecutableFileInstanceLocated?.Invoke(this, file);
-                    output.Add(file);
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Skip if not authorized.
-            }
-        }
-        
-        return output.ToArray();
-    }
-
-    /// <summary>
-    /// Asynchronously enumerates instances of <see cref="FileInfo"/> objects representing executable files within a specified directory that match the given executable name.
-    /// </summary>
-    /// <param name="directory">The directory to search for executable files.</param>
-    /// <param name="executableName">The name of the executable file to locate.</param>
-    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to abort the operation.</param>
-    /// <returns>An asynchronous sequence of <see cref="FileInfo"/> objects representing executable files that match the specified criteria.</returns>
-    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
-        string executableName,
-        SearchOption directorySearchOption, [EnumeratorCancellation] CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(executableName);
-        
-        IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => directory.EnumerateFiles(sp, new EnumerationOptions
-            {
-                IgnoreInaccessible = true,
-                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
-            }))
-            .Where(f => f.Exists && f.Name.Equals(executableName));
-
-        foreach (FileInfo file in files)
-        {
-            bool validExecutable = false;
-            try
-            {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (isExecutable)
-                {
-                    ExecutableFileInstanceLocated?.Invoke(this, file);
-                    validExecutable = true;
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Skip if not authorized.
-                validExecutable = false;
-            }
-            
-            if(validExecutable)
-                yield return file;
-        }
-    }
-
-    /// <summary>
-    /// Locates instances of an executable file within the specified directory.
-    /// </summary>
-    /// <param name="directory">The directory where the search will be conducted.</param>
-    /// <param name="executableName">The name of the executable file to search for.</param>
-    /// <param name="directorySearchOption">Specifies whether to search subdirectories or only the current directory.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to abort the operation.</param>
-    /// <returns>An array of <see cref="FileInfo"/> objects representing the located executable files within the directory.</returns>
+    /// <inheritdoc/>
+    [Obsolete("Use EnumerateExecutableInstancesInDirectoryAsync instead. (D005)")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    public async Task<FileInfo[]> GetExecutableInstancesInDirectoryAsync(DirectoryInfo directory,
+    public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesInDirectoryAsync(
+        DirectoryInfo directory,
         string executableName,
-        SearchOption directorySearchOption, CancellationToken cancellationToken)
+        SearchOption directorySearchOption,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrEmpty(executableName);
-
-        List<FileInfo> output = new();
-        
-        IEnumerable<FileInfo> files = EnumerateSearchPatterns(executableName)
-            .SelectMany(sp => directory.EnumerateFiles(sp, new EnumerationOptions
-            {
-                IgnoreInaccessible = true,
-                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
-            }))
-            .Where(f => f.Exists && f.Name.Equals(executableName));
-
-        foreach (FileInfo file in files)
+        await foreach (FileInfo file in EnumerateExecutableInstancesInDirectoryAsync(
+                           directory, executableName, directorySearchOption, cancellationToken)
+                           .ConfigureAwait(false))
         {
-            try
-            {
-                bool isExecutable = await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (isExecutable)
-                {
-                    ExecutableFileInstanceLocated?.Invoke(this, file);
-                    output.Add(file);
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Skip if not authorized.
-            }
+            yield return file;
         }
-
-        return output.ToArray();
     }
 
-    #region Helper Code
-
-    private static IEnumerable<string> EnumerateSearchPatterns(string executableFileName)
-    {
-        FileInfo fileInfo = new FileInfo(executableFileName);
-
-        if (Path.HasExtension(executableFileName))
-        {
-            yield return fileInfo.Extension;
-        }
-
-        yield return fileInfo.Name;
-    }
-    #endregion
+    /// <inheritdoc/>
+    [Obsolete("Use EnumerateExecutableInstancesInDirectoryAsync instead. (D005)")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
+    [UnsupportedOSPlatform("browser")]
+    public async Task<FileInfo[]> GetExecutableInstancesInDirectoryAsync(
+        DirectoryInfo directory,
+        string executableName,
+        SearchOption directorySearchOption,
+        CancellationToken cancellationToken)
+        => await EnumerateExecutableInstancesInDirectoryAsync(
+               directory, executableName, directorySearchOption, cancellationToken)
+               .ToArrayAsync(cancellationToken: cancellationToken)
+               .ConfigureAwait(false);
 }

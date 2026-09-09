@@ -23,12 +23,6 @@ public class SearchDriveCommand
     public SearchDriveCommand(IExecutablesLocator executablesResolver)
     {
         _executablesResolver = executablesResolver;
-        _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
-    }
-
-    private void ExecutablesResolverOnExecutableFileLocated(object? sender, FileInfo e)
-    {
-        
     }
 
     [CliOption(
@@ -79,7 +73,7 @@ public class SearchDriveCommand
             return -1;
         }
 
-        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDriveAsync(drive, SearchOption.AllDirectories,
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesInDriveAsync(drive, SearchOption.AllDirectories,
             cliContext.CancellationToken);
         
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);

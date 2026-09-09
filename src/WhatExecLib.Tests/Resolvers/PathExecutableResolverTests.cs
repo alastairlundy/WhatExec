@@ -44,8 +44,7 @@ public class PathExecutableResolverTests
             expected = new  FileInfo("/usr/bin/dotnet");
         }
 
-        Assert.That(actual.ContainsKey(executableName), Is.True);
-        await Assert.That(expected.FullName).
-            IsEqualTo(actual[executableName].FullName);
+        await Assert.That(actual.ContainsKey(executableName)).IsTrue();
+        await Assert.That(expected.FullName).IsEqualTo(actual[executableName].FullName);
     }
 }

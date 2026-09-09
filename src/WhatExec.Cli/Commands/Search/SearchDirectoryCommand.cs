@@ -24,12 +24,6 @@ public class SearchDirectoryCommand
     public SearchDirectoryCommand(IExecutablesLocator executablesResolver)
     {
         _executablesResolver = executablesResolver;
-        _executablesResolver.ExecutableFileLocated += ExecutablesResolverOnExecutableFileLocated;
-    }
-
-    private void ExecutablesResolverOnExecutableFileLocated(object? sender, FileInfo e)
-    {
-        
     }
 
     [CliOption(
@@ -80,7 +74,7 @@ public class SearchDirectoryCommand
             return -1;
         }
 
-        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesWithinDirectoryAsync(directoryInfo,
+        IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesInDirectoryAsync(directoryInfo,
             SearchOption.AllDirectories, cliContext.CancellationToken);
 
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);

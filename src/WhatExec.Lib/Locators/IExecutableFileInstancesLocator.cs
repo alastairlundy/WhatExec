@@ -12,11 +12,13 @@ namespace WhatExec.Lib.Locators;
 /// <summary>
 /// Defines methods for locating executable file instances across various locations such as drives and directories.
 /// </summary>
+[Obsolete("Use IExecutableInstancesLocator instead. This interface will be removed in a future version. (D005, D019)")]
 public interface IExecutableFileInstancesLocator
 {
     /// <summary>
     /// An event that is triggered each time an instance of an executable file was located during the resolution process.
     /// </summary>
+    [Obsolete("Events are removed from the new seam. Use enumeration instead. (D008)")]
     event EventHandler<FileInfo> ExecutableFileInstanceLocated;
     
     /// <summary>

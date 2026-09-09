@@ -86,9 +86,9 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             results.Add(kvp);
         }
 
-        Assert.That(results, Has.Count.EqualTo(1));
-        Assert.That(results[0].Key, Is.EqualTo(name));
-        Assert.That(results[0].Value.Name, Is.EqualTo(name));
+        await Assert.That(results.Count).IsEqualTo(1);
+        await Assert.That(results[0].Key).IsEqualTo(name);
+        await Assert.That(results[0].Value.Name).IsEqualTo(name);
     }
 
     [Test]
@@ -110,7 +110,7 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             results.Add(kvp);
         }
 
-        Assert.That(results, Is.Empty);
+        await Assert.That(results).IsEmpty();
     }
 
     [Test]
@@ -134,8 +134,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             results.Add(kvp);
         }
 
-        Assert.That(results, Has.Count.EqualTo(1));
-        Assert.That(results[0].Key, Is.EqualTo(foundName));
+        await Assert.That(results.Count).IsEqualTo(1);
+        await Assert.That(results[0].Key).IsEqualTo(foundName);
     }
 
     [Test]
@@ -158,8 +158,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             results.Add(kvp);
         }
 
-        Assert.That(results, Has.Count.EqualTo(1));
-        Assert.That(results[0].Key, Is.EqualTo(name));
+        await Assert.That(results.Count).IsEqualTo(1);
+        await Assert.That(results[0].Key).IsEqualTo(name);
     }
 
     #endregion
@@ -192,8 +192,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
         }
 
         // First-match: only the first PATH directory match is returned
-        Assert.That(results, Has.Count.EqualTo(1));
-        Assert.That(results[0].Value.DirectoryName, Is.EqualTo(dirA));
+        await Assert.That(results.Count).IsEqualTo(1);
+        await Assert.That(results[0].Value.DirectoryName).IsEqualTo(dirA);
     }
 
     [Test]
@@ -216,8 +216,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
         IReadOnlyDictionary<string, FileInfo> result =
             await resolver.TryGetExecutableFilePathsAsync([name], CancellationToken.None);
 
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result[name].DirectoryName, Is.EqualTo(dirA));
+        await Assert.That(result.Count).IsEqualTo(1);
+        await Assert.That(result[name].DirectoryName).IsEqualTo(dirA);
     }
 
     #endregion
@@ -243,9 +243,9 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             await resolver.TryGetExecutableFilePathsAsync(
                 [exe1Name, exe2Name], CancellationToken.None);
 
-        Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result.ContainsKey(exe1Name), Is.True);
-        Assert.That(result.ContainsKey(exe2Name), Is.True);
+        await Assert.That(result.Count).IsEqualTo(2);
+        await Assert.That(result.ContainsKey(exe1Name)).IsTrue();
+        await Assert.That(result.ContainsKey(exe2Name)).IsTrue();
     }
 
     [Test]
@@ -264,7 +264,7 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             await resolver.TryGetExecutableFilePathsAsync(
                 ["ghost1", "ghost2"], CancellationToken.None);
 
-        Assert.That(result, Is.Empty);
+        await Assert.That(result).IsEmpty();
     }
 
     [Test]
@@ -284,8 +284,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             await resolver.TryGetExecutableFilePathsAsync(
                 [foundName, "missing"], CancellationToken.None);
 
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result.ContainsKey(foundName), Is.True);
+        await Assert.That(result.Count).IsEqualTo(1);
+        await Assert.That(result.ContainsKey(foundName)).IsTrue();
     }
 
     [Test]
@@ -304,8 +304,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
         IReadOnlyDictionary<string, FileInfo> result =
             await resolver.TryGetExecutableFilePathsAsync(name, CancellationToken.None);
 
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result.ContainsKey(name), Is.True);
+        await Assert.That(result.Count).IsEqualTo(1);
+        await Assert.That(result.ContainsKey(name)).IsTrue();
     }
 
     #endregion
@@ -325,7 +325,7 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             await resolver.TryGetExecutableFilePathsAsync(
                 ["anything"], CancellationToken.None);
 
-        Assert.That(result, Is.Empty);
+        await Assert.That(result).IsEmpty();
     }
 
     [Test]
@@ -344,7 +344,7 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             results.Add(kvp);
         }
 
-        Assert.That(results, Is.Empty);
+        await Assert.That(results).IsEmpty();
     }
 
     #endregion
@@ -356,7 +356,8 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
     {
         if (!OperatingSystem.IsWindows())
         {
-            Assert.Pass("Case-insensitive matching only applies to Windows");
+            // TUnit: skip this test on non-Windows
+            await Assert.That(true).IsTrue();
             return;
         }
 
@@ -372,7 +373,7 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
             await resolver.TryGetExecutableFilePathsAsync(
                 ["mytool.exe"], CancellationToken.None);
 
-        Assert.That(result, Has.Count.EqualTo(1));
+        await Assert.That(result.Count).IsEqualTo(1);
     }
 
     #endregion
@@ -400,9 +401,9 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
         IReadOnlyDictionary<string, FileInfo> result =
             await resolver.TryGetExecutableFilePathsAsync(lazyNames, CancellationToken.None);
 
-        Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result.ContainsKey(name1), Is.True);
-        Assert.That(result.ContainsKey(name2), Is.True);
+        await Assert.That(result.Count).IsEqualTo(2);
+        await Assert.That(result.ContainsKey(name1)).IsTrue();
+        await Assert.That(result.ContainsKey(name2)).IsTrue();
     }
 
     private static IEnumerable<string> GetLazyNames(params string[] names)
