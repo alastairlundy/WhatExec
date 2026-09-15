@@ -7,12 +7,12 @@
     <PackageVersion Include="DotMake.CommandLine" Version="3.7.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
     <PackageVersion Include="Spectre.Console" Version="0.57.2" />
-    <PackageVersion Include="Polyfill" Version="11.2.0" />
+    <PackageVersion Include="Polyfill" Version="11.3.0" />
     <PackageVersion Include="ConsoleAppFramework" Version="5.7.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.231" PrivateAssets="all" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.259" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.12" />
@@ -26,8 +26,8 @@
     <PackageVersion Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="TUnit" Version="1.66.27" />
-    <PackageVersion Include="System.IO.Abstractions" Version="21.0.29" />
-    <PackageVersion Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
+    <PackageVersion Include="TUnit" Version="1.67.0" />
+    <PackageVersion Include="System.IO.Abstractions" Version="22.2.0" />
+    <PackageVersion Include="System.IO.Abstractions.TestingHelpers" Version="22.2.0" />
   </ItemGroup>
 </Project>
