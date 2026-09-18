@@ -3,13 +3,7 @@ name: Publish Packages to Nuget
 on:
   workflow_dispatch:
      inputs:
-      core-version:
-         type: string
-         required: true
       main-version:
-        type: string
-        required: true
-      dependencyinjection-version:
         type: string
         required: true
 
@@ -42,45 +36,33 @@ jobs:
       - name: Build Abstractions
         run: dotnet build src/WhatExec.Lib.Abstractions -c Release
 
-      # Pack Abstractions into ./nupkgs
-      - name: Pack Abstractions to local feed
-        run: dotnet pack src/WhatExec.Lib.Abstractions -c Release -o ./nupkg
-
       # Use local feed for WhatExec.Lib
       - name: Restore WhatExec.Lib from local feed + NuGet.org
         run: dotnet restore src/WhatExec.Lib -s ./nupkgs -s https://api.nuget.org/v3/index.json
 
-      - name: Build WhatExec.Lib (resolves Abstractions from local feed)
-        run: dotnet build src/WhatExec.Lib -c Release -p:AbstractionsVersion=${{ inputs.core-version }}
-
-      # Use local feed for extensions
-      - name: Restore Extensions from local feed + NuGet.org
-        run: dotnet restore src/WhatExec.Lib.Extensions.DependencyInjection -s ./nupkgs -s https://api.nuget.org/v3/index.json
-
-      - name: Build Extensions (resolves Abstractions and Main from local feed)
-        run: dotnet build src/WhatExec.Lib.Extensions.DependencyInjection -c Release -p:AbstractionsVersion=${{ inputs.core-version }} -p:WhatExecLibVersion=${{ inputs.main-version }}
+      - name: Build WhatExec.Lib
+        run: dotnet build src/WhatExec.Lib -c Release
 
       # Use local feed for WhatExec.Cli.Lite
       - name: Restore Cli Lite from local feed + NuGet.org
         run: dotnet restore src/WhatExec.Cli.Lite -s ./nupkgs -s https://api.nuget.org/v3/index.json
 
-      - name: Build Extensions (resolves Abstractions, Main, and DI version from local feed)
-        run: dotnet build src/WhatExec.Cli.Lite -c Release -p:AbstractionsVersion=${{ inputs.core-version }} -p:WhatExecLibVersion=${{ inputs.main-version }} -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
+      - name: Build Extensions (resolves Main, and DI version from local feed)
+        run: dotnet build src/WhatExec.Cli.Lite -c Release -p:WhatExecLibVersion=${{ inputs.main-version }}
 
       # Use local feed for WhatExec.Cli
       - name: Restore Cli Lite from local feed + NuGet.org
         run: dotnet restore src/WhatExec.Cli -s ./nupkgs -s https://api.nuget.org/v3/index.json
 
       - name: Build Extensions (resolves Abstractions, Main, and DI version from local feed)
-        run: dotnet build src/WhatExec.Cli -c Release -p:AbstractionsVersion=${{ inputs.core-version }} -p:WhatExecLibVersion=${{ inputs.main-version }} -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
+        run: dotnet build src/WhatExec.Cli -c Release -p:WhatExecLibVersion=${{ inputs.main-version }}
 
       # Pack the builds to ./nupkgs as well (so all resulting nupkgs end up in ./nupkgs)
       - name: Pack Specializations and Main into local feed
         run: |
-          dotnet pack src/WhatExec.Lib -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}
-          dotnet pack src/WhatExec.Lib.Extensions.DependencyInjection -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}
-          dotnet pack src/WhatExec.Cli.Lite -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}   -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
-          dotnet pack src/WhatExec.Cli -c Release -o ./nupkgs /p:AbstractionsVersion=${{ inputs.core-version }}  -p:WhatExecLibVersion=${{ inputs.main-version }}   -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
+          dotnet pack src/WhatExec.Lib -c Release -o ./nupkgs
+          dotnet pack src/WhatExec.Cli.Lite -c Release -o ./nupkgs -p:WhatExecLibVersion=${{ inputs.main-version }} 
+          dotnet pack src/WhatExec.Cli -c Release -o ./nupkgs -p:WhatExecLibVersion=${{ inputs.main-version }}
         
           # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
