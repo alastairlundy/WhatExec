@@ -32,10 +32,6 @@ jobs:
       - name: Create local nupkg output dir
         run: mkdir -p ./nupkgs
 
-      # Build Abstractions
-      - name: Build Abstractions
-        run: dotnet build src/WhatExec.Lib.Abstractions -c Release
-
       # Use local feed for WhatExec.Lib
       - name: Restore WhatExec.Lib from local feed + NuGet.org
         run: dotnet restore src/WhatExec.Lib -s ./nupkgs -s https://api.nuget.org/v3/index.json
