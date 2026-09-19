@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Title>WhatExec.Lib.Extensions.DependencyInjection</Title>
     <Authors>Alastair Lundy</Authors>
     <Copyright>Copyright (c) 2025-2026 Alastair Lundy</Copyright>
@@ -14,10 +14,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>#### ⚙️ Modifications
-- Added `GlobalUsings.cs` with centralized using directives
-- Enabled implicit usings
-- Refactored to use global usings instead of explicit per-file using statements</PackageReleaseNotes>
+    <PackageReleaseNotes>* Updated dependencies</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Registers WhatExecLib with Microsoft.Extensions.DependencyInjection</Description>
@@ -26,8 +23,8 @@
     <RootNamespace>WhatExec.Lib.Extensions.DependencyInjection</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>whatexec</PackageTags>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
-    <FileVersion>1.1.0</FileVersion>
+    <AssemblyVersion>1.2.0</AssemblyVersion>
+    <FileVersion>1.2.0</FileVersion>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(TargetFramework) != 'netstandard2.0'">
