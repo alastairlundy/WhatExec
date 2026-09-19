@@ -66,7 +66,7 @@ jobs:
       # Pack the builds to ./nupkgs as well (so all resulting nupkgs end up in ./nupkgs)
       - name: Pack Specializations and Main into local feed
         run: |
-          dotnet pack src/WhatExec.Lib -c Release -o
+          dotnet pack src/WhatExec.Lib -c Release -o ./nupkgs
           dotnet pack src/WhatExec.Lib.Extensions.DependencyInjection -c Release -o ./nupkgs -p:WhatExecLibVersion=${{ inputs.main-version }}
           dotnet pack src/WhatExec.Cli.Lite -c Release -o ./nupkgs  -p:WhatExecLibVersion=${{ inputs.main-version }}   -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
           dotnet pack src/WhatExec.Cli -c Release -o ./nupkgs -p:WhatExecLibVersion=${{ inputs.main-version }}   -p:DependencyInjectionPackageVersion=${{ inputs.dependencyinjection-version }}
