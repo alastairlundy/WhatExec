@@ -63,8 +63,9 @@ public class FindCommand
     {
         if(ReportTimeTaken)
             _stopwatch.Start();
-        
-        Dictionary<string, FileInfo> commandLocations = new(StringComparer.OrdinalIgnoreCase);
+
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        Dictionary<string, FileInfo> commandLocations = new(keyComparer);
         
         if (Limit < 1)
         { 
@@ -88,7 +89,8 @@ public class FindCommand
             {
                 foreach (KeyValuePair<string, FileInfo> pair in result)
                 {
-                    commandLocations.Add(pair.Key, pair.Value);
+                    if (!commandLocations.TryAdd(pair.Key, pair.Value))
+                        commandLocations[pair.Key] = pair.Value;
                 }
             });
 
@@ -106,14 +108,15 @@ public class FindCommand
     private async Task<IReadOnlyDictionary<string, FileInfo>> TrySearchSystem_DoNotLocateAll(
         string[] commandLeftToLookFor, CancellationToken cancellationToken)
     {
+        StringComparison nameComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
         try
         {
             return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
         }
-        catch(AggregateException unauthorizedAccessException)
+        catch(UnauthorizedAccessException unauthorizedAccessException)
         {
-            string? problematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.InnerExceptions.First()
-                .Message.Contains(command));
+            string? problematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.Message.Contains(command, nameComparison));
 
             if (problematicCommand is null)
             {
@@ -124,23 +127,36 @@ public class FindCommand
             {
                 Console.WriteLine(Resources.Errors_Information_CommandNotLocated
                     .Replace("{0}", problematicCommand)       
-                    .Replace("{1}", unauthorizedAccessException.InnerExceptions.First().Message));
+                    .Replace("{1}", unauthorizedAccessException.Message));
                 Console.WriteLine();
             }
-            
-            commandLeftToLookFor = commandLeftToLookFor.SkipWhile(c => string.Equals(c, problematicCommand,
-                StringComparison.OrdinalIgnoreCase)).ToArray();
-            
+             
+            commandLeftToLookFor = commandLeftToLookFor.Where(c => !string.Equals(c, problematicCommand,
+                nameComparison)).ToArray();
+             
             bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
-            
+             
             if(continueInteractive)
             {
                 return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
             }
             else
             {
-                return new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase);
+                return new Dictionary<string, FileInfo>(keyComparer);
             }
+        }
+        catch (IOException ioException) when (!Verbose)
+        {
+            commandLeftToLookFor = commandLeftToLookFor.Where(c => !ioException.Message.Contains(c, nameComparison)).ToArray();
+
+            bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
+
+            if (continueInteractive && commandLeftToLookFor.Length > 0)
+            {
+                return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
+            }
+
+            return new Dictionary<string, FileInfo>(keyComparer);
         }
     }
 
@@ -155,7 +171,8 @@ public class FindCommand
     private async Task<IReadOnlyDictionary<string, FileInfo>> LocateFirstMatchesPathFirstAsync(
         string[] commandLeftToLookFor, CancellationToken cancellationToken)
     {
-        Dictionary<string, FileInfo> output = new(StringComparer.OrdinalIgnoreCase);
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        Dictionary<string, FileInfo> output = new(keyComparer);
 
         IReadOnlyDictionary<string, FileInfo> pathMatches = await _pathResolver.
             TryGetExecutableFilePathsAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);

@@ -60,8 +60,9 @@ public class SearchDriveCommand
             Drive = UserInputHelper.GetDriveInput();
         }
 
-        DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d => string.Equals(d.Name, Drive,
-            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
+        DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d =>
+            DrivesEqual(d.Name, Drive,
+                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
         
         if(drive is null)
             return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),
@@ -77,5 +78,36 @@ public class SearchDriveCommand
             cliContext.CancellationToken);
         
         return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);
+    }
+
+    private static bool DrivesEqual(string driveName, string? input, StringComparison comparison)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return false;
+
+        string normalizedInput = input.Trim().TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        string normalizedDrive = driveName.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        if (string.Equals(normalizedDrive, normalizedInput, comparison))
+            return true;
+
+        // Allow Windows "C:" to match "C:\".
+        if (OperatingSystem.IsWindows())
+        {
+            if (!normalizedInput.EndsWith(':') && !normalizedInput.EndsWith(Path.DirectorySeparatorChar) && !normalizedInput.EndsWith(Path.AltDirectorySeparatorChar))
+            {
+                // No extra handling needed; exact match already attempted.
+                return false;
+            }
+
+            string withSeparator = normalizedInput.EndsWith(':')
+                ? normalizedInput + Path.DirectorySeparatorChar
+                : normalizedInput;
+
+            return string.Equals(driveName, withSeparator, comparison)
+                || string.Equals(normalizedDrive, withSeparator.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar), comparison);
+        }
+
+        return false;
     }
 }

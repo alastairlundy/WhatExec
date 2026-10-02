@@ -87,7 +87,15 @@ public class ExecutablesLocator : IExecutablesLocator
         {
             drives = DriveInfo.GetDrives();
         }
-        catch (Exception)
+        catch (IOException)
+        {
+            yield break;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            yield break;
+        }
+        catch (System.Security.SecurityException)
         {
             yield break;
         }
@@ -159,11 +167,53 @@ public class ExecutablesLocator : IExecutablesLocator
         {
             ct.ThrowIfCancellationRequested();
 
-            FileInfo file = new FileInfo(filePath);
+            StringComparison nameComparison = OperatingSystem.IsWindows()
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+
+            string fileName;
+            try
+            {
+                fileName = _fileSystem.Path.GetFileName(filePath);
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                continue;
+            }
+
+            bool existsInSeam;
+            try
+            {
+                existsInSeam = _fileSystem.File.Exists(filePath);
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (!existsInSeam)
+            {
+                continue;
+            }
+
+            FileInfo file;
+            try
+            {
+                file = new FileInfo(filePath);
+            }
+            catch
+            {
+                continue;
+            }
 
             // Fixed name filter — no extension-first dead pattern (D010).
             if (nameFilter is not null &&
-                !string.Equals(file.Name, nameFilter, StringComparison.OrdinalIgnoreCase))
+                !string.Equals(fileName, nameFilter, nameComparison))
             {
                 continue;
             }
@@ -178,6 +228,18 @@ public class ExecutablesLocator : IExecutablesLocator
                 // Skip unauthorized entries (D010).
                 continue;
             }
+            catch (FileNotFoundException)
+            {
+                continue;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                continue;
+            }
+            catch (IOException)
+            {
+                continue;
+            }
 
             if (isExecutable)
             {
@@ -189,12 +251,38 @@ public class ExecutablesLocator : IExecutablesLocator
     /// <summary>
     /// Recursively enumerates file paths from the filesystem seam,
     /// skipping inaccessible directories (IgnoreInaccessible behavior, D010).
+    /// Tracks visited directories to avoid symlink cycles.
     /// </summary>
-    private async IAsyncEnumerable<string> EnumerateFilesRecursiveAsync(
+    private IAsyncEnumerable<string> EnumerateFilesRecursiveAsync(
         string directoryPath,
         bool recurse,
-        [EnumeratorCancellation] CancellationToken ct)
+        CancellationToken ct)
     {
+        StringComparer comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        return EnumerateFilesRecursiveCoreAsync(directoryPath, recurse, ct, new HashSet<string>(comparer));
+    }
+
+    private async IAsyncEnumerable<string> EnumerateFilesRecursiveCoreAsync(
+        string directoryPath,
+        bool recurse,
+        [EnumeratorCancellation] CancellationToken ct,
+        HashSet<string> visited)
+    {
+        string normalized;
+        try
+        {
+            normalized = _fileSystem.Path.GetFullPath(directoryPath);
+        }
+        catch
+        {
+            yield break;
+        }
+
+        if (!visited.Add(normalized))
+        {
+            yield break;
+        }
+
         // Enumerate files in the current directory, skipping inaccessible entries.
         IEnumerable<string> files;
         try
@@ -206,6 +294,14 @@ public class ExecutablesLocator : IExecutablesLocator
             yield break;
         }
         catch (IOException)
+        {
+            yield break;
+        }
+        catch (System.Security.SecurityException)
+        {
+            yield break;
+        }
+        catch (ArgumentException)
         {
             yield break;
         }
@@ -233,10 +329,18 @@ public class ExecutablesLocator : IExecutablesLocator
         {
             yield break;
         }
+        catch (System.Security.SecurityException)
+        {
+            yield break;
+        }
+        catch (ArgumentException)
+        {
+            yield break;
+        }
 
         foreach (string subdir in subdirectories)
         {
-            await foreach (string file in EnumerateFilesRecursiveAsync(subdir, true, ct)
+            await foreach (string file in EnumerateFilesRecursiveCoreAsync(subdir, true, ct, visited)
                                .ConfigureAwait(false))
             {
                 ct.ThrowIfCancellationRequested();

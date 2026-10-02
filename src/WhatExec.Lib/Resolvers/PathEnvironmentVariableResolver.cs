@@ -43,19 +43,48 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         string filePath,
         CancellationToken cancellationToken)
     {
-        if (!Path.IsPathRooted(filePath))
+        if (string.IsNullOrWhiteSpace(filePath))
         {
             return (false, null);
         }
 
-        if (!File.Exists(filePath)) return (false, null);
-
-        FileInfo file = new(filePath);
-
-        if (file.Exists && await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
-                .ConfigureAwait(false))
+        string fullPath;
+        try
         {
-            return (true, file);
+            fullPath = Path.GetFullPath(filePath);
+        }
+        catch
+        {
+            return (false, null);
+        }
+
+        if (!File.Exists(fullPath)) return (false, null);
+
+        FileInfo file = new(fullPath);
+
+        try
+        {
+            if (file.Exists && await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
+                    .ConfigureAwait(false))
+            {
+                return (true, file);
+            }
+        }
+        catch (FileNotFoundException)
+        {
+            return (false, null);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return (false, null);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return (false, null);
+        }
+        catch (IOException)
+        {
+            return (false, null);
         }
 
         return (false, null);
@@ -116,7 +145,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
                        if (homeTokenIndex != -1)
                        {
-                           return
+                           x =
                                $"{x.Substring(0, homeTokenIndex)}{userProfile}{x.Substring(homeTokenIndex + homeToken.Length)}";
                        }
 
@@ -232,6 +261,11 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         string[] pathExtensions,
         CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(executableName))
+        {
+            return null;
+        }
+
         // If the name is rooted or contains a directory separator, check it directly
         if (Path.IsPathRooted(executableName)
             || executableName.Contains(Path.DirectorySeparatorChar, _stringComparison)

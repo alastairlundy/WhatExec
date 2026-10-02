@@ -19,8 +19,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
 {
     #region Magic Number helper code
 
-    private static readonly byte[] PEMagicNumber = "MZPE\0\0"u8.ToArray();
-
     private static readonly byte[] MzMagicNumber = [0x4D, 0x5A];
 
     private static readonly byte[] MachO32BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCE];
@@ -30,23 +28,32 @@ public class ExecutableFileDetector : IExecutableFileDetector
     
     private async Task<bool> ReadMagicNumberAsync(FileInfo file, byte[] magicNumberToCompare, CancellationToken cancellationToken)
     {
-        FileStream fileStream = new(file.FullName, FileMode.Open);
-        
-#if NET8_0_OR_GREATER
-        await using (fileStream.ConfigureAwait(false))
-#else
-        using (fileStream)
-#endif
+        try
         {
+            using FileStream fileStream = new(file.FullName, FileMode.Open, FileAccess.Read,
+                FileShare.ReadWrite | FileShare.Delete, 4096, useAsync: true);
+
             byte[] buffer = new byte[magicNumberToCompare.Length];
 
             int bytesRead = await fileStream.ReadAsync(buffer, 0, magicNumberToCompare.Length, cancellationToken).ConfigureAwait(false);
 
-#if DEBUG
-            Console.WriteLine(Resources.Errors_ExecutableDetection_MagicNumberIssue, string.Join("", buffer), string.Join("", magicNumberToCompare));
-#endif
-
-            return buffer.SequenceEqual(magicNumberToCompare) && bytesRead == magicNumberToCompare.Length;
+            return bytesRead == magicNumberToCompare.Length && buffer.SequenceEqual(magicNumberToCompare);
+        }
+        catch (FileNotFoundException)
+        {
+            throw;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            throw;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+        catch (IOException)
+        {
+            return false;
         }
     }
     #endregion
@@ -75,11 +82,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("browser")]
     public bool IsFileExecutable(FileInfo file)
     {
-        Task<bool> isFileExecutable = IsFileExecutableAsync(file, CancellationToken.None);
-
-        isFileExecutable.Wait();
-        
-        return isFileExecutable.Result;
+        return IsFileExecutableAsync(file, CancellationToken.None).GetAwaiter().GetResult();
     }
 
     /// <summary>
@@ -112,11 +115,18 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 {
                     try
                     {
-                        bool magicNumberMatch = await ReadMagicNumberAsync(file, PEMagicNumber, cancellationToken).ConfigureAwait(false) ||
-                                                await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
+                        bool magicNumberMatch = await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
 
                         return hasExecutableExtension
                                && magicNumberMatch;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        throw;
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        throw;
                     }
                     catch
                     {
@@ -127,7 +137,22 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 {
                     if (Environment.Is64BitOperatingSystem)
                     {
-                        return hasExecutableExtension && await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
+                        try
+                        {
+                            return hasExecutableExtension && await ReadMagicNumberAsync(file, MzMagicNumber, cancellationToken).ConfigureAwait(false);
+                        }
+                        catch (FileNotFoundException)
+                        {
+                            throw;
+                        }
+                        catch (DirectoryNotFoundException)
+                        {
+                            throw;
+                        }
+                        catch
+                        {
+                            return false;
+                        }
                     }
 
                     return hasExecutableExtension;
@@ -138,12 +163,42 @@ public class ExecutableFileDetector : IExecutableFileDetector
         }
         if (IsMac || OperatingSystem.IsIOS())
         {
-            return await ReadMagicNumberAsync(file, MachO64BitMagicNumber, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await ReadMagicNumberAsync(file, MachO64BitMagicNumber, cancellationToken).ConfigureAwait(false);
+            }
+            catch (FileNotFoundException)
+            {
+                throw;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                throw;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
-            return await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await ReadMagicNumberAsync(file, ElfMagicNumber, cancellationToken).ConfigureAwait(false);
+            }
+            catch (FileNotFoundException)
+            {
+                throw;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                throw;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         return file.HasExecutePermission();

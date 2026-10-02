@@ -29,36 +29,36 @@ public static class RegisterAddWhatExecLib
             switch (serviceLifetime)
             {
                 case ServiceLifetime.Scoped:
-                    services.AddScoped<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddScoped<
+                    services.TryAddScoped<IExecutableFileDetector, ExecutableFileDetector>();
+                    services.TryAddScoped<
                         IExecutableFileInstancesLocator,
                         ExecutableFileInstancesLocator
                     >();
-                    services.AddScoped<IExecutableInstancesLocator, ExecutableFileInstancesLocator>();
-                    services.AddScoped<IExecutableFileResolver, ExecutableFileResolver>();
-                    services.AddScoped<IExecutablesLocator, ExecutablesLocator>();
+                    services.TryAddScoped<IExecutableInstancesLocator, ExecutableFileInstancesLocator>();
+                    services.TryAddScoped<IExecutableFileResolver, ExecutableFileResolver>();
+                    services.TryAddScoped<IExecutablesLocator, ExecutablesLocator>();
                     services.TryAddScoped<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                     break;
                 case ServiceLifetime.Singleton:
-                    services.AddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddSingleton<
+                    services.TryAddSingleton<IExecutableFileDetector, ExecutableFileDetector>();
+                    services.TryAddSingleton<
                         IExecutableFileInstancesLocator,
                         ExecutableFileInstancesLocator
                     >();
-                    services.AddSingleton<IExecutableInstancesLocator, ExecutableFileInstancesLocator>();
-                    services.AddSingleton<IExecutableFileResolver, ExecutableFileResolver>();
-                    services.AddSingleton<IExecutablesLocator, ExecutablesLocator>();
+                    services.TryAddSingleton<IExecutableInstancesLocator, ExecutableFileInstancesLocator>();
+                    services.TryAddSingleton<IExecutableFileResolver, ExecutableFileResolver>();
+                    services.TryAddSingleton<IExecutablesLocator, ExecutablesLocator>();
                     services.TryAddSingleton<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                     break;
                 case ServiceLifetime.Transient:
-                    services.AddTransient<IExecutableFileDetector, ExecutableFileDetector>();
-                    services.AddTransient<
+                    services.TryAddTransient<IExecutableFileDetector, ExecutableFileDetector>();
+                    services.TryAddTransient<
                         IExecutableFileInstancesLocator,
                         ExecutableFileInstancesLocator
                     >();
-                    services.AddTransient<IExecutableInstancesLocator, ExecutableFileInstancesLocator>();
-                    services.AddTransient<IExecutableFileResolver, ExecutableFileResolver>();
-                    services.AddTransient<IExecutablesLocator, ExecutablesLocator>();
+                    services.TryAddTransient<IExecutableInstancesLocator, ExecutableFileInstancesLocator>();
+                    services.TryAddTransient<IExecutableFileResolver, ExecutableFileResolver>();
+                    services.TryAddTransient<IExecutablesLocator, ExecutablesLocator>();
                     services.TryAddTransient<IPathEnvironmentVariableResolver, PathEnvironmentVariableResolver>();
                     break;
                 default:

@@ -39,8 +39,9 @@ public class FindAllCommand
     
     public async Task<int> RunAsync(CliContext cliContext)
     {
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
         Dictionary<string, List<FileInfo>> commandLocations = new(
-            StringComparer.OrdinalIgnoreCase);
+            keyComparer);
 
         if (Commands is null && Interactive)
             Commands = UserInputHelper.GetCommandInput();
@@ -53,7 +54,8 @@ public class FindAllCommand
         // Populate command Keys in Dictionary.
         foreach (string command in Commands)
         {
-            commandLocations.Add(command, new List<FileInfo>());
+            if (!commandLocations.ContainsKey(command))
+                commandLocations.Add(command, new List<FileInfo>());
         }
         
         IReadOnlyDictionary<string, FileInfo[]> result = await TrySearchSystem_LocateAllInstances(Commands, cliContext.CancellationToken).ConfigureAwait(true);
@@ -69,8 +71,9 @@ public class FindAllCommand
     private async Task<IReadOnlyDictionary<string, FileInfo[]>> TrySearchSystem_LocateAllInstances(
         string[] commandsLeftToLookFor, CancellationToken cancellationToken)
     {
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
         Dictionary<string, FileInfo[]> output = new(capacity: commandsLeftToLookFor.Length, 
-            StringComparer.OrdinalIgnoreCase);
+            keyComparer);
 
         foreach (string command in commandsLeftToLookFor)
         {
@@ -89,11 +92,20 @@ public class FindAllCommand
                     instances.Add(file);
                 }
 
-                output.Add(command, instances.ToArray());
+                if (!output.TryAdd(command, instances.ToArray()))
+                    output[command] = instances.ToArray();
             }
-            catch (AggregateException)
+            catch (UnauthorizedAccessException)
             {
                 // Skip and move to the next executable.
+                if (!output.ContainsKey(command))
+                    output[command] = [];
+            }
+            catch (IOException)
+            {
+                // Skip and move to the next executable.
+                if (!output.ContainsKey(command))
+                    output[command] = [];
             }
         }
 

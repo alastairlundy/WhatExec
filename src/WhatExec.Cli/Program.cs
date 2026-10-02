@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WhatExec.Cli.Commands;
 using WhatExec.Lib.Extensions.DependencyInjection;
 
-if (args.Any(s => s.Contains("--interactive")))
+if (args.Any(s => string.Equals(s, "--interactive", StringComparison.Ordinal) || string.Equals(s, "-i", StringComparison.Ordinal)))
 {
     FigletText titleText = new FigletText("WhatExec").LeftJustified();
 

@@ -22,15 +22,31 @@ public class CliCommand
     {
         try
         {
+            if (commands.Length == 0)
+            {
+                await Console.Error.WriteLineAsync("No commands specified.").ConfigureAwait(true);
+                return 1;
+            }
+
+            StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
             IReadOnlyDictionary<string, FileInfo> resolvedExecutables = await pathEnvironmentVariableResolver.
                 TryGetExecutableFilePathsAsync(commands, cancellationToken).ConfigureAwait(true);
-            
+             
             foreach (FileInfo resolvedCommand in resolvedExecutables.Values)
             {
                 await Console.Out.WriteLineAsync(resolvedCommand.FullName).ConfigureAwait(true);
             }
 
-            return resolvedExecutables.Count > 0 ? 0 : 1;
+            if (resolvedExecutables.Count == commands.Length)
+                return 0;
+
+            IEnumerable<string> missing = commands.Where(c => !resolvedExecutables.Keys.Contains(c, keyComparer));
+            foreach (string miss in missing)
+            {
+                await Console.Error.WriteLineAsync(miss).ConfigureAwait(true);
+            }
+
+            return 1;
         }
         catch (Exception e)
         {

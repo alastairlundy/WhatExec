@@ -52,6 +52,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
         await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(directory.FullName, search, executableName, ct)
                            .ConfigureAwait(false))
         {
+            ExecutableFileInstanceLocated?.Invoke(this, file);
             yield return file;
         }
     }
@@ -76,6 +77,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
         await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(drive.RootDirectory.FullName, search, executableName, ct)
                            .ConfigureAwait(false))
         {
+            ExecutableFileInstanceLocated?.Invoke(this, file);
             yield return file;
         }
     }
@@ -96,7 +98,15 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
         {
             drives = DriveInfo.GetDrives();
         }
-        catch (Exception)
+        catch (IOException)
+        {
+            yield break;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            yield break;
+        }
+        catch (System.Security.SecurityException)
         {
             yield break;
         }
@@ -109,6 +119,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
             await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(drive.RootDirectory.FullName, search, executableName, ct)
                                .ConfigureAwait(false))
             {
+                ExecutableFileInstanceLocated?.Invoke(this, file);
                 yield return file;
             }
         }
