@@ -10,6 +10,8 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UseUtf8StringLiteral
 
+using System.IO.Abstractions;
+
 namespace WhatExec.Lib.Detectors;
 
 /// <summary>
@@ -17,6 +19,7 @@ namespace WhatExec.Lib.Detectors;
 /// </summary>
 public class ExecutableFileDetector : IExecutableFileDetector
 {
+    private readonly IFileSystem _fileSystem;
     #region Magic Number helper code
 
     private static readonly byte[] MzMagicNumber = [0x4D, 0x5A];
@@ -30,7 +33,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     {
         try
         {
-            using FileStream fileStream = new(file.FullName, FileMode.Open, FileAccess.Read,
+            using Stream fileStream = _fileSystem.FileStream.New(file.FullName, FileMode.Open, FileAccess.Read,
                 FileShare.ReadWrite | FileShare.Delete, 4096, useAsync: true);
 
             byte[] buffer = new byte[magicNumberToCompare.Length];
@@ -64,10 +67,24 @@ public class ExecutableFileDetector : IExecutableFileDetector
     ///
     /// </summary>
     /// <exception cref="PlatformNotSupportedException"></exception>
-    public ExecutableFileDetector()
+    public ExecutableFileDetector() : this(new FileSystem())
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExecutableFileDetector"/> class
+    /// using the specified filesystem abstraction for all file access.
+    /// </summary>
+    /// <param name="fileSystem">The filesystem abstraction to read files through.</param>
+    /// <exception cref="PlatformNotSupportedException"></exception>
+    public ExecutableFileDetector(IFileSystem fileSystem)
+    {
+        ArgumentNullException.ThrowIfNull(fileSystem);
+
+        _fileSystem = fileSystem;
+
         IsMac = OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst();
-        
+
         if (OperatingSystem.IsBrowser() || OperatingSystem.IsTvOS())
             throw new PlatformNotSupportedException();
     }
@@ -96,7 +113,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
     [UnsupportedOSPlatform("browser")]
     public async Task<bool> IsFileExecutableAsync(FileInfo file, CancellationToken cancellationToken)
     {
-        if (!file.Exists)
+        if (!_fileSystem.File.Exists(file.FullName))
             throw new FileNotFoundException();
 
         if (OperatingSystem.IsWindows())
@@ -128,6 +145,10 @@ public class ExecutableFileDetector : IExecutableFileDetector
                     {
                         throw;
                     }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
                     catch
                     {
                         return file.HasExecutePermission() && hasExecutableExtension;
@@ -146,6 +167,10 @@ public class ExecutableFileDetector : IExecutableFileDetector
                             throw;
                         }
                         catch (DirectoryNotFoundException)
+                        {
+                            throw;
+                        }
+                        catch (OperationCanceledException)
                         {
                             throw;
                         }
@@ -175,6 +200,10 @@ public class ExecutableFileDetector : IExecutableFileDetector
             {
                 throw;
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch
             {
                 return false;
@@ -192,6 +221,10 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 throw;
             }
             catch (DirectoryNotFoundException)
+            {
+                throw;
+            }
+            catch (OperationCanceledException)
             {
                 throw;
             }

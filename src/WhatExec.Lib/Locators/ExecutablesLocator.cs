@@ -60,7 +60,7 @@ public class ExecutablesLocator : IExecutablesLocator
     public async IAsyncEnumerable<FileInfo> EnumerateExecutablesInDriveAsync(
         DriveInfo drive,
         SearchOption search,
-        CancellationToken ct)
+        [EnumeratorCancellation] CancellationToken ct)
     {
         if (!drive.IsReady)
             throw new ArgumentException(
@@ -80,7 +80,7 @@ public class ExecutablesLocator : IExecutablesLocator
     [UnsupportedOSPlatform("browser")]
     public async IAsyncEnumerable<FileInfo> EnumerateExecutablesAcrossDrivesAsync(
         SearchOption search,
-        CancellationToken ct)
+        [EnumeratorCancellation] CancellationToken ct)
     {
         DriveInfo[] drives;
         try
@@ -186,10 +186,20 @@ public class ExecutablesLocator : IExecutablesLocator
                 continue;
             }
 
+            IFileInfo seamFile;
+            try
+            {
+                seamFile = _fileSystem.FileInfo.New(filePath);
+            }
+            catch
+            {
+                continue;
+            }
+
             bool existsInSeam;
             try
             {
-                existsInSeam = _fileSystem.File.Exists(filePath);
+                existsInSeam = seamFile.Exists;
             }
             catch
             {
@@ -204,7 +214,7 @@ public class ExecutablesLocator : IExecutablesLocator
             FileInfo file;
             try
             {
-                file = new FileInfo(filePath);
+                file = new FileInfo(seamFile.FullName);
             }
             catch
             {
@@ -222,6 +232,10 @@ public class ExecutablesLocator : IExecutablesLocator
             try
             {
                 isExecutable = await _detector.IsFileExecutableAsync(file, ct).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (UnauthorizedAccessException)
             {
@@ -284,31 +298,12 @@ public class ExecutablesLocator : IExecutablesLocator
         }
 
         // Enumerate files in the current directory, skipping inaccessible entries.
-        IEnumerable<string> files;
-        try
+        // Enumeration is lazy, so each MoveNext is guarded: faults surface mid-iteration,
+        // not at the call site (IgnoreInaccessible behavior, D010).
+        await foreach (string file in DrainWithSkipAsync(
+                           () => _fileSystem.Directory.EnumerateFiles(directoryPath, "*"), ct)
+                           .ConfigureAwait(false))
         {
-            files = _fileSystem.Directory.EnumerateFiles(directoryPath, "*");
-        }
-        catch (UnauthorizedAccessException)
-        {
-            yield break;
-        }
-        catch (IOException)
-        {
-            yield break;
-        }
-        catch (System.Security.SecurityException)
-        {
-            yield break;
-        }
-        catch (ArgumentException)
-        {
-            yield break;
-        }
-
-        foreach (string file in files)
-        {
-            ct.ThrowIfCancellationRequested();
             yield return file;
         }
 
@@ -316,29 +311,9 @@ public class ExecutablesLocator : IExecutablesLocator
             yield break;
 
         // Recurse into subdirectories, skipping inaccessible ones.
-        IEnumerable<string> subdirectories;
-        try
-        {
-            subdirectories = _fileSystem.Directory.EnumerateDirectories(directoryPath);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            yield break;
-        }
-        catch (IOException)
-        {
-            yield break;
-        }
-        catch (System.Security.SecurityException)
-        {
-            yield break;
-        }
-        catch (ArgumentException)
-        {
-            yield break;
-        }
-
-        foreach (string subdir in subdirectories)
+        await foreach (string subdir in DrainWithSkipAsync(
+                           () => _fileSystem.Directory.EnumerateDirectories(directoryPath), ct)
+                           .ConfigureAwait(false))
         {
             await foreach (string file in EnumerateFilesRecursiveCoreAsync(subdir, true, ct, visited)
                                .ConfigureAwait(false))
@@ -346,6 +321,100 @@ public class ExecutablesLocator : IExecutablesLocator
                 ct.ThrowIfCancellationRequested();
                 yield return file;
             }
+        }
+    }
+
+    /// <summary>
+    /// Drains a lazily-enumerated sequence, ending the sequence (instead of throwing)
+    /// when the filesystem reports an inaccessible, missing, or invalid entry mid-iteration.
+    /// Cancellation is never swallowed: <see cref="OperationCanceledException"/> propagates.
+    /// </summary>
+    private static async IAsyncEnumerable<string> DrainWithSkipAsync(
+        Func<IEnumerable<string>> enumerate,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        IEnumerable<string>? items;
+        try
+        {
+            items = enumerate();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            items = null;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            items = null;
+        }
+        catch (IOException)
+        {
+            items = null;
+        }
+        catch (System.Security.SecurityException)
+        {
+            items = null;
+        }
+        catch (ArgumentException)
+        {
+            items = null;
+        }
+
+        if (items is null)
+            yield break;
+
+        using IEnumerator<string> enumerator = items.GetEnumerator();
+
+        while (TryMoveNextWithSkip(enumerator, ct, out string current))
+        {
+            yield return current;
+        }
+    }
+
+    /// <summary>
+    /// Advances the enumerator, returning false (end of sequence) when the filesystem
+    /// reports an inaccessible entry. Only <see cref="OperationCanceledException"/> escapes.
+    /// </summary>
+    private static bool TryMoveNextWithSkip(
+        IEnumerator<string> enumerator,
+        CancellationToken ct,
+        out string current)
+    {
+        try
+        {
+            ct.ThrowIfCancellationRequested();
+
+            if (!enumerator.MoveNext())
+            {
+                current = string.Empty;
+                return false;
+            }
+
+            current = enumerator.Current;
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            current = string.Empty;
+            return false;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            current = string.Empty;
+            return false;
+        }
+        catch (IOException)
+        {
+            current = string.Empty;
+            return false;
+        }
+        catch (System.Security.SecurityException)
+        {
+            current = string.Empty;
+            return false;
         }
     }
 }

@@ -90,6 +90,29 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
         return (false, null);
     }
 
+    /// <summary>
+    /// Replaces every case-insensitive occurrence of <paramref name="token"/> in
+    /// <paramref name="input"/> with <paramref name="replacement"/>.
+    /// </summary>
+    internal static string ReplaceTokenCaseInsensitive(string input, string token, string replacement)
+    {
+        if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(token))
+            return input;
+
+        // Guard against a replacement that reintroduces the token (non-termination).
+        if (replacement.IndexOf(token, StringComparison.CurrentCultureIgnoreCase) != -1)
+            return input;
+
+        int index = input.IndexOf(token, StringComparison.CurrentCultureIgnoreCase);
+        while (index != -1)
+        {
+            input = input.Substring(0, index) + replacement + input.Substring(index + token.Length);
+            index = input.IndexOf(token, index + replacement.Length, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        return input;
+    }
+
     internal static string[] GetPathExtensions()
     {
         if (!OperatingSystem.IsWindows())
@@ -97,7 +120,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
             return [""];
         }
 
-        char separator = OperatingSystem.IsWindows() ? ';' : ':';
+        const char separator = ';';
 
         return Environment.GetEnvironmentVariable("PATHEXT")
                    ?.Split(separator, StringSplitOptions.RemoveEmptyEntries)
@@ -131,23 +154,18 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                        string userProfile = Environment.GetFolderPath(
                            Environment.SpecialFolder.UserProfile);
 
-                       int homeTokenIndex = x.IndexOf(
-                           homeToken,
-                           StringComparison.CurrentCultureIgnoreCase
-                       );
-
                        if (x.StartsWith("~/", StringComparison.Ordinal)
                            || x.StartsWith("~\\", StringComparison.Ordinal))
                        {
                            x =
-                               $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}{x.Substring(1)}";
+                               $"{userProfile}{x.Substring(1)}";
                        }
 
-                       if (homeTokenIndex != -1)
-                       {
-                           x =
-                               $"{x.Substring(0, homeTokenIndex)}{userProfile}{x.Substring(homeTokenIndex + homeToken.Length)}";
-                       }
+                       // The index must be computed against the current value of x:
+                       // a "~" expansion above changes the string length, so any index
+                       // captured beforehand would splice at the wrong offset.
+                       // Replace every occurrence, not just the first.
+                       x = ReplaceTokenCaseInsensitive(x, homeToken, userProfile);
 
                        x = x.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 

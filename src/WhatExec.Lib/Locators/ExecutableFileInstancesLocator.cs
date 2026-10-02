@@ -65,7 +65,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
         DriveInfo drive,
         string executableName,
         SearchOption search,
-        CancellationToken ct)
+        [EnumeratorCancellation] CancellationToken ct)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(executableName);
 
@@ -89,7 +89,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
     public async IAsyncEnumerable<FileInfo> EnumerateExecutableInstancesAcrossDrivesAsync(
         string executableName,
         SearchOption search,
-        CancellationToken ct)
+        [EnumeratorCancellation] CancellationToken ct)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(executableName);
 

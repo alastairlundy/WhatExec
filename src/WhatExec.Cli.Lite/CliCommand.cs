@@ -37,10 +37,10 @@ public class CliCommand
                 await Console.Out.WriteLineAsync(resolvedCommand.FullName).ConfigureAwait(true);
             }
 
-            if (resolvedExecutables.Count == commands.Length)
+            if (commands.All(c => resolvedExecutables.ContainsKey(c)))
                 return 0;
 
-            IEnumerable<string> missing = commands.Where(c => !resolvedExecutables.Keys.Contains(c, keyComparer));
+            IEnumerable<string> missing = commands.Distinct(keyComparer).Where(c => !resolvedExecutables.ContainsKey(c));
             foreach (string miss in missing)
             {
                 await Console.Error.WriteLineAsync(miss).ConfigureAwait(true);

@@ -77,17 +77,21 @@ public class ResultHelper
 
             Console.WriteLine(joinedString);
         }
-        
-        if (results.Keys.Count == commands.Length)
+
+        // A command counts as found only when it has at least one location:
+        // pre-populated or duplicate keys must not mask misses.
+        if (commands.All(c => results.TryGetValue(c, out List<FileInfo>? locations) && locations.Count > 0))
         {
             return 0;
         }
 
-        IEnumerable<string> missedCommands = commands.Where(c => !results.ContainsKey(c));
+        IEnumerable<string> missedCommands = commands
+            .Where(c => !results.TryGetValue(c, out List<FileInfo>? locations) || locations.Count == 0)
+            .Distinct(CommandComparer);
 
         return HandleIncompleteResults(missedCommands, results.Count);
     }
-    
+
     public static int PrintResults(IDictionary<string, FileInfo> results, string[] commands)
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -98,17 +102,24 @@ public class ResultHelper
             {
                 stringBuilder.AppendLine(result.Value.FullName);
             }
-            
+
             Console.Write(stringBuilder.ToString());
         }
 
-        if (results.Keys.Count == commands.Length)
+        // Compare against distinct requested commands: duplicate arguments
+        // must not turn a complete result into a failure.
+        if (commands.All(c => results.ContainsKey(c)))
         {
             return 0;
         }
 
-        IEnumerable<string> missedCommands = commands.Where(c => !results.ContainsKey(c));
-        
+        IEnumerable<string> missedCommands = commands
+            .Where(c => !results.ContainsKey(c))
+            .Distinct(CommandComparer);
+
         return HandleIncompleteResults(missedCommands, results.Count);
     }
+
+    private static StringComparer CommandComparer =>
+        OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 }

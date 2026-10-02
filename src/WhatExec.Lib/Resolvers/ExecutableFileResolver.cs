@@ -152,12 +152,24 @@ public class ExecutableFileResolver : IExecutableFileResolver
 
         foreach (DriveInfo drive in DriveInfo.SafelyEnumerateLogicalDrives())
         {
-            IAsyncEnumerable<KeyValuePair<string, FileInfo>> driveResults = EnumerateExecutablesInDriveAsync(drive, 
+            IAsyncEnumerable<KeyValuePair<string, FileInfo>> driveResults = EnumerateExecutablesInDriveAsync(drive,
                 executablesToLookFor, directorySearchOption, cancellationToken);
-            
+
+            // Defer removal until the drive enumeration has completed so the inner
+            // iteration is never disturbed, and so later drives skip already-found names
+            // instead of yielding duplicates.
+            List<string> foundOnDrive = new();
+
             await foreach (KeyValuePair<string, FileInfo> driveResult in driveResults.ConfigureAwait(false))
             {
                 yield return new KeyValuePair<string, FileInfo>(driveResult.Key, driveResult.Value);
+
+                foundOnDrive.Add(driveResult.Key);
+            }
+
+            foreach (string found in foundOnDrive)
+            {
+                executablesToLookFor.Remove(found);
             }
         }
     }
@@ -222,26 +234,62 @@ public class ExecutableFileResolver : IExecutableFileResolver
         IList<string> inputFileNames, SearchOption directorySearchOption,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        IEnumerable<DirectoryInfo> directories = drive.RootDirectory
-            .EnumerateDirectories("*", new EnumerationOptions
-            {
-                IgnoreInaccessible = true,
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
-            });
+        // Materialize eagerly: directory enumeration is lazy and faults surface mid-iteration.
+        List<DirectoryInfo>? directories;
+        try
+        {
+            directories = drive.RootDirectory
+                .EnumerateDirectories("*", new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                    RecurseSubdirectories = directorySearchOption == SearchOption.AllDirectories
+                }).ToList();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            directories = null;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            directories = null;
+        }
+        catch (IOException)
+        {
+            directories = null;
+        }
+        catch (ArgumentException)
+        {
+            directories = null;
+        }
+
+        if (directories is null)
+            yield break;
 
         List<string> executableNames = new(inputFileNames);
-        
+
         foreach (DirectoryInfo directory in directories)
         {
-            IAsyncEnumerable<KeyValuePair<string, FileInfo>> directoryResults = EnumerateExecutablesInDirectoryAsync(directory, 
-                executableNames, cancellationToken);
+            // Snapshot per directory: hits are removed from executableNames only after
+            // the inner enumeration has completed. Removing mid-iteration would mutate
+            // the collection the inner foreach is suspended over (InvalidOperationException).
+            string[] namesToSearch = executableNames.ToArray();
+
+            IAsyncEnumerable<KeyValuePair<string, FileInfo>> directoryResults = EnumerateExecutablesInDirectoryAsync(directory,
+                namesToSearch, cancellationToken);
+
+            List<KeyValuePair<string, FileInfo>> hits = new();
 
             await foreach (KeyValuePair<string, FileInfo> kvp in directoryResults.ConfigureAwait(false))
             {
                 yield return new KeyValuePair<string, FileInfo>(kvp.Key, kvp.Value);
 
-                executableNames.Remove(kvp.Key);
+                hits.Add(kvp);
+            }
+
+            foreach (KeyValuePair<string, FileInfo> hit in hits)
+            {
+                executableNames.Remove(hit.Key);
             }
         }
     }
@@ -256,7 +304,7 @@ public class ExecutableFileResolver : IExecutableFileResolver
         {
             StringComparison nameComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             MatchCasing matchCasing = OperatingSystem.IsWindows() ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive;
-            FileInfo? file = directoryInfo.Root
+            FileInfo? file = directoryInfo
                 .EnumerateFiles(Path.GetFileName(executableFileName), new EnumerationOptions
                 {
                     IgnoreInaccessible = true,

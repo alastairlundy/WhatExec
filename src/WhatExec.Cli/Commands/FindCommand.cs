@@ -81,6 +81,22 @@ public class FindCommand
             return -1;
         }
         
+        if (Limit > 1)
+        {
+            Dictionary<string, List<FileInfo>> multiResult = await TrySearchSystem_LocateUpToLimit(
+                Commands, Limit, cliContext.CancellationToken).ConfigureAwait(true);
+
+            int multiRes = ResultHelper.PrintResults(multiResult, Commands, Limit);
+
+            if (ReportTimeTaken)
+            {
+                _stopwatch.Stop();
+                Console.WriteLine(Resources.Commands_Results_ReportTime_Milliseconds, _stopwatch.ElapsedMilliseconds);
+            }
+
+            return multiRes;
+        }
+
         IReadOnlyDictionary<string, FileInfo> result = await TrySearchSystem_DoNotLocateAll(
             Commands, cliContext.CancellationToken).ConfigureAwait(true);
 
@@ -120,7 +136,19 @@ public class FindCommand
 
             if (problematicCommand is null)
             {
-                return await LocateFirstMatchesPathFirstAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
+                // No requested command is named by the exception, so there is nothing
+                // to exclude and retry without: re-searching the identical input would
+                // throw identically on every attempt (unbounded recursion ending in
+                // StackOverflowException). Report and return gracefully instead.
+                if (Verbose)
+                {
+                    Console.WriteLine(Resources.Errors_Information_CommandNotLocated
+                        .Replace("{0}", string.Join(", ", commandLeftToLookFor))
+                        .Replace("{1}", unauthorizedAccessException.Message));
+                    Console.WriteLine();
+                }
+
+                return new Dictionary<string, FileInfo>(keyComparer);
             }
 
             if (Verbose)
@@ -147,7 +175,17 @@ public class FindCommand
         }
         catch (IOException ioException) when (!Verbose)
         {
-            commandLeftToLookFor = commandLeftToLookFor.Where(c => !ioException.Message.Contains(c, nameComparison)).ToArray();
+            string[] remainingCommands = commandLeftToLookFor.Where(c => !ioException.Message.Contains(c, nameComparison)).ToArray();
+
+            if (remainingCommands.Length == commandLeftToLookFor.Length)
+            {
+                // No requested command is named by the exception: retrying the
+                // identical input would throw identically on every attempt
+                // (unbounded recursion ending in StackOverflowException).
+                return new Dictionary<string, FileInfo>(keyComparer);
+            }
+
+            commandLeftToLookFor = remainingCommands;
 
             bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
 
@@ -192,6 +230,137 @@ public class FindCommand
             {
                 output.TryAdd(command, file);
                 break;
+            }
+        }
+
+        return output;
+    }
+
+    private async Task<Dictionary<string, List<FileInfo>>> TrySearchSystem_LocateUpToLimit(
+        string[] commandLeftToLookFor, int limit, CancellationToken cancellationToken)
+    {
+        StringComparison nameComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        try
+        {
+            return await LocateUpToLimitPathFirstAsync(commandLeftToLookFor, limit, cancellationToken).ConfigureAwait(true);
+        }
+        catch(UnauthorizedAccessException unauthorizedAccessException)
+        {
+            string? problematicCommand = commandLeftToLookFor.FirstOrDefault(command => unauthorizedAccessException.Message.Contains(command, nameComparison));
+
+            if (problematicCommand is null)
+            {
+                // No requested command is named by the exception, so there is nothing
+                // to exclude and retry without: re-searching the identical input would
+                // throw identically on every attempt (unbounded recursion ending in
+                // StackOverflowException). Report and return gracefully instead.
+                if (Verbose)
+                {
+                    Console.WriteLine(Resources.Errors_Information_CommandNotLocated
+                        .Replace("{0}", string.Join(", ", commandLeftToLookFor))
+                        .Replace("{1}", unauthorizedAccessException.Message));
+                    Console.WriteLine();
+                }
+
+                return new Dictionary<string, List<FileInfo>>(keyComparer);
+            }
+
+            if (Verbose)
+            {
+                Console.WriteLine(Resources.Errors_Information_CommandNotLocated
+                    .Replace("{0}", problematicCommand)
+                    .Replace("{1}", unauthorizedAccessException.Message));
+                Console.WriteLine();
+            }
+
+            commandLeftToLookFor = commandLeftToLookFor.Where(c => !string.Equals(c, problematicCommand,
+                nameComparison)).ToArray();
+
+            bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
+
+            if(continueInteractive)
+            {
+                return await LocateUpToLimitPathFirstAsync(commandLeftToLookFor, limit, cancellationToken).ConfigureAwait(true);
+            }
+            else
+            {
+                return new Dictionary<string, List<FileInfo>>(keyComparer);
+            }
+        }
+        catch (IOException ioException) when (!Verbose)
+        {
+            string[] remainingCommands = commandLeftToLookFor.Where(c => !ioException.Message.Contains(c, nameComparison)).ToArray();
+
+            if (remainingCommands.Length == commandLeftToLookFor.Length)
+            {
+                // No requested command is named by the exception: retrying the
+                // identical input would throw identically on every attempt
+                // (unbounded recursion ending in StackOverflowException).
+                return new Dictionary<string, List<FileInfo>>(keyComparer);
+            }
+
+            commandLeftToLookFor = remainingCommands;
+
+            bool continueInteractive = !Interactive || UserInputHelper.ContinueIfUnauthorizedAccessExceptionOccurs();
+
+            if (continueInteractive && commandLeftToLookFor.Length > 0)
+            {
+                return await LocateUpToLimitPathFirstAsync(commandLeftToLookFor, limit, cancellationToken).ConfigureAwait(true);
+            }
+
+            return new Dictionary<string, List<FileInfo>>(keyComparer);
+        }
+    }
+
+    /// <summary>
+    /// PATH-first composition honoring <paramref name="limit"/> (D011): resolves each name
+    /// against PATH first, then scans drives for additional instances up to the limit.
+    /// </summary>
+    private async Task<Dictionary<string, List<FileInfo>>> LocateUpToLimitPathFirstAsync(
+        string[] commandLeftToLookFor, int limit, CancellationToken cancellationToken)
+    {
+        StringComparison nameComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        Dictionary<string, List<FileInfo>> output = new(keyComparer);
+
+        IReadOnlyDictionary<string, FileInfo> pathMatches = await _pathResolver.
+            TryGetExecutableFilePathsAsync(commandLeftToLookFor, cancellationToken).ConfigureAwait(true);
+
+        foreach (KeyValuePair<string, FileInfo> match in pathMatches)
+        {
+            output[match.Key] = new List<FileInfo> { match.Value };
+        }
+
+        foreach (string command in commandLeftToLookFor)
+        {
+            if (!output.TryGetValue(command, out List<FileInfo>? locations))
+            {
+                locations = new List<FileInfo>();
+                output[command] = locations;
+            }
+
+            if (locations.Count >= limit)
+                continue;
+
+            await foreach (FileInfo file in _instancesLocator.EnumerateExecutableInstancesAcrossDrivesAsync(
+                                command, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true))
+            {
+                if (locations.Count >= limit)
+                    break;
+
+                bool alreadyListed = false;
+                foreach (FileInfo existing in locations)
+                {
+                    if (string.Equals(existing.FullName, file.FullName, nameComparison))
+                    {
+                        alreadyListed = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyListed)
+                    locations.Add(file);
             }
         }
 
