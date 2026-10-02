@@ -11,17 +11,17 @@ The following indicates supported versions of each versioned WhatExec repo compo
 #### WhatExec.Cli.Lite
 | Version | Supported with Bug Fixes | Supported with Security Updates |
 | ------- | ------------------ | ------------------ |
-| 1.0 | Until 1.2 | Until 1.3 |
+| 1.x | 1.1, 1.2 | 1.1, 1.2 |
 
 #### WhatExec.Cli
 | Version | Supported with Bug Fixes | Supported with Security Updates |
 | ------- | ------------------ | ------------------ |
-| 1.0 | Until 1.2 | Until 1.3 |
+| 1.x | 1.1, 1.2 | 1.1, 1.2 |
 
 ### Libraries
 | Version | Supported with Bug Fixes | Supported with Security Updates |
 | ------- | ------------------ | ------------------ |
-| 1.0 | Until 1.2 | Until 1.3 |
+| 1.x | 1.1, 1.2 | 1.1, 1.2 |
 
 ## Reporting a Vulnerability
 If you wish to report a potential security vulnerability please go to the security tab on this GitHub project and create a new Security Vulnerability report. 
