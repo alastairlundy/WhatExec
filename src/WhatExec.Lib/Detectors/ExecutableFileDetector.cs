@@ -61,6 +61,46 @@ public class ExecutableFileDetector : IExecutableFileDetector
     }
     #endregion
 
+    /// <summary>
+    /// Probes whether a file has the execute permission, without letting a failed ACL read
+    /// fail detection.
+    /// </summary>
+    /// <remarks>
+    /// The permission probe is best-effort: it reads the file's security descriptor, which
+    /// fails with <see cref="InvalidOperationException"/> on a sharing violation or when the
+    /// descriptor is otherwise unreadable. Those conditions mean "cannot confirm", not
+    /// "not executable" and not "detection failed", so they yield <see langword="false"/>
+    /// and leave the surrounding walk running. A missing file still surfaces as
+    /// <see cref="FileNotFoundException"/> to honour the documented contract, and
+    /// cancellation is never swallowed.
+    /// </remarks>
+    /// <param name="file">The file whose execute permission is required.</param>
+    /// <returns><see langword="true"/> if the permission is present; otherwise <see langword="false"/>.</returns>
+    private static bool TryGetExecutePermission(FileInfo file)
+    {
+        try
+        {
+            return file.HasExecutePermission();
+        }
+        catch (FileNotFoundException)
+        {
+            throw;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            // Unreadable ACL / sharing violation: cannot confirm, so do not claim executable.
+            return false;
+        }
+    }
+
     private bool IsMac { get; }
 
     /// <summary>
@@ -151,7 +191,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
                     }
                     catch
                     {
-                        return file.HasExecutePermission() && hasExecutableExtension;
+                        return hasExecutableExtension && TryGetExecutePermission(file);
                     }
                 }
                 case ".com":
@@ -184,7 +224,7 @@ public class ExecutableFileDetector : IExecutableFileDetector
                 }
             }
 
-            return file.HasExecutePermission() && hasExecutableExtension;
+            return hasExecutableExtension && TryGetExecutePermission(file);
         }
         if (IsMac || OperatingSystem.IsIOS())
         {
@@ -234,6 +274,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
             }
         }
 
-        return file.HasExecutePermission();
+        return TryGetExecutePermission(file);
     }
 }
