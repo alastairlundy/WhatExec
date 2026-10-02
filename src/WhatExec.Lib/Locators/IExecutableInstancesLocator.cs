@@ -11,8 +11,8 @@ namespace WhatExec.Lib.Locators;
 
 /// <summary>
 /// Defines an interface for locating named executable file instances within directories, drives, or across drives.
-/// Split-pair discovery seam for named-instances queries (D019).
-/// No events (D008); no PATH knowledge (D002, D011).
+/// Split-pair discovery seam for named-instances queries.
+/// No events; no PATH knowledge.
 /// </summary>
 public interface IExecutableInstancesLocator
 {
@@ -48,7 +48,7 @@ public interface IExecutableInstancesLocator
 
     /// <summary>
     /// Enumerates instances of the specified executable file across all available drives asynchronously.
-    /// Across-drives sugar over DriveInfo.GetDrives() fan-out (D017).
+    /// Across-drives sugar over DriveInfo.GetDrives() fan-out.
     /// </summary>
     /// <param name="executableName">The name of the executable file to locate.</param>
     /// <param name="search">Specifies whether to search all subdirectories or only the top-level directory.</param>

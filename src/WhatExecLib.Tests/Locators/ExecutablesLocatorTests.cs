@@ -5,8 +5,8 @@ namespace WhatExecLib.Tests.Locators;
 
 /// <summary>
 /// Unit tests for <see cref="ExecutablesLocator"/> and <see cref="IExecutablesLocator"/>.
-/// Uses System.IO.Abstractions test helper fake (D009).
-/// One shared mock detector covering every executability test (D014).
+/// Uses System.IO.Abstractions test helper fake.
+/// One shared mock detector covering every executability test.
 /// </summary>
 public class ExecutablesLocatorTests
 {
@@ -127,7 +127,7 @@ public class ExecutablesLocatorTests
         await Assert.That(results.Count).IsEqualTo(3);
     }
 
-    // ── Unauthorized entry skipping (D010) ───────────────────────────────
+    // ── Unauthorized entry skipping ───────────────────────────────
 
     [Test]
     public async Task EnumerateInDirectory_UnauthorizedEntry_IsSkipped(
@@ -149,7 +149,7 @@ public class ExecutablesLocatorTests
         await Assert.That(results[0].Name).IsEqualTo("good.exe");
     }
 
-    // ── Across-drives sugar (D017) ───────────────────────────────────────
+    // ── Across-drives sugar ───────────────────────────────────────
 
     [Test]
     public async Task EnumerateAcrossDrives_DoesNotThrow(CancellationToken cancellationToken)
@@ -168,7 +168,7 @@ public class ExecutablesLocatorTests
         await Assert.That(results).IsNotNull();
     }
 
-    // ── Consistent casing (D010) ─────────────────────────────────────────
+    // ── Consistent casing ─────────────────────────────────────────
 
     [Test]
     public async Task EnumerateInDirectory_CaseInsensitiveFindsFile(

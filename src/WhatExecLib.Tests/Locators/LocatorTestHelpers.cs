@@ -5,8 +5,8 @@ namespace WhatExecLib.Tests.Locators;
 
 /// <summary>
 /// Shared test support for locator tests.
-/// One mock detector covering every executability test (D014).
-/// Uses System.IO.Abstractions test helper fake (D009).
+/// One mock detector covering every executability test.
+/// Uses System.IO.Abstractions test helper fake.
 /// </summary>
 internal static class LocatorTestHelpers
 {
@@ -32,7 +32,7 @@ internal static class LocatorTestHelpers
     /// <summary>
     /// A detector that returns <c>true</c> for files whose extension is in the
     /// specified set (case-insensitive), and <c>false</c> otherwise.
-    /// Covers every executability test with one mock (D014).
+    /// Covers every executability test with one mock.
     /// </summary>
     internal sealed class MockExecutableDetector : IExecutableFileDetector
     {
@@ -81,7 +81,7 @@ internal static class LocatorTestHelpers
     /// <summary>
     /// A detector that throws <see cref="UnauthorizedAccessException"/> for files
     /// whose name contains "unauthorized" (case-insensitive).
-    /// Used to verify Skip-unauthorized-entry behavior (D010).
+    /// Used to verify Skip-unauthorized-entry behavior.
     /// </summary>
     internal sealed class UnauthorizedThrowingDetector : IExecutableFileDetector
     {

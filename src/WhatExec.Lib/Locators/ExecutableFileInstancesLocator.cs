@@ -1,4 +1,4 @@
-﻿/*
+/*
     WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
@@ -13,13 +13,13 @@ namespace WhatExec.Lib.Locators;
 
 /// <summary>
 /// Locates named executable file instances within directories, drives, or across drives.
-/// Split-pair discovery seam for named-instances queries (D019).
+/// Split-pair discovery seam for named-instances queries.
 /// Implements both <see cref="IExecutableInstancesLocator"/> (new) and the obsolete
-/// <see cref="IExecutableFileInstancesLocator"/> for backward compatibility (D005).
-/// One shared traversal core from <see cref="ExecutablesLocator"/> serves all overloads (D016).
-/// Filesystem access goes through System.IO.Abstractions seam (D009).
-/// Fault rules: IgnoreInaccessible, consistent casing, fixed patterns, no hot tasks (D010).
-/// No PATH knowledge (D002, D011); no events on new seam (D008).
+/// <see cref="IExecutableFileInstancesLocator"/> for backward compatibility.
+/// One shared traversal core from <see cref="ExecutablesLocator"/> serves all overloads.
+/// Filesystem access goes through System.IO.Abstractions seam.
+/// Fault rules: IgnoreInaccessible, consistent casing, fixed patterns, no hot tasks.
+/// No PATH knowledge; no events on new seam.
 /// </summary>
 public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExecutableFileInstancesLocator
 {
@@ -125,14 +125,14 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
         }
     }
 
-    // ── IExecutableFileInstancesLocator (obsolete, D005/D008) ─────────────
+    // ── IExecutableFileInstancesLocator (obsolete) ─────────────
 
     /// <inheritdoc/>
-    [Obsolete("Events are removed from the new seam. Use enumeration instead. (D008)")]
+    [Obsolete("Events are removed from the new seam. Use enumeration instead.")]
     public event EventHandler<FileInfo>? ExecutableFileInstanceLocated;
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutableInstancesAcrossDrivesAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutableInstancesAcrossDrivesAsync instead.")]
     public async IAsyncEnumerable<FileInfo> EnumerableExecutableInstancesAsync(
         string executableName,
         SearchOption directorySearchOption,
@@ -147,7 +147,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
     }
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutableInstancesAcrossDrivesAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutableInstancesAcrossDrivesAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -161,7 +161,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
                .ConfigureAwait(false);
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutableInstancesInDriveAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutableInstancesInDriveAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -180,7 +180,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
     }
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutableInstancesInDriveAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutableInstancesInDriveAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -195,7 +195,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
                .ConfigureAwait(false);
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutableInstancesInDirectoryAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutableInstancesInDirectoryAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -214,7 +214,7 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
     }
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutableInstancesInDirectoryAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutableInstancesInDirectoryAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]

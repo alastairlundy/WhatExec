@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using WhatExec.Lib.Locators;
 
 namespace WhatExec.Cli.Commands;
@@ -79,8 +79,8 @@ public class FindAllCommand
         {
             try
             {
-                // Named-instances scan only (D019): locate-all enumerates every drive
-                // through the shared traversal core. Legacy edge-case difference (D010):
+                // Named-instances scan only: locate-all enumerates every drive
+                // through the shared traversal core. Legacy edge-case difference:
                 // scan hits are now verdict-filtered per file by the detector and
                 // inaccessible entries are skipped, so instance sets may differ from
                 // the retired seam where unauthorized entries surfaced as errors.

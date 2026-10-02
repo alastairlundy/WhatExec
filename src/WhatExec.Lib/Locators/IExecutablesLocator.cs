@@ -11,8 +11,8 @@ namespace WhatExec.Lib.Locators;
 
 /// <summary>
 /// Defines an interface for locating all executable files within directories, drives, or across drives.
-/// Split-pair discovery seam for all-executables queries (D019).
-/// No events (D008); no PATH knowledge (D002, D011).
+/// Split-pair discovery seam for all-executables queries.
+/// No events; no PATH knowledge.
 /// </summary>
 public interface IExecutablesLocator
 {
@@ -44,7 +44,7 @@ public interface IExecutablesLocator
 
     /// <summary>
     /// Enumerates all executable files across all available drives asynchronously.
-    /// Across-drives sugar over DriveInfo.GetDrives() fan-out (D017).
+    /// Across-drives sugar over DriveInfo.GetDrives() fan-out.
     /// </summary>
     /// <param name="search">Specifies whether to search all subdirectories or only the top-level directory.</param>
     /// <param name="ct">The <see cref="CancellationToken"/> to use to request cancellation.</param>
@@ -54,12 +54,12 @@ public interface IExecutablesLocator
         CancellationToken ct
     );
 
-    // ── Obsolete legacy members (D005) ────────────────────────────────────
+    // ── Obsolete legacy members ────────────────────────────────────
 
     /// <summary>
     /// Gets all executable files within the specified directory asynchronously.
     /// </summary>
-    [Obsolete("Use EnumerateExecutablesInDirectoryAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutablesInDirectoryAsync instead.")]
     Task<FileInfo[]> GetExecutablesInDirectoryAsync(
         DirectoryInfo directory,
         SearchOption directorySearchOption,
@@ -69,7 +69,7 @@ public interface IExecutablesLocator
     /// <summary>
     /// Gets all executable files within the specified drive asynchronously.
     /// </summary>
-    [Obsolete("Use EnumerateExecutablesInDriveAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutablesInDriveAsync instead.")]
     Task<FileInfo[]> GetExecutablesInDriveAsync(
         DriveInfo driveInfo,
         SearchOption directorySearchOption,

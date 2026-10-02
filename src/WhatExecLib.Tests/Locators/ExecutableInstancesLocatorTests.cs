@@ -5,8 +5,8 @@ namespace WhatExecLib.Tests.Locators;
 
 /// <summary>
 /// Unit tests for <see cref="ExecutableFileInstancesLocator"/> and <see cref="IExecutableInstancesLocator"/>.
-/// Uses System.IO.Abstractions test helper fake (D009).
-/// One shared mock detector covering every executability test (D014).
+/// Uses System.IO.Abstractions test helper fake.
+/// One shared mock detector covering every executability test.
 /// </summary>
 public class ExecutableInstancesLocatorTests
 {
@@ -127,7 +127,7 @@ public class ExecutableInstancesLocatorTests
         await Assert.That(results[0].DirectoryName).IsEqualTo(TestRoot);
     }
 
-    // ── Unauthorized entry skipping (D010) ───────────────────────────────
+    // ── Unauthorized entry skipping ───────────────────────────────
 
     [Test]
     public async Task EnumerateInstancesInDirectory_UnauthorizedEntry_IsSkipped(
@@ -165,11 +165,11 @@ public class ExecutableInstancesLocatorTests
             .EnumerateExecutableInstancesInDirectoryAsync(dir, "unauthorized_target.exe", SearchOption.TopDirectoryOnly, cancellationToken)
             .ToListAsync(cancellationToken);
 
-        // The unauthorized file matches the name but the detector throws → skipped (D010).
+        // The unauthorized file matches the name but the detector throws → skipped.
         await Assert.That(results).IsEmpty();
     }
 
-    // ── Across-drives sugar (D017) ───────────────────────────────────────
+    // ── Across-drives sugar ───────────────────────────────────────
 
     [Test]
     public async Task EnumerateInstancesAcrossDrives_DoesNotThrow(
@@ -186,7 +186,7 @@ public class ExecutableInstancesLocatorTests
         await Assert.That(results).IsNotNull();
     }
 
-    // ── Consistent casing (D010) ─────────────────────────────────────────
+    // ── Consistent casing ─────────────────────────────────────────
 
     [Test]
     public async Task EnumerateInstancesInDirectory_CaseInsensitiveNameFilter(

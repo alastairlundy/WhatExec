@@ -1,4 +1,4 @@
-﻿/*
+/*
     WhatExec.Lib
     Copyright (c) 2025-2026 Alastair Lundy
 
@@ -13,11 +13,11 @@ namespace WhatExec.Lib.Locators;
 
 /// <summary>
 /// Locates all executable files within directories, drives, or across drives.
-/// One shared traversal core serves all overloads (D016); every file is routed through
-/// <see cref="IExecutableFileDetector"/> before yielding (D003, D014).
-/// Filesystem access goes through System.IO.Abstractions seam (D009).
-/// Fault rules: IgnoreInaccessible (skip per-directory), consistent casing, fixed patterns, no hot tasks (D010).
-/// No PATH knowledge (D002, D011); no events on new seam (D008).
+/// One shared traversal core serves all overloads; every file is routed through
+/// <see cref="IExecutableFileDetector"/> before yielding.
+/// Filesystem access goes through System.IO.Abstractions seam.
+/// Fault rules: IgnoreInaccessible (skip per-directory), consistent casing, fixed patterns, no hot tasks.
+/// No PATH knowledge; no events on new seam.
 /// </summary>
 public class ExecutablesLocator : IExecutablesLocator
 {
@@ -113,10 +113,10 @@ public class ExecutablesLocator : IExecutablesLocator
         }
     }
 
-    // ── Obsolete legacy members (D005) ────────────────────────────────────
+    // ── Obsolete legacy members ────────────────────────────────────
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutablesInDirectoryAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutablesInDirectoryAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -129,7 +129,7 @@ public class ExecutablesLocator : IExecutablesLocator
             .ConfigureAwait(false);
 
     /// <inheritdoc/>
-    [Obsolete("Use EnumerateExecutablesInDriveAsync instead. (D005)")]
+    [Obsolete("Use EnumerateExecutablesInDriveAsync instead.")]
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
@@ -144,7 +144,7 @@ public class ExecutablesLocator : IExecutablesLocator
     // ── Shared traversal core ─────────────────────────────────────────────
 
     /// <summary>
-    /// Shared traversal core serving all six overloads (D016).
+    /// Shared traversal core serving all six overloads.
     /// Enumerates files from the given root path using the <see cref="IFileSystem"/> seam,
     /// routes each through <see cref="IExecutableFileDetector.IsFileExecutableAsync"/>,
     /// and yields matches.
@@ -221,7 +221,7 @@ public class ExecutablesLocator : IExecutablesLocator
                 continue;
             }
 
-            // Fixed name filter — no extension-first dead pattern (D010).
+            // Fixed name filter — no extension-first dead pattern.
             if (nameFilter is not null &&
                 !string.Equals(fileName, nameFilter, nameComparison))
             {
@@ -239,7 +239,7 @@ public class ExecutablesLocator : IExecutablesLocator
             }
             catch (UnauthorizedAccessException)
             {
-                // Skip unauthorized entries (D010).
+                // Skip unauthorized entries.
                 continue;
             }
             catch (FileNotFoundException)
@@ -264,7 +264,7 @@ public class ExecutablesLocator : IExecutablesLocator
 
     /// <summary>
     /// Recursively enumerates file paths from the filesystem seam,
-    /// skipping inaccessible directories (IgnoreInaccessible behavior, D010).
+    /// skipping inaccessible directories (IgnoreInaccessible behavior).
     /// Tracks visited directories to avoid symlink cycles.
     /// </summary>
     private IAsyncEnumerable<string> EnumerateFilesRecursiveAsync(
@@ -299,7 +299,7 @@ public class ExecutablesLocator : IExecutablesLocator
 
         // Enumerate files in the current directory, skipping inaccessible entries.
         // Enumeration is lazy, so each MoveNext is guarded: faults surface mid-iteration,
-        // not at the call site (IgnoreInaccessible behavior, D010).
+        // not at the call site (IgnoreInaccessible behavior).
         await foreach (string file in DrainWithSkipAsync(
                            () => _fileSystem.Directory.EnumerateFiles(directoryPath, "*"), ct)
                            .ConfigureAwait(false))

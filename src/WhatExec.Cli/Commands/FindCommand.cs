@@ -199,9 +199,9 @@ public class FindCommand
     }
 
     /// <summary>
-    /// PATH-first composition above both seams (D011): resolves each name against PATH first,
+    /// PATH-first composition above both seams: resolves each name against PATH first,
     /// then scans drives for the remainder via the named-instances locator.
-    /// Legacy edge-case difference (D010): the retired resolver walked each drive's
+    /// Legacy edge-case difference: the retired resolver walked each drive's
     /// directories per name with its own PATHEXT handling, while the shared traversal core
     /// now walks recursively and verdicts every file through the detector - ordering and
     /// completeness of scan hits may differ, but PATH-first precedence is preserved.
@@ -314,7 +314,7 @@ public class FindCommand
     }
 
     /// <summary>
-    /// PATH-first composition honoring <paramref name="limit"/> (D011): resolves each name
+    /// PATH-first composition honoring <paramref name="limit"/>: resolves each name
     /// against PATH first, then scans drives for additional instances up to the limit.
     /// </summary>
     private async Task<Dictionary<string, List<FileInfo>>> LocateUpToLimitPathFirstAsync(
