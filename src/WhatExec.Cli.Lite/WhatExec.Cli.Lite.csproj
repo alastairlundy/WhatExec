@@ -17,22 +17,18 @@
     <RepositoryUrl>https://github.com/alastairlundy/whatexec</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>WhatExec.Cli.Lite</PackageId>
     <Description>A lightweight executable file resolver that checks the PATH environment variable.</Description>
-    <PackageReleaseNotes>#### ⚙️ Modifications
-- Renamed `CliCommands` class to `CliCommand`
-- Changed WhatExecLib service registration lifetime from Scoped to Singleton
-- Enabled implicit usings
-- Updated README to reference WhatExec.Cli.Lite instead of WhatExecLite</PackageReleaseNotes>
+    <PackageReleaseNotes>Runtime dependencies. Updated DotExtensions 10.3.2 to 10.5.2, DotMake.CommandLine 3.5.0 to 3.7.0, Microsoft.Extensions.DependencyInjection, Abstractions, Microsoft.Bcl.AsyncInterfaces, System.Linq.AsyncEnumerable 10.0.8 to 10.0.12, Spectre.Console 0.56.0 to 0.57.2, Polyfill 10.8.1 to 11.3.0.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
   </PropertyGroup>
   
   <ItemGroup>
