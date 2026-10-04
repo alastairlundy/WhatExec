@@ -161,9 +161,60 @@ public class ExecutablesLocator : IExecutablesLocator
 
             FileInfo file = new FileInfo(filePath);
 
-            // Fixed name filter — no extension-first dead pattern (D010).
+            string fileName;
+            try
+            {
+                fileName = _fileSystem.Path.GetFileName(filePath);
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                continue;
+            }
+
+            // Name-first filter (5de66e2): cheap name comparison runs before
+            // FileInfo construction and the existence probe; never extension-first.
             if (nameFilter is not null &&
-                !string.Equals(file.Name, nameFilter, StringComparison.OrdinalIgnoreCase))
+                !string.Equals(fileName, nameFilter, nameComparison))
+            {
+                continue;
+            }
+
+            IFileInfo seamFile;
+            try
+            {
+                seamFile = _fileSystem.FileInfo.New(filePath);
+            }
+            catch
+            {
+                continue;
+            }
+
+            bool existsInSeam;
+            try
+            {
+                existsInSeam = seamFile.Exists;
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (!existsInSeam)
+            {
+                continue;
+            }
+
+            FileInfo file;
+            try
+            {
+                file = new FileInfo(seamFile.FullName);
+            }
+            catch
             {
                 continue;
             }
