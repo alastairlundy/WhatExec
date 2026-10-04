@@ -87,6 +87,9 @@ public class FindAllCommand
                                    command, SearchOption.AllDirectories, cancellationToken).ConfigureAwait(true))
                 {
                     instances.Add(file);
+
+                    if (instances.Count >= Limit)
+                        break;
                 }
 
                 output.Add(command, instances.ToArray());
