@@ -46,7 +46,7 @@ public class SearchDirectoryCommand
     public string? Directory { get; set; }
     
     
-    public async Task<int> Run(CliContext cliContext)
+    public async Task<int> RunAsync(CliContext cliContext)
     {
         try
         {
