@@ -24,7 +24,6 @@ public class ExecutableFileDetector : IExecutableFileDetector
 
     private static readonly byte[] MzMagicNumber = [0x4D, 0x5A];
 
-    private static readonly byte[] MachO32BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCE];
     private static readonly byte[] MachO64BitMagicNumber = [0xFE, 0xED, 0xFA, 0xCF];
 
     private static readonly byte[] ElfMagicNumber = [0x7F, 0x45, 0x4C, 0x46];
