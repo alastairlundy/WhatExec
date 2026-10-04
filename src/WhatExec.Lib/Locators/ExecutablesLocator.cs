@@ -186,6 +186,14 @@ public class ExecutablesLocator : IExecutablesLocator
                 continue;
             }
 
+            // Name-first filter (5de66e2): cheap name comparison runs before
+            // FileInfo construction and the existence probe; never extension-first.
+            if (nameFilter is not null &&
+                !string.Equals(fileName, nameFilter, nameComparison))
+            {
+                continue;
+            }
+
             IFileInfo seamFile;
             try
             {
@@ -217,13 +225,6 @@ public class ExecutablesLocator : IExecutablesLocator
                 file = new FileInfo(seamFile.FullName);
             }
             catch
-            {
-                continue;
-            }
-
-            // Fixed name filter — no extension-first dead pattern.
-            if (nameFilter is not null &&
-                !string.Equals(fileName, nameFilter, nameComparison))
             {
                 continue;
             }
