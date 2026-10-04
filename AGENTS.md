@@ -4,7 +4,7 @@
 
 - Solution lives in `src/`, not repo root. Build with `dotnet build src/WhatExec.sln` (`CONTRIBUTING.md`'s bare `dotnet build` fails from root — verified `MSB1003`).
 - Run tests with `dotnet run --project src/WhatExecLib.Tests/WhatExecLib.Tests.csproj` — NOT `dotnet test` (verified: `dotnet test` fails on .NET 10 SDK because the VSTest target is unsupported by Microsoft.Testing.Platform; the test project is an `Exe` that runs via `dotnet run`).
-- 2 of 38 tests are host-environment dependent (`Resolve_VsCode_ExecutableFile`, `Resolve_Random_Running_Process_ExecutableFiles`) and may fail on machines without VS Code / matching processes; not a code regression signal.
+- Suite is 36 tests and all must pass.
 - Requires .NET 10 SDK (`net10.0` is a target everywhere; tests target `net10.0` only).
 - No lint, format, editorconfig, or pre-commit config. Build + test is the full local verification. `Meziantou.Analyzer` runs as a build analyzer, so treat its warnings as signal.
 
