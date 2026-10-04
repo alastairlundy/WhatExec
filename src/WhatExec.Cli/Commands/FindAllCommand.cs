@@ -39,6 +39,12 @@ public class FindAllCommand
     
     public async Task<int> RunAsync(CliContext cliContext)
     {
+        if (Limit < 1)
+        {
+            await Console.Error.WriteLineAsync(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero).ConfigureAwait(true);
+            return -1;
+        }
+
         StringComparer keyComparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
         Dictionary<string, List<FileInfo>> commandLocations = new(
             keyComparer);
