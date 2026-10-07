@@ -24,6 +24,10 @@ public class ExecutablesLocator : IExecutablesLocator
     private readonly IExecutableFileDetector _detector;
     private readonly IFileSystem _fileSystem;
 
+    // Executable-name comparison is OrdinalIgnoreCase by convention (AGENTS.md);
+    // never culture-sensitive or platform-dependent.
+    private const StringComparison NameComparison = StringComparison.OrdinalIgnoreCase;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExecutablesLocator"/> class.
     /// </summary>
@@ -159,8 +163,6 @@ public class ExecutablesLocator : IExecutablesLocator
         {
             ct.ThrowIfCancellationRequested();
 
-            FileInfo file = new FileInfo(filePath);
-
             string fileName;
             try
             {
@@ -179,7 +181,7 @@ public class ExecutablesLocator : IExecutablesLocator
             // Name-first filter (5de66e2): cheap name comparison runs before
             // FileInfo construction and the existence probe; never extension-first.
             if (nameFilter is not null &&
-                !string.Equals(fileName, nameFilter, nameComparison))
+                !string.Equals(fileName, nameFilter, NameComparison))
             {
                 continue;
             }
