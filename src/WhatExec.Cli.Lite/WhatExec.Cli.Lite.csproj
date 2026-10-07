@@ -29,7 +29,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
-    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
@@ -69,8 +69,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
-    <PackageReference Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
-    <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
+    <PackageReference Include="WhatExec.Lib" />
+    <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" />
   </ItemGroup>
   
   <ItemGroup>

@@ -14,8 +14,6 @@
     </PackageVersion>
     <PackageVersion Include="Meziantou.Analyzer" Version="3.0.291" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.12" />
   </ItemGroup>
   <PropertyGroup>
     <!-- default false, CI can set to true -->

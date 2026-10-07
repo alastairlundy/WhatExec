@@ -16,9 +16,9 @@
 
 ## Layout
 
-- `src/WhatExec.Lib/` — core logic. `Locators/` (PATH/directory/drive search) + `Resolvers/` (executable-name resolution) + `Detectors/`. Multi-targets `net10.0;net8.0;net9.0;netstandard2.0` (`ImplicitUsings` off, `Nullable` on). Marked `IsTrimmable`; keep new code trim/AOT-safe.
-- `src/WhatExec.Lib.Extensions.DependencyInjection/` — DI registration only (`net10.0;netstandard2.0`).
-- `src/WhatExec.Cli/` (tool command `whatexec`, DotMake.CommandLine + Spectre.Console) and `src/WhatExec.Cli.Lite/` (tool command `whatexec-lite`, ConsoleAppFramework, PATH-only). Different CLI frameworks — check the per-project `README.md` before adding commands/flags. Both target `net10.0;net8.0;net9.0`, `PublishAot`/`PublishTrimmed` are `false`.
+- `src/WhatExec.Lib/` — core logic. `Locators/` (PATH/directory/drive search) + `Resolvers/` (executable-name resolution) + `Detectors/`. Targets `net10.0` only (`ImplicitUsings` off, `Nullable` on). Marked `IsTrimmable`; keep new code trim/AOT-safe.
+- `src/WhatExec.Lib.Extensions.DependencyInjection/` — DI registration only (`net10.0` only).
+- `src/WhatExec.Cli/` (tool command `whatexec`, DotMake.CommandLine + Spectre.Console) and `src/WhatExec.Cli.Lite/` (tool command `whatexec-lite`, ConsoleAppFramework, PATH-only). Different CLI frameworks — check the per-project `README.md` before adding commands/flags. Both target `net10.0` only, `PublishAot`/`PublishTrimmed` are `false`.
 - `src/WhatExecLib.Tests/` — TUnit tests (`OutputType=Exe`), `net10.0` only, references `WhatExec.Lib` directly. Mocks the filesystem via `System.IO.Abstractions.TestingHelpers` (see `Locators/LocatorTestHelpers.cs`); follow that pattern for new tests.
 - `src/WhatExecLib/` contains only stale `bin/`/`obj/` — no source, ignore it.
 - `IExecutableFileResolver` / `ExecutableFileResolver` are `[Obsolete]` — compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in new code instead.

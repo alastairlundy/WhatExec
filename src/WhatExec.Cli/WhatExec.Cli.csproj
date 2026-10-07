@@ -18,7 +18,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Version>1.1.0</Version>
     <PackageId>WhatExec.Cli</PackageId>
-    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <LangVersion>14</LangVersion>
     <Description>A CLI program (installable as a tool) to find executable files in PATH Environment Variables or elsewhere on your system.</Description>
     <PackageTags>whatexec, which, resolver,file-path</PackageTags>
@@ -69,8 +69,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePublishedPackages)'=='true'">
-    <PackageReference Include="WhatExec.Lib" Version="$(WhatExecLibVersion)"/>
-    <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" Version="$(DependencyInjectionPackageVersion)"/>
+    <PackageReference Include="WhatExec.Lib" />
+    <PackageReference Include="WhatExec.Lib.Extensions.DependencyInjection" />
   </ItemGroup>
   
   <ItemGroup>
