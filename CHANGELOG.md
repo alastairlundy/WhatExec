@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.0.0
+
+### Deprecated
+- `IExecutableFileInstancesLocator` members remain `Obsolete`. They warn on use and removal waits one version.
+- Legacy `Get*` and `Task[]` locator members remain `[Obsolete]` for migration. They sit outside the new locator contract.
+
+### Removed
+- Deleted `IExecutableFileResolver` and `ExecutableFileResolver` outright, together with their DI registrations (scoped, singleton, transient) and documentation mentions. Compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in the caller instead. Breaking change for outside callers of the obsolete type is accepted.
+
 ## 1.2.0
 
 ### Added

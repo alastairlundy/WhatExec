@@ -17,7 +17,6 @@ WhatExec.Lib implements ``WhatExec.Lib.Abstractions``'s interfaces.
 
 | Scenario                                                                 | Interface                            | Class                               |
 |--------------------------------------------------------------------------|--------------------------------------|-------------------------------------|
-| Resolve the file paths of specified Executable files                     | ``IExecutableFileResolver``          | ``ExecutableFileResolver``          |
 | Resolve an Executable file path using just the PATH Environment variable | ``IPathEnvironmentVariableResolver`` | ``PathEnvironmentVariableResolver`` |
 
 ### Detectors

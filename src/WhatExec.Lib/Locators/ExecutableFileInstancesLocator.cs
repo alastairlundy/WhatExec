@@ -93,35 +93,11 @@ public class ExecutableFileInstancesLocator : IExecutableInstancesLocator, IExec
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(executableName);
 
-        DriveInfo[] drives;
-        try
+        await foreach (FileInfo file in _sharedCore.EnumerateAcrossDrivesCoreAsync(search, executableName, ct)
+                           .ConfigureAwait(false))
         {
-            drives = DriveInfo.GetDrives();
-        }
-        catch (IOException)
-        {
-            yield break;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            yield break;
-        }
-        catch (System.Security.SecurityException)
-        {
-            yield break;
-        }
-
-        foreach (DriveInfo drive in drives)
-        {
-            if (!drive.IsReady)
-                continue;
-
-            await foreach (FileInfo file in _sharedCore.TraversalCoreAsync(drive.RootDirectory.FullName, search, executableName, ct)
-                               .ConfigureAwait(false))
-            {
-                ExecutableFileInstanceLocated?.Invoke(this, file);
-                yield return file;
-            }
+            ExecutableFileInstanceLocated?.Invoke(this, file);
+            yield return file;
         }
     }
 

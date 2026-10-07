@@ -24,6 +24,10 @@ public class ExecutablesLocator : IExecutablesLocator
     private readonly IExecutableFileDetector _detector;
     private readonly IFileSystem _fileSystem;
 
+    // Executable-name comparison is OrdinalIgnoreCase by convention (AGENTS.md);
+    // never culture-sensitive or platform-dependent.
+    private const StringComparison NameComparison = StringComparison.OrdinalIgnoreCase;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExecutablesLocator"/> class.
     /// </summary>
@@ -82,34 +86,10 @@ public class ExecutablesLocator : IExecutablesLocator
         SearchOption search,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        DriveInfo[] drives;
-        try
+        await foreach (FileInfo file in EnumerateAcrossDrivesCoreAsync(search, nameFilter: null, ct)
+                           .ConfigureAwait(false))
         {
-            drives = DriveInfo.GetDrives();
-        }
-        catch (IOException)
-        {
-            yield break;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            yield break;
-        }
-        catch (System.Security.SecurityException)
-        {
-            yield break;
-        }
-
-        foreach (DriveInfo drive in drives)
-        {
-            if (!drive.IsReady)
-                continue;
-
-            await foreach (FileInfo file in TraversalCoreAsync(drive.RootDirectory.FullName, search, nameFilter: null, ct)
-                               .ConfigureAwait(false))
-            {
-                yield return file;
-            }
+            yield return file;
         }
     }
 
@@ -144,7 +124,57 @@ public class ExecutablesLocator : IExecutablesLocator
     // ── Shared traversal core ─────────────────────────────────────────────
 
     /// <summary>
-    /// Shared traversal core serving all six overloads.
+    /// The single across-drives fan-out shared by both across-drives entry points.
+    /// Enumerates logical drives safely (any enumeration fault yields an empty sequence),
+    /// skips drives that are not ready, and traverses each ready root through
+    /// <see cref="TraversalCoreAsync"/> - one lazy walk end to end, with no eager
+    /// intermediate collections.
+    /// </summary>
+    /// <param name="search">Top-level only or all subdirectories.</param>
+    /// <param name="nameFilter">Optional filename filter (case-insensitive ordinal). Pass null for all-executables.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>An async stream of <see cref="FileInfo"/> for matching executable files.</returns>
+    internal async IAsyncEnumerable<FileInfo> EnumerateAcrossDrivesCoreAsync(
+        SearchOption search,
+        string? nameFilter,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        DriveInfo[] drives;
+        try
+        {
+            drives = DriveInfo.GetDrives();
+        }
+        catch (IOException)
+        {
+            yield break;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            yield break;
+        }
+        catch (System.Security.SecurityException)
+        {
+            yield break;
+        }
+
+        foreach (DriveInfo drive in drives)
+        {
+            if (!drive.IsReady)
+            {
+                continue;
+            }
+
+            await foreach (FileInfo file in TraversalCoreAsync(drive.RootDirectory.FullName, search, nameFilter, ct)
+                               .ConfigureAwait(false))
+            {
+                yield return file;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Shared traversal core serving every location overload - directory, drive, and
+    /// across-drives, for both the all-executables and named-instances seams.
     /// Enumerates files from the given root path using the <see cref="IFileSystem"/> seam,
     /// routes each through <see cref="IExecutableFileDetector.IsFileExecutableAsync"/>,
     /// and yields matches.
@@ -167,99 +197,144 @@ public class ExecutablesLocator : IExecutablesLocator
         {
             ct.ThrowIfCancellationRequested();
 
-            StringComparison nameComparison = OperatingSystem.IsWindows()
-                ? StringComparison.OrdinalIgnoreCase
-                : StringComparison.Ordinal;
+            FileInfo? file = await TryResolveExecutableAsync(filePath, nameFilter, ct)
+                .ConfigureAwait(false);
 
-            string fileName;
-            try
-            {
-                fileName = _fileSystem.Path.GetFileName(filePath);
-            }
-            catch
-            {
-                continue;
-            }
-
-            if (string.IsNullOrEmpty(fileName))
-            {
-                continue;
-            }
-
-            // Name-first filter (5de66e2): cheap name comparison runs before
-            // FileInfo construction and the existence probe; never extension-first.
-            if (nameFilter is not null &&
-                !string.Equals(fileName, nameFilter, nameComparison))
-            {
-                continue;
-            }
-
-            IFileInfo seamFile;
-            try
-            {
-                seamFile = _fileSystem.FileInfo.New(filePath);
-            }
-            catch
-            {
-                continue;
-            }
-
-            bool existsInSeam;
-            try
-            {
-                existsInSeam = seamFile.Exists;
-            }
-            catch
-            {
-                continue;
-            }
-
-            if (!existsInSeam)
-            {
-                continue;
-            }
-
-            FileInfo file;
-            try
-            {
-                file = new FileInfo(seamFile.FullName);
-            }
-            catch
-            {
-                continue;
-            }
-
-            bool isExecutable;
-            try
-            {
-                isExecutable = await _detector.IsFileExecutableAsync(file, ct).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Skip unauthorized entries.
-                continue;
-            }
-            catch (FileNotFoundException)
-            {
-                continue;
-            }
-            catch (DirectoryNotFoundException)
-            {
-                continue;
-            }
-            catch (IOException)
-            {
-                continue;
-            }
-
-            if (isExecutable)
+            if (file is not null)
             {
                 yield return file;
             }
+        }
+    }
+
+    /// <summary>
+    /// Maps one traversed path to an executable <see cref="FileInfo"/>, or null when the
+    /// entry is skipped: unreadable name, name-filter mismatch, missing seam file, or a
+    /// detector fault. Only cancellation propagates.
+    /// </summary>
+    private async Task<FileInfo?> TryResolveExecutableAsync(
+        string filePath,
+        string? nameFilter,
+        CancellationToken ct)
+    {
+        string? fileName = GetFileNameSafe(filePath);
+        if (fileName is null)
+        {
+            return null;
+        }
+
+        // Name-first filter (5de66e2): cheap name comparison runs before
+        // FileInfo construction and the existence probe; never extension-first.
+        if (nameFilter is not null &&
+            !string.Equals(fileName, nameFilter, NameComparison))
+        {
+            return null;
+        }
+
+        IFileInfo? seamFile = TryGetExistingSeamFile(filePath);
+        if (seamFile is null)
+        {
+            return null;
+        }
+
+        FileInfo? file = TryCreateFileInfo(seamFile);
+        if (file is null)
+        {
+            return null;
+        }
+
+        return await IsExecutableSafeAsync(file, ct).ConfigureAwait(false) ? file : null;
+    }
+
+    /// <summary>
+    /// Returns the file name for a path, or null when the name cannot be read or is empty.
+    /// </summary>
+    private string? GetFileNameSafe(string filePath)
+    {
+        string fileName;
+        try
+        {
+            fileName = _fileSystem.Path.GetFileName(filePath);
+        }
+        catch
+        {
+            return null;
+        }
+
+        return string.IsNullOrEmpty(fileName) ? null : fileName;
+    }
+
+    /// <summary>
+    /// Probes the filesystem seam for an existing file, returning null when the path is
+    /// invalid, the probe faults, or the file does not exist.
+    /// </summary>
+    private IFileInfo? TryGetExistingSeamFile(string filePath)
+    {
+        IFileInfo seamFile;
+        try
+        {
+            seamFile = _fileSystem.FileInfo.New(filePath);
+        }
+        catch
+        {
+            return null;
+        }
+
+        try
+        {
+            return seamFile.Exists ? seamFile : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Wraps a seam-validated path in a public <see cref="FileInfo"/>, or null when construction faults.
+    /// </summary>
+    private static FileInfo? TryCreateFileInfo(IFileInfo seamFile)
+    {
+        try
+        {
+            return new FileInfo(seamFile.FullName);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Runs the executable detector, returning false (skip the entry) for inaccessible or
+    /// vanished files. Cancellation always propagates.
+    /// </summary>
+    private async Task<bool> IsExecutableSafeAsync(FileInfo file, CancellationToken ct)
+    {
+        try
+        {
+            return await _detector.IsFileExecutableAsync(file, ct).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Skip unauthorized entries.
+            return false;
+        }
+        catch (FileNotFoundException)
+        {
+            return false;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return false;
+        }
+        catch (IOException)
+        {
+            return false;
         }
     }
 

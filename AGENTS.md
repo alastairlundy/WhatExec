@@ -21,13 +21,12 @@
 - `src/WhatExec.Cli/` (tool command `whatexec`, DotMake.CommandLine + Spectre.Console) and `src/WhatExec.Cli.Lite/` (tool command `whatexec-lite`, ConsoleAppFramework, PATH-only). Different CLI frameworks — check the per-project `README.md` before adding commands/flags. Both target `net10.0` only, `PublishAot`/`PublishTrimmed` are `false`.
 - `src/WhatExecLib.Tests/` — TUnit tests (`OutputType=Exe`), `net10.0` only, references `WhatExec.Lib` directly. Mocks the filesystem via `System.IO.Abstractions.TestingHelpers` (see `Locators/LocatorTestHelpers.cs`); follow that pattern for new tests.
 - `src/WhatExecLib/` contains only stale `bin/`/`obj/` — no source, ignore it.
-- `IExecutableFileResolver` / `ExecutableFileResolver` are `[Obsolete]` — compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in new code instead.
 - Root `README.md` still references a `WhatExecLib.Abstractions` package/folder that no longer exists; don't treat it as source of truth.
 
 ## Gotchas
 
 - Windows Winget install dirs deny traversal, so lookups there silently miss (documented in root `README.md` Known Issues). Don't "fix" this in locators.
-- Compare executable names with `OrdinalIgnoreCase` (established convention in `ExecutableFileResolver`); don't switch to platform-dependent comparison.
+- Compare executable names with `OrdinalIgnoreCase` (established convention in the traversal core's name filter); don't switch to platform-dependent comparison.
 - Keep PRs small and single-issue; AI-generated code in a PR must declare which portions are AI-written (`CONTRIBUTING.md`).
 
 ## Issues
