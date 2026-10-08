@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExecLib.Tests", "WhatEx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Cli", "WhatExec.Cli\WhatExec.Cli.csproj", "{DD4A7F3B-EF12-438B-9DD6-C36B97384464}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatExec.Benchmarks", "WhatExec.Benchmarks\WhatExec.Benchmarks.csproj", "{43270F30-ED4B-4854-A63C-9A6D716AE37A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,18 @@ Global
 		{DD4A7F3B-EF12-438B-9DD6-C36B97384464}.Release|x64.Build.0 = Release|Any CPU
 		{DD4A7F3B-EF12-438B-9DD6-C36B97384464}.Release|x86.ActiveCfg = Release|Any CPU
 		{DD4A7F3B-EF12-438B-9DD6-C36B97384464}.Release|x86.Build.0 = Release|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Debug|x64.Build.0 = Debug|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Debug|x86.Build.0 = Debug|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Release|x64.ActiveCfg = Release|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Release|x64.Build.0 = Release|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Release|x86.ActiveCfg = Release|Any CPU
+		{43270F30-ED4B-4854-A63C-9A6D716AE37A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
