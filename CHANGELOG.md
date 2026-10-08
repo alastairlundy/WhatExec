@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Deleted `IExecutableFileResolver` and `ExecutableFileResolver` outright, together with their DI registrations (scoped, singleton, transient) and documentation mentions. Compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in the caller instead. Breaking change for outside callers of the obsolete type is accepted.
+- Retargeted all shipped projects (`WhatExec.Lib`, `WhatExec.Lib.Extensions.DependencyInjection`, `WhatExec.Cli`, `WhatExec.Cli.Lite`) to `net10.0` only, dropping the `net8.0`, `net9.0`, and `netstandard2.0` targets.
 
 ## 1.2.0
 

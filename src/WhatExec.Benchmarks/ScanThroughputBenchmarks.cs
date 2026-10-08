@@ -73,13 +73,13 @@ public class ScanThroughputBenchmarks
     // ── Scenario 1: directory walk ───────────────────────────────────────
 
     [Benchmark]
-    public async Task DirectoryWalk_TopDirectoryOnly()
-        => _ = await CountAsync(
+    public async Task<int> DirectoryWalk_TopDirectoryOnly()
+        => await CountAsync(
             _locator.EnumerateExecutablesInDirectoryAsync(_root, SearchOption.TopDirectoryOnly, CancellationToken.None));
 
     [Benchmark]
-    public async Task DirectoryWalk_AllDirectories()
-        => _ = await CountAsync(
+    public async Task<int> DirectoryWalk_AllDirectories()
+        => await CountAsync(
             _locator.EnumerateExecutablesInDirectoryAsync(_root, SearchOption.AllDirectories, CancellationToken.None));
 
     // ── Scenario 2: drive fan-out single pass ────────────────────────────
@@ -88,10 +88,12 @@ public class ScanThroughputBenchmarks
     /// The across-drives entry point ticket 003 unified: one lazy pass over every
     /// ready drive, no eager intermediate collections. Top-level only so a hand run
     /// stays short even though whole-drive recursion would take minutes.
+    /// Machine-dependent: the enumerated set is the host's ready drives, so results
+    /// are only comparable before/after on the same machine, never across hosts.
     /// </summary>
     [Benchmark]
-    public async Task DriveFanOut_SinglePass()
-        => _ = await CountAsync(
+    public async Task<int> DriveFanOut_SinglePass()
+        => await CountAsync(
             _locator.EnumerateExecutablesAcrossDrivesAsync(SearchOption.TopDirectoryOnly, CancellationToken.None));
 
     /// <summary>
@@ -115,7 +117,19 @@ public class ScanThroughputBenchmarks
     private static void BuildFixtureTree(string root, int depth)
     {
         if (Directory.Exists(root))
-            Directory.Delete(root, recursive: true);
+        {
+            try
+            {
+                Directory.Delete(root, recursive: true);
+            }
+            catch (IOException)
+            {
+                // Best-effort delete; fall through and overwrite the fixed-layout tree in place.
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+        }
 
         Directory.CreateDirectory(root);
         WriteLevel(root, depth);

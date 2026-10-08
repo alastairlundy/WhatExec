@@ -7,7 +7,9 @@ BenchmarkDotNet throughput evidence for the WhatExec scan pipeline (ledger
   over a fixed real directory tree, in both top-level and all-subdirectories cases.
 - **Drive fan-out single pass** - `IExecutablesLocator.EnumerateExecutablesAcrossDrivesAsync`,
   the single-pass across-drives core, across the machine's ready drives (top-level only
-  so a hand run stays short).
+  so a hand run stays short). Machine-dependent: the enumerated set is the host's
+  ready drives, so results are only comparable before/after on the same machine,
+  never across hosts.
 
 Both are tagged with `[MemoryDiagnoser]`, so allocated bytes appear next to timings -
 use that to spot allocation regressions (for example, eager intermediate lists

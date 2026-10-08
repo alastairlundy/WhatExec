@@ -21,7 +21,8 @@
 - Legacy `Get*` and `Task[]` locator members remain `[Obsolete]` for migration. They sit outside the new locator contract.
 
 ### Removed
-- Deleted `IExecutableFileResolver` and `ExecutableFileResolver` outright, together with their DI registrations (scoped, singleton, transient) and documentation mentions. Compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in the caller instead. Breaking change for outside callers of the obsolete type is accepted.</PackageReleaseNotes>
+- Deleted `IExecutableFileResolver` and `ExecutableFileResolver` outright, together with their DI registrations (scoped, singleton, transient) and documentation mentions. Compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in the caller instead. Breaking change for outside callers of the obsolete type is accepted.
+- Retargeted all shipped projects to `net10.0` only, dropping the `net8.0`, `net9.0`, and `netstandard2.0` targets.</PackageReleaseNotes>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PolyArgumentExceptions>true</PolyArgumentExceptions>
