@@ -15,7 +15,8 @@ namespace WhatExec.Cli.Commands.Search;
     Name = "directory",
     Alias = "dir",
     Description = "Locate all commands and/or executable files in a given directory.",
-    Parent = typeof(SearchCommand)
+    Parent = typeof(SearchCommand),
+    TreatUnmatchedTokensAsErrors = true
 )]
 public class SearchDirectoryCommand
 {
@@ -34,35 +35,23 @@ public class SearchDirectoryCommand
     [Range(1, int.MaxValue)]
     public int Limit { get; set; } = 1;
 
-    [CliOption(Description = "Enable interactivity.", Alias = "-i", Name = "--interactive")]
-    [DefaultValue(false)]
-    public bool Interactive { get; set; }
-    
     [CliOption(Name = "--verbose", Description = "Enable verbose exception output.")]
     [DefaultValue(false)]
     public bool Verbose { get; set; }
     
-    [CliArgument(Order = 0, Name = "<directory>", Description = "The directory to be searched.")]
+    // The parser hands an option it does not recognise to the argument, so the argument
+    // rejects a value that looks like an option and the caller is told which token failed.
+    [CliArgument(Order = 0, Name = "<directory>", Description = "The directory to be searched. Required.", Required = true, ValidationPattern = "^[^-].*$", ValidationMessage = "Unrecognized option. The directory argument takes a directory path.")]
     public string? Directory { get; set; }
     
     
     public async Task<int> RunAsync(CliContext cliContext)
     {
-        try
-        {
-#pragma warning disable MA0015
-            ArgumentException.ThrowIfNullOrEmpty(Directory);
-#pragma warning restore MA0015
-        }
-        catch (Exception)
-        {
-            if (!Interactive)
-                throw;
-            
-            Directory = UserInputHelper.GetDirectoryInput(new DriveInfo(UserInputHelper.GetDriveInput()));
-        }
+        if (string.IsNullOrWhiteSpace(Directory))
+            return ResultHelper.PrintException(new DirectoryNotFoundException(Resources.ValidationErrors_Directory_NotSpecified),
+                Verbose, -1);
         
-        DirectoryInfo directoryInfo = new DirectoryInfo(Directory);
+        DirectoryInfo directoryInfo = new DirectoryInfo(Directory!);
 
         if (!directoryInfo.Exists)
             return ResultHelper.PrintException(new DirectoryNotFoundException(Resources.ValidationErrors_Directory_NotSpecified),

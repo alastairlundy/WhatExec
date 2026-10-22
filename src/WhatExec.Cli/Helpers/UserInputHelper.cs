@@ -21,48 +21,6 @@ internal static class UserInputHelper
         return AnsiConsole.Prompt(prompt);
     }
     
-    internal static string GetDirectoryInput(DriveInfo drive)
-    {
-        IEnumerable<string> directories = drive
-            .RootDirectory.SafelyGetDirectories()
-            .Select(d => d.FullName);
-
-        string directory = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title(
-                    Resources.Prompts_Selection_Directory.Replace(
-                        Resources.Prompts_Highlights_Directory,
-                        $"[underline italic gold1]{Resources.Prompts_Highlights_Directory}"
-                    )
-                )
-                .PageSize(10)
-                .AddChoices(directories)
-                .MoreChoicesText($"({Resources.Prompts_Selection_RevealMoreOptions})")
-        );
-
-        return directory;
-    }
-
-    internal static string GetDriveInput()
-    {
-        string[] drives = DriveInfo.SafelyEnumerateLogicalDrives().Select(d => d.Name).ToArray();
-
-        string drive = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title(
-                    Resources.Prompts_Selection_StorageDrive.Replace(
-                        Resources.Prompts_Highlights_StorageDrive,
-                        $"[underline italic gold1]{Resources.Prompts_Highlights_StorageDrive}"
-                    )
-                )
-                .PageSize(10)
-                .AddChoices(drives)
-                .MoreChoicesText($"({Resources.Prompts_Selection_RevealMoreOptions})")
-        );
-
-        return drive;
-    }
-
     internal static string[] GetCommandInput()
     {
         bool keepAddingCommands;

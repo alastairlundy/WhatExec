@@ -14,7 +14,8 @@ namespace WhatExec.Cli.Commands.Search;
 [CliCommand(
     Name = "drive",
     Description = "Locate all commands and/or executable files on a Storage Drive.",
-    Parent = typeof(SearchCommand)
+    Parent = typeof(SearchCommand),
+    TreatUnmatchedTokensAsErrors = true
 )]
 public class SearchDriveCommand
 {
@@ -33,11 +34,9 @@ public class SearchDriveCommand
     [Range(1, int.MaxValue)]
     public int Limit { get; set; } = 1;
 
-    [CliOption(Description = "Enable interactivity.", Alias = "-i", Name = "--interactive")]
-    [DefaultValue(false)]
-    public bool Interactive { get; set; }
-    
-    [CliArgument(Order = 0, Name = "<drive>", Description = "Locate the drive to search for.")]
+    // The parser hands an option it does not recognise to the argument, so the argument
+    // rejects a value that looks like an option and the caller is told which token failed.
+    [CliArgument(Order = 0, Name = "<drive>", Description = "The drive to search. Required.", Required = true, ValidationPattern = "^[^-].*$", ValidationMessage = "Unrecognized option. The drive argument takes a drive name such as C or C:\\.")]
     public string? Drive { get; set; }
 
     [CliOption(Name = "--verbose", Description = "Enable verbose exception output.")]
@@ -50,17 +49,12 @@ public class SearchDriveCommand
 
         try
         {
-            // The DriveInfo constructor normalises a bare drive letter and a root path to the
-            // same drive, so the CLI applies no drive name matching of its own.
             drive = new DriveInfo(Drive!);
         }
         catch (ArgumentException)
         {
-            if (!Interactive)
-                return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),
-                    Verbose, -1);
-
-            drive = new DriveInfo(UserInputHelper.GetDriveInput());
+            return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),
+                Verbose, -1);
         }
 
         if (Limit < 1)
