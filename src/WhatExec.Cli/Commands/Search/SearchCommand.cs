@@ -50,17 +50,13 @@ public class SearchCommand
 
     private async IAsyncEnumerable<FileInfo> LocateExecutables([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        DriveInfo[] drives = DriveInfo.SafelyGetLogicalDrives();
-
-        foreach (DriveInfo drive in drives)
+        // The library owns the across-drives fan-out and applies the drive candidate rule, so
+        // the CLI keeps no private copy of it.
+        await foreach (FileInfo file in _executablesResolver
+                           .EnumerateExecutablesAcrossDrivesAsync(SearchOption.AllDirectories, cancellationToken)
+                           .ConfigureAwait(true))
         {
-            IAsyncEnumerable<FileInfo> driveFiles = _executablesResolver.EnumerateExecutablesInDriveAsync(drive, 
-                SearchOption.AllDirectories, cancellationToken);
-
-            await foreach (FileInfo file in driveFiles.ConfigureAwait(true))
-            {
-                yield return file;
-            }
+            yield return file;
         }
     }
 }
