@@ -52,7 +52,7 @@ Limit results to three locations per command:
 
   ``whatexec find notepad.exe --limit 3``
 
-Enable interactive mode (prompts for input):
+Enter command names interactively (the find commands only):
 
   ``whatexec find --interactive``
 
@@ -69,18 +69,26 @@ Enable verbose output and timing:
 
   ``whatexec find git.exe node.exe code.exe``
 
-- Search an entire drive using the advanced search commands (see repository Commands folder for details)
+- Search an entire drive:
+
+  ``whatexec search drive C``
+
+- Search a directory tree:
+
+  ``whatexec search directory C:\Windows\System32``
+
+  The search commands require their drive or directory argument, and they do not take `--interactive`.
 
 ### Features
 - Locate executables and command files across PATH and common directories
 - Configurable result limits (--limit / -l)
-- Interactive mode for entering commands (-i / --interactive)
+- Interactive mode for entering command names on the find commands (-i / --interactive)
 - Verbose output and timing (--verbose, --report-time)
 - Graceful handling of access errors and partial results
 
 ### Troubleshooting
 - WinGet / package manager disclaimer: Applications installed via WinGet or other system package managers may be installed into protected or virtualized directories which can be hidden from standard file-system searches. If an app installed via WinGet does not appear in WhatExec results, check whether the app's installation directory is protected or run with elevated permissions.
-- If you receive permission errors when searching deep directories, run with elevated privileges or use interactive mode to skip problematic locations.
+- If you receive permission errors when searching deep directories, run with elevated privileges, or use the find commands' interactive mode to skip problematic locations.
 - If commands are not found, ensure they are on the PATH environment variable or provide the full filename (e.g. notepad.exe).
 
 ### Contributing

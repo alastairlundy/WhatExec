@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2.0.0
 
+### Changed
+- The `search drive` and `search directory` commands now require their drive and directory argument, and no longer accept `--interactive`. The find and find all commands keep `--interactive` for entering command names.
+- The set of files reported on a default Windows machine is wider. It now includes the extensions the machine's own `PATHEXT` names, such as `.bat` and `.cmd`, alongside WhatExec's fixed sixteen-entry list.
+- On Windows, a file counts as executable when the current user holds effective execute access to it. Before, any access rule mentioning execute rights was enough, and a rule granting execute rights to a group the user does not belong to counted.
+
 ### Deprecated
 - `IExecutableFileInstancesLocator` members remain `Obsolete`. They warn on use and removal waits one version.
 - Legacy `Get*` and `Task[]` locator members remain `[Obsolete]` for migration. They sit outside the new locator contract.
 
 ### Removed
+- **Runtime dependencies.** Removed `DotExtensions` from `WhatExec.Lib` and `WhatExec.Cli`, along with the transitive `Microsoft.Extensions.Primitives` dependency it was the only source of. WhatExec now owns the drive, directory, and executable-file permission semantics the package supplied.
 - Deleted `IExecutableFileResolver` and `ExecutableFileResolver` outright, together with their DI registrations (scoped, singleton, transient) and documentation mentions. Compose `IPathEnvironmentVariableResolver` (PATH-first) with `IExecutableInstancesLocator` (scan) in the caller instead. Breaking change for outside callers of the obsolete type is accepted.
 - Retargeted all shipped projects (`WhatExec.Lib`, `WhatExec.Lib.Extensions.DependencyInjection`, `WhatExec.Cli`, `WhatExec.Cli.Lite`) to `net10.0` only, dropping the `net8.0`, `net9.0`, and `netstandard2.0` targets.
 
