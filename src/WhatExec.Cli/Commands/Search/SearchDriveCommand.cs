@@ -46,28 +46,23 @@ public class SearchDriveCommand
     
     public async Task<int> RunAsync(CliContext cliContext)
     {
+        DriveInfo drive;
+
         try
         {
-#pragma warning disable MA0015
-            ArgumentException.ThrowIfNullOrEmpty(Drive);
-#pragma warning restore MA0015
+            // The DriveInfo constructor normalises a bare drive letter and a root path to the
+            // same drive, so the CLI applies no drive name matching of its own.
+            drive = new DriveInfo(Drive!);
         }
-        catch (Exception)
+        catch (ArgumentException)
         {
             if (!Interactive)
-                throw;
+                return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),
+                    Verbose, -1);
 
-            Drive = UserInputHelper.GetDriveInput();
+            drive = new DriveInfo(UserInputHelper.GetDriveInput());
         }
 
-        DriveInfo? drive = DriveInfo.SafelyEnumerateLogicalDrives().FirstOrDefault(d =>
-            DrivesEqual(d.Name, Drive,
-                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
-        
-        if(drive is null)
-            return ResultHelper.PrintException(new DriveNotFoundException(Resources.ValidationErrors_Drive_NotSpecified),
-                Verbose, -1);
-        
         if (Limit < 1)
         { 
             Console.WriteLine(Resources.Exceptions_Commands_Find_Limit_MustBeGreaterThanZero);
@@ -76,38 +71,15 @@ public class SearchDriveCommand
 
         IAsyncEnumerable<FileInfo> files = _executablesResolver.EnumerateExecutablesInDriveAsync(drive, SearchOption.AllDirectories,
             cliContext.CancellationToken);
-        
-        return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);
-    }
 
-    private static bool DrivesEqual(string driveName, string? input, StringComparison comparison)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return false;
-
-        string normalizedInput = input.Trim().TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        string normalizedDrive = driveName.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-        if (string.Equals(normalizedDrive, normalizedInput, comparison))
-            return true;
-
-        // Allow Windows "C:" to match "C:\".
-        if (OperatingSystem.IsWindows())
+        try
         {
-            if (!normalizedInput.EndsWith(':') && !normalizedInput.EndsWith(Path.DirectorySeparatorChar) && !normalizedInput.EndsWith(Path.AltDirectorySeparatorChar))
-            {
-                // No extra handling needed; exact match already attempted.
-                return false;
-            }
-
-            string withSeparator = normalizedInput.EndsWith(':')
-                ? normalizedInput + Path.DirectorySeparatorChar
-                : normalizedInput;
-
-            return string.Equals(driveName, withSeparator, comparison)
-                || string.Equals(normalizedDrive, withSeparator.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar), comparison);
+            // The library owns the readiness decision; its not-ready ArgumentException surfaces here.
+            return await ResultHelper.PrintFileSearchResultsAsync(files, Limit).ConfigureAwait(true);
         }
-
-        return false;
+        catch (ArgumentException exception)
+        {
+            return ResultHelper.PrintException(exception, Verbose, -1);
+        }
     }
 }
