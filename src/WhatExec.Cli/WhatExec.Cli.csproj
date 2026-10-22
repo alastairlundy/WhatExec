@@ -47,7 +47,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotExtensions" />
     <PackageReference Include="DotMake.CommandLine"/>
     <PackageReference Include="Meziantou.Analyzer">
       <PrivateAssets>all</PrivateAssets>

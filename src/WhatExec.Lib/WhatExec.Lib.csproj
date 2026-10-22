@@ -40,7 +40,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="DotExtensions" />
     <PackageReference Include="System.IO.Abstractions" />
     <PackageReference Include="Meziantou.Analyzer">
       <PrivateAssets>all</PrivateAssets>

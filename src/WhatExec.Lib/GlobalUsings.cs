@@ -8,6 +8,5 @@ global using System.Runtime.CompilerServices;
 global using System.Runtime.Versioning;
 global using System.Threading;
 global using System.Threading.Tasks;
-global using DotExtensions.IO.Drives;
 global using WhatExec.Lib.Detectors;
 global using WhatExec.Lib.Localizations;
