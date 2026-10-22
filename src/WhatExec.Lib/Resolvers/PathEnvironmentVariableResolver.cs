@@ -36,10 +36,19 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
 
     #region Internal Helpers
 
+    /// <summary>
+    /// Checks whether the candidate is an executable file, without a separate existence probe
+    /// standing between the candidate and the detector.
+    /// </summary>
+    /// <remarks>
+    /// The detector opens the candidate and the read determines presence, so a candidate that
+    /// does not exist surfaces as a <see cref="FileNotFoundException"/> from the detector and
+    /// yields no match here, and a candidate that cannot be opened yields no match as well.
+    /// </remarks>
     [UnsupportedOSPlatform("ios")]
     [UnsupportedOSPlatform("tvos")]
     [UnsupportedOSPlatform("browser")]
-    internal async Task<(bool success, FileInfo? file)> CheckFileExistsAndIsExecutable(
+    internal async Task<(bool success, FileInfo? file)> CheckFileIsExecutable(
         string filePath,
         CancellationToken cancellationToken)
     {
@@ -58,13 +67,11 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
             return (false, null);
         }
 
-        if (!File.Exists(fullPath)) return (false, null);
-
         FileInfo file = new(fullPath);
 
         try
         {
-            if (file.Exists && await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
+            if (await _executableFileDetector.IsFileExecutableAsync(file, cancellationToken)
                     .ConfigureAwait(false))
             {
                 return (true, file);
@@ -290,7 +297,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
             || executableName.Contains(Path.AltDirectorySeparatorChar, _stringComparison))
         {
             (bool success, FileInfo? file) checkResult =
-                await CheckFileExistsAndIsExecutable(executableName, cancellationToken).ConfigureAwait(false);
+                await CheckFileIsExecutable(executableName, cancellationToken).ConfigureAwait(false);
 
             if (checkResult.success && checkResult.file is not null)
             {
@@ -313,7 +320,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                         $"{Path.GetFileNameWithoutExtension(executableName)}{pathExtension.ToLower(CultureInfo.InvariantCulture)}");
 
                     (bool success, FileInfo? file) result =
-                        await CheckFileExistsAndIsExecutable(filePath, cancellationToken).ConfigureAwait(false);
+                        await CheckFileIsExecutable(filePath, cancellationToken).ConfigureAwait(false);
 
                     if (result.success && result.file is not null)
                     {
@@ -326,7 +333,7 @@ public class PathEnvironmentVariableResolver : IPathEnvironmentVariableResolver
                 string filePath = Path.Combine(pathEntry, Path.GetFileName(executableName));
 
                 (bool success, FileInfo? file) result =
-                    await CheckFileExistsAndIsExecutable(filePath, cancellationToken).ConfigureAwait(false);
+                    await CheckFileIsExecutable(filePath, cancellationToken).ConfigureAwait(false);
 
                 if (result.success && result.file is not null)
                 {

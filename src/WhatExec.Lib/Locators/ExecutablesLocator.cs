@@ -8,6 +8,7 @@
  */
 
 using System.IO.Abstractions;
+using WhatExec.Lib.Drives;
 
 namespace WhatExec.Lib.Locators;
 
@@ -126,8 +127,8 @@ public class ExecutablesLocator : IExecutablesLocator
     /// <summary>
     /// The single across-drives fan-out shared by both across-drives entry points.
     /// Enumerates logical drives safely (any enumeration fault yields an empty sequence),
-    /// skips drives that are not ready, and traverses each ready root through
-    /// <see cref="TraversalCoreAsync"/> - one lazy walk end to end, with no eager
+    /// admits drives with the owned drive candidate rule, and traverses each admitted root
+    /// through <see cref="TraversalCoreAsync"/> - one lazy walk end to end, with no eager
     /// intermediate collections.
     /// </summary>
     /// <param name="search">Top-level only or all subdirectories.</param>
@@ -159,7 +160,10 @@ public class ExecutablesLocator : IExecutablesLocator
 
         foreach (DriveInfo drive in drives)
         {
-            if (!drive.IsReady)
+            // The owned drive candidate rule decides admission, so the rule is applied in one
+            // place. A drive that turns unready after admission yields no results rather than
+            // an error, because the traversal fault policy absorbs the failure.
+            if (!DriveCandidate.IsCandidate(drive))
             {
                 continue;
             }
@@ -209,7 +213,7 @@ public class ExecutablesLocator : IExecutablesLocator
 
     /// <summary>
     /// Maps one traversed path to an executable <see cref="FileInfo"/>, or null when the
-    /// entry is skipped: unreadable name, name-filter mismatch, missing seam file, or a
+    /// entry is skipped: unreadable name, name-filter mismatch, unusable seam path, or a
     /// detector fault. Only cancellation propagates.
     /// </summary>
     private async Task<FileInfo?> TryResolveExecutableAsync(
@@ -224,14 +228,14 @@ public class ExecutablesLocator : IExecutablesLocator
         }
 
         // Name-first filter (5de66e2): cheap name comparison runs before
-        // FileInfo construction and the existence probe; never extension-first.
+        // FileInfo construction and the detector call; never extension-first.
         if (nameFilter is not null &&
             !string.Equals(fileName, nameFilter, NameComparison))
         {
             return null;
         }
 
-        IFileInfo? seamFile = TryGetExistingSeamFile(filePath);
+        IFileInfo? seamFile = TryCreateSeamFile(filePath);
         if (seamFile is null)
         {
             return null;
@@ -265,24 +269,18 @@ public class ExecutablesLocator : IExecutablesLocator
     }
 
     /// <summary>
-    /// Probes the filesystem seam for an existing file, returning null when the path is
-    /// invalid, the probe faults, or the file does not exist.
+    /// Creates a filesystem seam entry for the path, returning null when the path is invalid or
+    /// the creation faults.
     /// </summary>
-    private IFileInfo? TryGetExistingSeamFile(string filePath)
+    /// <remarks>
+    /// No existence probe runs here: the detector opens the candidate and the read determines
+    /// presence, so a file that cannot be opened is skipped rather than reported.
+    /// </remarks>
+    private IFileInfo? TryCreateSeamFile(string filePath)
     {
-        IFileInfo seamFile;
         try
         {
-            seamFile = _fileSystem.FileInfo.New(filePath);
-        }
-        catch
-        {
-            return null;
-        }
-
-        try
-        {
-            return seamFile.Exists ? seamFile : null;
+            return _fileSystem.FileInfo.New(filePath);
         }
         catch
         {

@@ -54,14 +54,30 @@ public class PathEnvironmentVariableResolverUnitTests : IDisposable
     }
 
     /// <summary>
-    /// A stub detector that always considers files executable.
+    /// A stub detector that considers every existing file executable and honours the
+    /// documented <see cref="FileNotFoundException"/> contract for a missing file.
     /// </summary>
+    /// <remarks>
+    /// The resolver no longer probes existence before the detector call, so the stub stands in
+    /// for the real detector, which opens the candidate and raises
+    /// <see cref="FileNotFoundException"/> when the file does not exist.
+    /// </remarks>
     private class AlwaysExecutableDetector : IExecutableFileDetector
     {
-        public bool IsFileExecutable(FileInfo file) => true;
+        public bool IsFileExecutable(FileInfo file) => CheckExists(file);
 
         public Task<bool> IsFileExecutableAsync(FileInfo file, CancellationToken cancellationToken)
-            => Task.FromResult(true);
+            => Task.FromResult(CheckExists(file));
+
+        private static bool CheckExists(FileInfo file)
+        {
+            if (!file.Exists)
+            {
+                throw new FileNotFoundException();
+            }
+
+            return true;
+        }
     }
 
     private IPathEnvironmentVariableResolver CreateResolver()
