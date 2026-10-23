@@ -16,10 +16,10 @@ using WhatExec.Lib.Locators;
 namespace WhatExec.Benchmarks;
 
 /// <summary>
-/// Throughput evidence for the scan pipeline (ledger T006): the directory walk
+/// Throughput evidence for the scan pipeline: the directory walk
 /// through <see cref="IExecutablesLocator"/> (top-level and all-subdirectories)
 /// and the unified single-pass drive fan-out across ready drives.
-/// Run by hand locally - never from a workflow (ledger T008).
+/// Run by hand locally - never from a workflow.
 /// </summary>
 [MemoryDiagnoser]
 public class ScanThroughputBenchmarks
@@ -85,7 +85,7 @@ public class ScanThroughputBenchmarks
     // ── Scenario 2: drive fan-out single pass ────────────────────────────
 
     /// <summary>
-    /// The across-drives entry point ticket 003 unified: one lazy pass over every
+    /// The across-drives entry point unified: one lazy pass over every
     /// ready drive, no eager intermediate collections. Top-level only so a hand run
     /// stays short even though whole-drive recursion would take minutes.
     /// Machine-dependent: the enumerated set is the host's ready drives, so results
