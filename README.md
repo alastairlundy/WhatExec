@@ -1,5 +1,7 @@
 # WhatExec
 
+> **⚠️ This project has been archived and is no longer maintained.** No further updates, bug fixes, or support will be provided. The code remains available for reference and historical purposes.
+
 ![GitHub License](https://img.shields.io/github/license/alastairlundy/whatexec?style=flat-square)
  [![NuGet WhatExec.Cli](https://img.shields.io/nuget/v/WhatExec.Cli?style=flat-square&label=WhatExec.Cli%20NuGet)](https://www.nuget.org/packages/WhatExec.Cli)
  [![NuGet WhatExec.Cli.Lite](https://img.shields.io/nuget/v/WhatExec.Cli.Lite?style=flat-square&label=WhatExec.Cli.Lite%20NuGet)](https://www.nuget.org/packages/WhatExec.Cli.Lite)
